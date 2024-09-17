@@ -1,5 +1,5 @@
 export interface IStudent {
-    id?:string;
+    id?:string|undefined;
     name?: string;
     email?: string;
     mobile?: number;
@@ -12,4 +12,16 @@ export interface IStudent {
     isVerified?: boolean;
     isBlocked?: boolean;
     courses?: string[];
+}
+
+export interface IUserAuthResponse {
+    status: number;
+    data: {
+        success: boolean;
+        message: string;
+        data?: IStudent;
+        userId?: string;
+        token?: string;
+        refreshToken?: string;
+    };
 }

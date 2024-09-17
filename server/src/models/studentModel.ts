@@ -1,5 +1,5 @@
 import mongoose, { Document, Model, Schema } from "mongoose";
-import bcrypt from "bcryptjs";
+import Encrypt from "../utils/comparePassword";
 
 const emailRegexPattern: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -71,22 +71,22 @@ const studentSchema: Schema<IUser> = new Schema(
     { timestamps: true }
 );
 
-// hash password before saving
+// Instance of the Encrypt class
+const encrypt = new Encrypt();
+
+// Hash password before saving
 studentSchema.pre<IUser>("save", async function (next) {
     if (!this.isModified("password")) {
         next();
     }
-    this.password = await bcrypt.hash(this.password, 10);
+    this.password = await encrypt.hashPassword(this.password); // Use the Encrypt class to hash the password
     next();
 });
 
-//compare password
-studentSchema.methods.comparePassword = async function (
-    enteredPassword: string
-): Promise<boolean> {
-    return await bcrypt.compare(enteredPassword, this.password);
+// Compare password
+studentSchema.methods.comparePassword = async function (enteredPassword: string): Promise<boolean> {
+    return await encrypt.compare(enteredPassword, this.password); // Use the Encrypt class to compare passwords
 };
 
-
-const studentCollection:Model<IUser> = mongoose.model('Student',studentSchema)
-export {studentCollection};
+const studentCollection: Model<IUser> = mongoose.model('Student', studentSchema);
+export { studentCollection };
