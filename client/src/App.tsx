@@ -1,12 +1,12 @@
 
 import './App.css'
-import Banner from './components/Banner'
-import Navbarin from './components/Navbar'
-import Courses from './components/Courses'
-import Companies from './components/Companies/Companies'
-import Mentor from './components/Mentor'
-import Testimonials from './components/Testimonials/index'
-import Footer from './components/Footer/Footer'
+import Banner from './components/User/Home/Banner'
+import Navbarin from './components/User/Common/Navbar'
+import Courses from './components/User/Home/Courses'
+import Companies from './components/User/Home/Companies/Companies'
+import Mentor from './components/User/Home/Mentor'
+import Testimonials from './components/User/Home/Testimonials/index'
+import Footer from './components/User/Common/Footer/Footer'
 
 function App() {
   

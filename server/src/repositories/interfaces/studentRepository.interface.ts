@@ -2,9 +2,8 @@ import { IStudent} from "../../interfaces/student";
 
 
 export interface IStudentRepository {
-    emailExistCheck(email: string): Promise<IStudent | null>;
-    saveStudent(studentDetails:IStudent) : Promise<IStudent|null>;
+  createStudent(studentData: IStudent): Promise<IStudent>;
+  findStudentByEmail(email: string): Promise<IStudent | null>;
+  updateUserVerification(email: string): Promise<IStudent>;
     
-    
-
 }

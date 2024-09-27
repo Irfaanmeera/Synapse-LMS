@@ -25,10 +25,10 @@ const Drawer = ({ children, isOpen, setIsOpen }: DrawerProps) => {
         }
     >
  
-                <article className="relative w-270 max-w-lg pb-10 flex flex-col space-y-6 h-full">
-                    <header className="p-4 flex items-center justify-between"><img
-                        className="h-12 w-40"
-                        src={"/assets/logo/logo.svg"}
+                <article className="relative w-270 max-w-lg pb-10 flex flex-col space-y-4 h-full">
+                    <header className="p-2 flex items-center justify-between"><img
+                        className="h-35 w-40"
+                        src={"/assets/logo/Modern_Educational_Logo_Template_-removebg-preview (1).png"}
                         alt="Courses-Logo"
                         onClick={() => {
                             setIsOpen(false);

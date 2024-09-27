@@ -3,8 +3,8 @@ import { Disclosure } from '@headlessui/react';
 import { Bars3Icon } from '@heroicons/react/24/outline';
 import Drawer from "./Drawer";
 import Drawerdata from "./Drawerdata";
-import Signdialog from "./Signdialog";
-import Registerdialog from "./Registerdialog";
+import Signdialog from "../../../auth/StudentLogin";
+import Registerdialog from "../../../auth/StudentSignup";
 
 interface NavigationItem {
     name: string;
@@ -13,10 +13,10 @@ interface NavigationItem {
 }
 
 const navigation: NavigationItem[] = [
-    { name: 'Home', href: '#/', current: true },
+    { name: 'Home', href: '/', current: true },
     { name: 'Courses', href: '#courses', current: false },
     { name: 'Mentor', href: '#mentor', current: false },
-    { name: 'Group', href: '/', current: false },
+    // { name: 'Group', href: '/', current: false },
     { name: 'Testimonial', href: '#testimonial', current: false },
 ];
 
@@ -26,7 +26,7 @@ function classNames(...classes: string[]) {
 
 const CustomLink = ({ href, onClick, children }: { href: string; onClick: () => void; children: React.ReactNode }) => {
     return (
-        <a href={href} onClick={onClick} className="px-3 py-1 text-sm font-normal">
+        <a href={href} onClick={onClick} className="px-3 py-3 text-sm font-normal">
             {children}
         </a>
     );
@@ -52,7 +52,7 @@ const Navbar = () => {
                             <div className="flex flex-shrink-0 items-center">
                                 {/* Update the logo src path as per your project */}
                                 <img
-                                    className="hidden mr-0 h-25 w-80 lg:block"
+                                    className="hidden h-25 w-80 lg:block"
                                     src={'/assets/logo/Modern_Educational_Logo_Template_-removebg-preview (1).png'}
                                     alt="design-logo"
                                 />
@@ -71,7 +71,7 @@ const Navbar = () => {
                                             <span
                                                 className={classNames(
                                                     item.href === currentLink ? 'underline-links' : 'text-slategray',
-                                                    'px-2 py-3 text-sm font-normal opacity-75 hover:opacity-100'
+                                                    'px-2 py-3 text-base font-normal opacity-75 hover:opacity-100'
                                                 )}
                                                 aria-current={item.href ? 'page' : undefined}
                                             >

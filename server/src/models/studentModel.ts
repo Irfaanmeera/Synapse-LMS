@@ -1,92 +1,79 @@
-import mongoose, { Document, Model, Schema } from "mongoose";
-import Encrypt from "../utils/comparePassword";
+import mongoose, { Document, Model } from "mongoose";
+import { IStudent } from "../interfaces/student";
 
-const emailRegexPattern: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-export interface IUser extends Document {
-    name: string;
-    email: string;
-    mobile: number;
-    password: string;
-    avatar?: {
-        public_id: string;
-        url: string;
-    };
-    role?: string;
-    isVerified?: boolean;
-    isBlocked?: boolean;
-    courses?: string[];
-    comparePassword: (password: string) => Promise<boolean>;
+interface StudentModel extends Model<StudentDoc> {
+  build(attrs: IStudent): StudentDoc;
 }
 
-const studentSchema: Schema<IUser> = new Schema(
-    {
-        name: {
-            type: String,
-            required: [true, "Please Enter your name"],
-        },
-        email: {
-            type: String,
-            required: [true, "Please Enter your Email"],
-            validate: {
-                validator: function (value: string) {
-                    return emailRegexPattern.test(value);
-                },
-                message: "Please enter a valide email",
-            },
-            unique: true,
-        },
-        mobile: {
-            type: Number,
-            required: [true, "Please Enter your mobile number"],
-        },
-        password: {
-            type: String,
-            required: [true, "Please Enter your password"],
-            minlength: [6, "Password must be atleast 6 characters"],
-            select: false,
-        },
-        avatar: {
-            public_id: String,
-            url: String,
-        },
-        role: {
-            type: String,
-            default: "user",
-        },
-        isVerified: {
-            type: Boolean,
-            default: false,
-        },
-        isBlocked: {
-            type: Boolean,
-            default: false,
-        },
-        courses: [
-            {
-                courseId: String,
-            },
-        ],
+interface StudentDoc extends Document {
+  name: string;
+  email: string; 
+  mobile: number;
+  password: string;
+  image?: string;
+  isBlocked?: boolean;
+  wallet?: number;
+  courses?: string[];
+}
+
+const studentSchema = new mongoose.Schema(
+  {
+   
+    name: {
+      type: String,
+      required: true,
     },
-    { timestamps: true }
+    password: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+    },
+    mobile: {
+      type: Number,
+      required: true,
+    },
+    image: {
+      type: String,
+    },
+    isBlocked: {
+      type: Boolean,
+      default: false,
+    },
+    wallet: {
+      type: Number,
+      default: 0,
+    },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+    courses: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "courses",
+      },
+    ],
+  },
+  {
+    toJSON: {
+      transform(doc, ret) {
+        ret.id = ret._id;
+        delete ret._id;
+      },
+    },
+  }
 );
 
-// Instance of the Encrypt class
-const encrypt = new Encrypt();
-
-// Hash password before saving
-studentSchema.pre<IUser>("save", async function (next) {
-    if (!this.isModified("password")) {
-        next();
-    }
-    this.password = await encrypt.hashPassword(this.password); // Use the Encrypt class to hash the password
-    next();
-});
-
-// Compare password
-studentSchema.methods.comparePassword = async function (enteredPassword: string): Promise<boolean> {
-    return await encrypt.compare(enteredPassword, this.password); // Use the Encrypt class to compare passwords
+studentSchema.statics.build = (student: IStudent) => {
+  return new Student(student);
 };
 
-const studentCollection: Model<IUser> = mongoose.model('Student', studentSchema);
-export { studentCollection };
+const Student = mongoose.model<StudentDoc, StudentModel>(
+  "student",
+  studentSchema
+);
+
+export { Student };

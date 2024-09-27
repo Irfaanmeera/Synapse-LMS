@@ -5,6 +5,10 @@ import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import { ErrorMiddleware } from './src/middlewares/error'
 import morgan from 'morgan';
+import dotenv from 'dotenv';
+import studentRouter from "./src/routes/studentRoutes";
+dotenv.config();
+
 
 app.use(express.json({limit:'50mb'}))
 app.use(cookieParser())
@@ -12,6 +16,8 @@ app.use(cors({
     origin:process.env.ORIGIN
 }))
 app.use(morgan('dev'))
+
+app.use('/', studentRouter);
 
 
 //testing api

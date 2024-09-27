@@ -3,8 +3,8 @@ import { Fragment, useState } from 'react'
 import { LockClosedIcon } from '@heroicons/react/20/solid'
 
 
-const Signin = () => {
-    let [isOpen, setIsOpen] = useState(false)
+const Register = () => {
+    const [isOpen, setIsOpen] = useState(false)
 
     const closeModal = () => {
         setIsOpen(false)
@@ -16,10 +16,10 @@ const Signin = () => {
 
     return (
         <>
-            <div className="absolute inset-y-0 right-0 flex items-center sm:static sm:inset-auto sm:pr-0">
+            <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto  sm:pr-0">
                 <div className='hidden lg:block'>
-                    <button type="button" className='text-sm text-Blueviolet font-medium' onClick={openModal}>
-                        Log In
+                    <button className="text-Blueviolet text-base font-medium ml-9 py-2 px-12 transition duration-150 ease-in-out rounded-full bg-semiblueviolet hover:text-white hover:bg-Blueviolet" onClick={openModal}>
+                        Sign up
                     </button>
                 </div>
             </div>
@@ -39,7 +39,7 @@ const Signin = () => {
                     </Transition.Child>
 
                     <div className="fixed inset-0 overflow-y-auto">
-                        <div className="flex min-h-full items-center justify-center p-2 text-center">
+                        <div className="flex min-h-full items-center justify-center p-4 text-center">
                             <Transition.Child
                                 as={Fragment}
                                 enter="ease-out duration-300"
@@ -51,17 +51,19 @@ const Signin = () => {
                             >
                                 <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
 
-                                    <div className="flex min-h-full items-center justify-center py-2 px-4 sm:px-6 lg:px-8">
+                                    <div className="flex min-h-full items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
                                         <div className="w-full max-w-md space-y-8">
                                             <div>
-                                            
-
-<h2 className="mt-4 text-center text-2xl font-bold tracking-tight text-gray-900">
-    Sign in to your account
-</h2>
-
+                                                {/* <img
+                                                    className="mx-auto h-12 w-auto"
+                                                    src="/assets/logo/Modern_Educational_Logo_Template_-removebg-preview (1).png"
+                                                    alt="Your Company"
+                                                /> */}
+                                                <h2 className="mt-6 text-center text-2xl font-bold tracking-tight text-gray-800">
+                                                    Sign Up
+                                                </h2>
                                             </div>
-                                            <form className="mt-6 space-y-6" action="#" method="POST">
+                                            <form className="mt-8 space-y-6" action="#" method="POST">
                                                 <input type="hidden" name="remember" defaultValue="true" />
                                                 <div className="-space-y-px rounded-md shadow-sm">
                                                     <div>
@@ -76,6 +78,20 @@ const Signin = () => {
                                                             required
                                                             className="relative block w-full appearance-none rounded-none rounded-t-md border border-grey500 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                                                             placeholder="Email address"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label htmlFor="password" className="sr-only">
+                                                            Phone No
+                                                        </label>
+                                                        <input
+                                                            id="password"
+                                                            name="password"
+                                                            type="password"
+                                                            autoComplete="current-password"
+                                                            required
+                                                            className="relative block w-full appearance-none rounded-none rounded-b-md border border-grey500 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                                                            placeholder="Mobile No"
                                                         />
                                                     </div>
                                                     <div>
@@ -107,22 +123,17 @@ const Signin = () => {
                                                         </label>
                                                     </div>
 
-                                                    <div className="text-sm">
-                                                        <a href="#" className="font-medium text-indigo-600 hover:text-indigo-500">
-                                                            Forgot your password?
-                                                        </a>
-                                                    </div>
                                                 </div>
 
                                                 <div>
                                                     <button
                                                         type="submit"
-                                                        className="group relative flex w-full justify-center rounded-md border border-transparent bg-Blueviolet py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                                        className="group relative flex w-full justify-center rounded-md border border-transparent bg-Blueviolet py-2 px-4 text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                                                     >
                                                         <span className="absolute inset-y-0 left-0 flex items-center pl-3">
                                                             <LockClosedIcon className="h-5 w-5 text-indigo-500 group-hover:text-indigo-400" aria-hidden="true" />
                                                         </span>
-                                                        Sign In
+                                                        Send OTP
                                                     </button>
                                                 </div>
                                             </form>
@@ -133,7 +144,7 @@ const Signin = () => {
                                     <div className="mt-4 flex justify-end">
                                         <button
                                             type="button"
-                                            className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                                            className="inline-flex justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-blue-900 "
                                             onClick={closeModal}
                                         >
                                             Got it, thanks!
@@ -149,4 +160,4 @@ const Signin = () => {
     )
 }
 
-export default Signin;
+export default Register;

@@ -1,18 +1,15 @@
 export interface IStudent {
-    id?:string|undefined;
+    id?: string;
     name?: string;
     email?: string;
     mobile?: number;
     password?: string;
-    avatar?: {
-        public_id: string;
-        url: string;
-    };
-    role?: string;
-    isVerified?: boolean;
+    image?: string;
+    wallet?: number;
     isBlocked?: boolean;
+    isVerified?: boolean;
     courses?: string[];
-}
+  }
 
 export interface IUserAuthResponse {
     status: number;
