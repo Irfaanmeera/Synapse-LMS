@@ -7,7 +7,7 @@ interface StudentModel extends Model<StudentDoc> {
 
 interface StudentDoc extends Document {
   name: string;
-  email: string; 
+  email: string;
   mobile: number;
   password: string;
   image?: string;
@@ -18,7 +18,7 @@ interface StudentDoc extends Document {
 
 const studentSchema = new mongoose.Schema(
   {
-   
+
     name: {
       type: String,
       required: true,

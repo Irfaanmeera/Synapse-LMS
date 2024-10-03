@@ -3,10 +3,10 @@ import { IStudent } from "../../interfaces/student";
 import { StudentRepository } from "../../repositories/implements/studentRepository";
 import { STATUS_CODES } from "../../constants/httpStatusCodes";
 import ErrorHandler from "../../utils/ErrorHandler";
-// import { CreateJWT } from "../../utils/generateToken";
-// import Encrypt from "../../utils/comparePassword";
+import { BadRequestError } from "../../constants/errors/badrequestError";
 
-const {BAD_REQUEST } = STATUS_CODES;
+
+const { BAD_REQUEST } = STATUS_CODES;
 
 export class StudentService implements IStudentService {
     constructor(
@@ -15,22 +15,21 @@ export class StudentService implements IStudentService {
         this.studentRepository = new StudentRepository();
     }
 
-    async signup(studentData: IStudent): Promise<IStudent | null> {
+    async signup(studentDetails: IStudent): Promise<IStudent | null> {
         try {
             const existingStudent = await this.studentRepository.findStudentByEmail(
-                studentData.email!
+                studentDetails.email!
             );
-            if (existingStudent) {
-                throw new ErrorHandler("Student already exists", BAD_REQUEST);
-            } else {
-                return await this.studentRepository.createStudent(studentData);
+            if (existingStudent) {   
+                throw new BadRequestError("Student already exists");
             }
-
+            return await this.studentRepository.createStudent(studentDetails);
         } catch (error) {
             console.log(error as Error);
-            return null;
+            throw error; // Rethrow the error to be caught in the controller
         }
     }
+    
 
     async login(email: string): Promise<IStudent> {
         const student = await this.studentRepository.findStudentByEmail(email)

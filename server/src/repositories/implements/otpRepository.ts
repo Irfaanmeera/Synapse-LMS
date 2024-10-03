@@ -14,7 +14,7 @@ export class OtpRepository implements IOtpRepository {
 
     async updateOtp(otpData: IOtp): Promise<IOtp | undefined> {
         const otp = await Otp.findOne({ email: otpData.email })
-       
+
         otp!.set({
             otp: otpData.otp,
             createdAt: new Date(),

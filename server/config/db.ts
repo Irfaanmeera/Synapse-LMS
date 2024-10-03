@@ -4,13 +4,13 @@ dotenv.config()
 
 const dbUrl = process.env.MONGO
 
-export const connectDb = async ()=>{
-    
-        await mongoose.connect(dbUrl!)
-        .then(()=>{
+export const connectDb = async () => {
+
+    await mongoose.connect(dbUrl!)
+        .then(() => {
             console.log('Database connected Successfully...')
         })
-        .catch((err)=>{
-        console.log("Database connection error..."+ err.message)
-         })
+        .catch((err) => {
+            console.log("Database connection error..." + err.message)
+        })
 }

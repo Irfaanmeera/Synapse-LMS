@@ -14,7 +14,7 @@ export class StudentRepository implements IStudentRepository {
     async updateUserVerification(email: string): Promise<IStudent> {
         const student = await Student.findOne({ email });
         student!.set({ isVerified: true });
-        const verifiedStudent = await student!.save();
-        return verifiedStudent;
+        return await student!.save();
+        
     }
 }

@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Request, Response, NextFunction } from 'express';
-// import ErrorHandler from '../utils/ErrorHandler';
-import { catchAsyncError } from '../middlewares/catchAsyncErrors';
 import { StudentService } from '../services/implements/studentService';
 import { OtpService } from '../services/implements/otpService';
 import { STATUS_CODES } from '../constants/httpStatusCodes';
@@ -10,6 +8,7 @@ import { IStudent } from '../interfaces/student';
 import jwt from "jsonwebtoken";
 import ErrorHandler from '../utils/ErrorHandler';
 import { StudentRepository } from '../repositories/implements/studentRepository';
+import { BadRequestError } from '../constants/errors/badrequestError';
 
 const { BAD_REQUEST, OK, INTERNAL_SERVER_ERROR } = STATUS_CODES
 
@@ -18,32 +17,34 @@ const studentService = new StudentService(studentRepository);
 const otpService = new OtpService();
 
 export class StudentController {
-  
+
+
   async signup(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { name, email, mobile, password } = req.body;
-      console.log("Request Body:", req.body);
+      const {name, email, password, mobile } = req.body;
       const hashedPassword = await bcrypt.hash(password, 10);
-      console.log("Password:", password); // Check if password is undefined
-
-
-      const studentData: IStudent = {
+      const studentDetails: IStudent = {
         name,
         email,
+        password: hashedPassword,
         mobile,
-        password:hashedPassword,
-      }
-      await studentService.signup(studentData)
-      const otp = otpService.generateOtp()
-      await otpService.createOtp({ email, otp })
-      otpService.sendOtpMail(email, otp)
-      res.status(OK).json({ success: true, message: 'OTP sent for verification...' });
-
+      };
+      await studentService.signup(studentDetails);
+      const otp = otpService.generateOtp();
+      await otpService.createOtp({ email, otp });
+      otpService.sendOtpMail(email, otp);
+      res.status(201).json({ message: "OTP sent for verification...", email });
     } catch (error) {
-      console.log(error as Error)
-      res.status(INTERNAL_SERVER_ERROR).json({ success: false, message: 'Internal server error' });
+      if (error instanceof Error) {
+        console.log(error.message);
+        return next(error);
+      } else {
+        console.log("An unknown error occured");
+      }
     }
   }
+
+
 
   async resendOtp(req: Request, res: Response) {
     try {
@@ -56,13 +57,13 @@ export class StudentController {
       console.log(error as Error)
     }
   }
-  async verifyStudent(req: Request, res: Response) {
+  async verifyOtp(req: Request, res: Response) {
     try {
       const { email, otp } = req.body;
       const existingOtp = await otpService.findOtp(email)
       if (otp === existingOtp?.otp) {
         const student: IStudent = await studentService.verifyStudent(email)
-        const accessToken = jwt.sign(
+        const token = jwt.sign(
           {
             studentId: student.id,
             role: "student",
@@ -92,7 +93,7 @@ export class StudentController {
 
         res.status(200).json({
           message: "Student Verified",
-          accessToken, // Return access token
+          token, // Return access token
           refreshToken, // Return refresh token
           student: studentData,
         });
@@ -111,7 +112,7 @@ export class StudentController {
       const validPassword = await bcrypt.compare(password, student.password!)
       if (validPassword) {
         if (student.isVerified) {
-          const accessToken = jwt.sign(
+          const token = jwt.sign(
             {
               studentId: student.id,
               role: "student",
@@ -141,7 +142,7 @@ export class StudentController {
 
           res.status(200).json({
             message: "Student Verified",
-            accessToken, // Return access token
+            token, // Return access token
             refreshToken, // Return refresh token
             student: studentData,
           });
@@ -149,10 +150,12 @@ export class StudentController {
           const otp = otpService.generateOtp();
           await otpService.createOtp({ email, otp });
           otpService.sendOtpMail(email, otp);
+          res.status(400).json({ message: "Not verified" });  
           throw new ErrorHandler("Not verified", BAD_REQUEST);
         }
       } else {
-        throw new ErrorHandler("Incorrect password", BAD_REQUEST);
+        res.status(400).json({ message: "Incorrect password" });             
+        throw new ErrorHandler("Incorrect Password", BAD_REQUEST);
       }
     } catch (error) {
       console.log(error as Error)

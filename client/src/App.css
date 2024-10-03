@@ -167,3 +167,15 @@ hr {
   background-size: cover;
   border-radius: 20px;
 }
+
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Full viewport height */
+}
+
+/* Optional: Customize the spinner's dimensions if needed */
+.spinner {
+  display: inline-block;
+}

@@ -67,7 +67,7 @@ const Footer = () => {
                     <div className='flex gap-4'>
                         {socialLinks.map((item, i) => (
                             <a href={item.link} key={i} target="_blank" rel="noopener noreferrer">
-                            <div className="bg-white h-12 w-12 shadow-xl text-base rounded-full flex items-center justify-center footer-icons hover:bg-ultramarine">
+                                <div className="bg-white h-12 w-12 shadow-xl text-base rounded-full flex items-center justify-center footer-icons hover:bg-ultramarine">
                                     <img src={item.imgSrc} alt={item.imgSrc} width={item.width} height={2} className="sepiaa" />
                                 </div>
                             </a>

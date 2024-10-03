@@ -3,7 +3,7 @@ import React from 'react';
 const Banner = () => {
     return (
         <div id="home-section" className='bg-lightkblue'>
-            <div className="mx-auto max-w-7xl pt-15 sm:pb-24 px-6">
+            <div className="mx-auto max-w-7xl sm:pb-24 px-6">
                 <div className='grid grid-cols-1 lg:grid-cols-12 space-x-1'>
                     <div className='col-span-6 flex flex-col justify-evenly'>
                         <div className='flex gap-2 mx-auto lg:mx-0'>
@@ -13,10 +13,10 @@ const Banner = () => {
                         <h1 className='text-midnightblue text-4xl sm:text-5xl font-semibold text-center lg:text-start lh-120 pt-5 lg:pt-0'>
                             Advance your coding skills with us.
                         </h1>
-                        <h3 className='text-charcoal text-lg font-normal text-center lg:text-start opacity-75 pt-5 lg:pt-0'>
-                            Build skills with our courses and mentor from world-class companies.
+                        <h3 className='text-charcoal text-lg font-normal text-center lg:text-start opacity-75 pt-1 '>
+                        Empower your career with our comprehensive online courses, guided by expert mentors from top global companies
                         </h3>
-
+{/* 
                         <div className="relative text-white focus-within:text-white flex flex-row-reverse input-shadow rounded-full pt-5 lg:pt-0">
                             <input
                                 type="email"
@@ -33,25 +33,25 @@ const Banner = () => {
                                     <img src='/assets/banner/search.svg' alt="input-icon" width={30} height={30} />
                                 </button>
                             </div>
-                        </div>
+                        </div> */}
 
-                        <div className='flex items-center justify-between pt-10 lg:pt-4'>
-                            <div className='flex gap-2'>
+                        <div className='flex items-center justify-between pt-3 lg:pt-1'>
+                            <div className='flex gap-1'>
                                 <img src="/assets/banner/check-circle.svg" alt="check-circle" width={30} height={30} className='smallImage' />
                                 <p className='text-sm sm:text-lg font-normal text-black'>Flexible</p>
                             </div>
-                            <div className='flex gap-2'>
+                            <div className='flex gap-1'>
                                 <img src="/assets/banner/check-circle.svg" alt="check-circle" width={30} height={30} className='smallImage' />
                                 <p className='text-sm sm:text-lg font-normal text-black'>Learning path</p>
                             </div>
-                            <div className='flex gap-2'>
+                            <div className='flex gap-1'>
                                 <img src="/assets/banner/check-circle.svg" alt="check-circle" width={30} height={30} className='smallImage' />
                                 <p className='text-sm sm:text-lg font-normal text-black'>Community</p>
                             </div>
                         </div>
                     </div>
 
-                    <div className='col-span-6 flex justify-center'>
+                    <div className='col-span-6 flex justify-end p-6'>
                         <img src="/assets/banner/mahila.png" alt="banner image" width={1000} height={805} />
                     </div>
                 </div>
