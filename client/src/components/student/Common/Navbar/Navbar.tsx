@@ -10,6 +10,8 @@ import Drawer from "./Drawer";
 import Drawerdata from "./Drawerdata";
 import Signdialog from "../../../auth/StudentLogin";
 import Registerdialog from "../../../auth/StudentSignup";
+import InstructorSignIn from "../../../auth/instructorLogin";
+
 import { Link, useNavigate } from "react-router-dom";
 import Typography from "@mui/material/Typography";
 import { useSelector, useDispatch} from "react-redux";
@@ -35,7 +37,7 @@ const Navbar = () => {
       navigate("/");
       toast.success("Logged Out Successfully"); 
     } else {
-      navigate("/instructor/login");
+      navigate("/");
     }
   };
 
@@ -269,7 +271,9 @@ const Navbar = () => {
                 <div className="ml-20 flex items-center justify-between">
                 <div className="flex space-x-0"> {/* Add margin-right for spacing */}
                     <Signdialog />
+                    <InstructorSignIn/>
                     <Registerdialog />
+                    
                 </div>
                 </div>
             )}

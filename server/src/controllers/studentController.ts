@@ -161,6 +161,126 @@ export class StudentController {
       console.log(error as Error)
     }
   }
+
+  async googleLogin(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+        const { name, email, googlePhotoUrl } = req.body;
+        const accessTokenMaxAge = 5 * 60 * 1000; // 5 minutes
+        const refreshTokenMaxAge = 7 * 24 * 60 * 60 * 1000; // 7 days
+
+        // Check if user already exists
+        const student = await studentService.getUserByEmail(email);
+        console.log(student)
+
+        if (student) {
+            // Generate access token and refresh token for existing user
+            const token = jwt.sign(
+                { studentId: student.id, role: "student" },
+                process.env.JWT_SECRET!,
+                { expiresIn: "15m" }
+            );
+
+            const refreshToken = jwt.sign(
+                { studentId: student.id, role: "student" },
+                process.env.JWT_REFRESH_SECRET!,
+                { expiresIn: "7d" }
+            );
+
+            const studentData = {
+                _id: student.id,
+                name: student.name,
+                email: student.email,
+                mobile: student.mobile,
+                wallet: student.wallet,
+                courses: student.courses,
+                image: student.image || googlePhotoUrl,
+                role: "student",
+            };
+
+            res.status(OK).cookie('access_token', token, {
+                maxAge: accessTokenMaxAge,
+                httpOnly: true, // Ensure tokens are secure
+            }).cookie('refresh_token', refreshToken, {
+                maxAge: refreshTokenMaxAge,
+                httpOnly: true,
+            }).json({
+                success: true,
+                message: "Login Successful",
+                token,
+                refreshToken,
+                student: studentData,
+            });
+            return;  // Exiting the function after sending the response
+        } else {
+            // If user does not exist, create a new user with a random password
+            const generatedPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
+            const hashedPassword = await bcrypt.hash(generatedPassword, 10);
+
+            const newStudent: IStudent = {
+                name,
+                email,
+                password: hashedPassword,
+                mobile: '', // Can be updated later by the user
+                image: googlePhotoUrl,
+                wallet: 0,
+                courses: [],
+                isVerified: true, // Assuming Google login skips the OTP verification
+            };
+
+            const savedStudent = await studentService.signup(newStudent);
+            console.log('Googlesigned User:'+ savedStudent)
+            // Check if savedStudent is null
+            if (!savedStudent) {
+                res.status(INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to create new student" });
+                return; // Exiting the function after sending the response
+            }
+
+            // Generate tokens for the new student
+            const token = jwt.sign(
+                { studentId: savedStudent.id, role: "student" },
+                process.env.JWT_SECRET!,
+                { expiresIn: "15m" }
+            );
+
+            const refreshToken = jwt.sign(
+                { studentId: savedStudent.id, role: "student" },
+                process.env.JWT_REFRESH_SECRET!,
+                { expiresIn: "7d" }
+            );
+
+            const studentData = {
+                _id: savedStudent.id,
+                name: savedStudent.name,
+                email: savedStudent.email,
+                mobile: savedStudent.mobile,
+                wallet: savedStudent.wallet,
+                courses: savedStudent.courses,
+                image: savedStudent.image,
+                role: "student",
+            };
+
+            res.status(OK).cookie('access_token', token, {
+                maxAge: accessTokenMaxAge,
+                httpOnly: true,
+            }).cookie('refresh_token', refreshToken, {
+                maxAge: refreshTokenMaxAge,
+                httpOnly: true,
+            }).json({
+                success: true,
+                message: "Google Login Successful, New Student Created",
+                token,
+                refreshToken,
+                student: studentData,
+            });
+            return; // Exiting the function after sending the response
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(INTERNAL_SERVER_ERROR).json({ success: false, message: 'Internal server error' });
+        return; // Exiting the function after sending the error response
+    }
+}
+
 }
 
 

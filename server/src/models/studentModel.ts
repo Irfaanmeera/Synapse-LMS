@@ -33,7 +33,7 @@ const studentSchema = new mongoose.Schema(
     },
     mobile: {
       type: Number,
-      required: true,
+      default:'',
     },
     image: {
       type: String,

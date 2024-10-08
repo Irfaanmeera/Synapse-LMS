@@ -84,6 +84,75 @@ const studentLogin = async (studentData: StudentData) => {
   }
 };
 
+const googleLogin = async (name: string | null, email: string | null, photoUrl: string | null) => {
+  try {
+      if (!name || !email) return;
+      const result = await axiosInstance.post('/google-login', { name, email, photoUrl });
+      console.log('Result:', result); // Improved logging
+      return result;
+  } catch (error) {
+      console.error('Error occurred:', error);
+      if (error.response) {
+          console.log('Error response:', error.response.data); // Log the server response for more context
+      }
+      console.log('Error coming from here...');
+  }
+};
+
+      const instructorSignup = async (instructorData: InstructorData): Promise<{ success: boolean; email: string } | undefined> => {
+        try {
+            const response = await axiosInstance.post('instructor/signup', instructorData);
+            const { message, email } = response.data;
+    
+            console.log('Submitting data:', response.data);
+    
+            if (message === 'OTP sent for verification...') {
+                return { success: true, email };
+            }
+        } catch (error) {
+          return handleAxiosError(error);
+            }
+    };
+    
+const instructorVerifyOtp = async (otp: string, email: string) => {
+    try {
+        const response = await axiosInstance.post('instructor/verifyOtp', { otp, email });
+        const { token, refreshToken, instructor } = response.data;
+        console.log(response)
+        localStorage.setItem('token', token);
+        localStorage.setItem('refreshToken', refreshToken);
+        return instructor;
+    } catch (error) {
+        return handleAxiosError(error);
+    }
+};
+
+const instructorResendOtp = async (email: string) => {
+    try {
+        await axiosInstance.post("instructor/resendOtp", { email });
+        return Promise.resolve("OTP resent successfully.");
+    } catch (error) {
+        return handleAxiosError(error);
+    }
+};
+
+const instructorLogin = async (instructorData: InstructorData) => {
+  try {
+    const response = await axiosInstance.post('instructor/login', instructorData);
+    const { token, refreshToken, instructor } = response.data;
+    
+    // Store tokens in local storage
+    localStorage.setItem('token', token);
+    localStorage.setItem('refreshToken', refreshToken);
+    
+    // Return student data upon successful login
+    return instructor;
+  } catch (error) {
+    console.error("Error during login:", error);
+    return await handleAxiosError(error); // Await the error handling to properly catch it
+  }
+};
+
 
 
 const userLogout = async () => {
@@ -94,4 +163,4 @@ const userLogout = async () => {
 
 
 
-export { studentSignup, verifyOtp, resendOtp, studentLogin,userLogout };
+export { studentSignup, verifyOtp, resendOtp, studentLogin, googleLogin,userLogout,instructorSignup,instructorVerifyOtp,instructorResendOtp, instructorLogin};

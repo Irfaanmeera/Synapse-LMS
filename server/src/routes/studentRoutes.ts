@@ -11,5 +11,6 @@ studentRouter.post('/signup', studentController.signup);
 studentRouter.post("/resendOtp", studentController.resendOtp);
 studentRouter.post("/verifyOtp", studentController.verifyOtp);
 studentRouter.post("/login", studentController.login);
+studentRouter.post('/google-login',studentController.googleLogin);
 
 export default studentRouter;

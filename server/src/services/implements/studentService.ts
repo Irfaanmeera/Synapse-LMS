@@ -43,4 +43,7 @@ export class StudentService implements IStudentService {
     async verifyStudent(email: string): Promise<IStudent> {
         return this.studentRepository.updateUserVerification(email)
     }
+    async getUserByEmail(email: string): Promise<IStudent|null> {
+        return this.studentRepository.findStudentByEmail(email);
+    }
 }

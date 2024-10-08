@@ -2,7 +2,7 @@ export interface IStudent {
     id?: string;
     name?: string;
     email?: string;
-    mobile?: number;
+    mobile?: number | string;
     password?: string;
     image?: string;
     wallet?: number;

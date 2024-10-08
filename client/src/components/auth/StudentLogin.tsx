@@ -8,6 +8,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { loginSchema } from "../../validations/loginSchema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import OAuth from '../auth/OAuth'
 
 // import {socket} from '../socket/Socket'
 
@@ -179,7 +180,16 @@ const Signin:FC= () => {
                                                 </div>
                                                 {err && <p className="text-red text-opacity-20 text-sm">{err}</p>}
                                             </form>
-                                            <div>
+                                            <div className="flex justify-center items-center">
+                                    <span className="w-full border border-black"></span>
+                                    <span className="px-4">Or</span>
+                                    <span className="w-full border border-black"></span>
+                                </div>
+                                <OAuth setError={function (error: string): void {
+                          throw new Error('Function not implemented.');
+                        } } />
+                          
+                                            {/* <div>
                                             <p className="text-center text-sm">
             Don't have an account!{" "}
             <Link to={"/signup"}>
@@ -194,7 +204,7 @@ const Signin:FC= () => {
             </p>
           </Link>
           
-                                            </div>
+                                            </div> */}
                                         </div>
                                     </div>
 

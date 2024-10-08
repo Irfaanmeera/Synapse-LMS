@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import { verifyOtp } from "../../api/authentication";
+import {instructorVerifyOtp} from '../../api/authentication'
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../redux/store";
 import { userActions } from "../../redux/userSlice";
@@ -33,6 +34,12 @@ const OtpVerificationForm: React.FC<{ isInstructor: boolean }> = (props) => {
           dispatch(userActions.saveUser(response));
           toast.success("OTP verification successful!"); 
           navigate("/");
+        }
+      }else {
+        const response = await instructorVerifyOtp(otp, email!);
+        if (response) {
+          dispatch(userActions.saveUser(response));
+          navigate("/instructor");
         }
       }
     } catch(error) {

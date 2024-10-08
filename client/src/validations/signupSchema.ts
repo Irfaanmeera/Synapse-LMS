@@ -13,6 +13,7 @@ interface SignupSchema {
 export const signupSchema: ZodType<SignupSchema> = z.object({
   name: z
     .string()
+    .regex(/^[A-Za-z ]+$/, "Name should only contain alphabets and spaces")
     .min(2, { message: "Name must be at least 2 characters long." })
     .max(50, { message: "Name must be less than 50 characters." })
     .refine((value) => value.trim() !== "", {
@@ -24,9 +25,10 @@ export const signupSchema: ZodType<SignupSchema> = z.object({
     .string()
     .email({ message: "Invalid email address." }),
 mobile: z
-      .number()
-      .min(1000000000, "Mobile should be 10 digits")
-      .max(9999999999, "Mobile should be 10 digits"),
+.string()
+.min(10, { message: "Mobile number should be at least 10 digits" })
+.max(15, { message: "Mobile number should not exceed 15 digits" })
+.regex(/^\+?[1-9]\d{1,14}$/, { message: "Invalid phone number format" }),
   
   password: z
     .string()

@@ -1,6 +1,6 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { FC, Fragment, useState } from 'react'
-import { studentLogin, resendOtp } from "../../api/authentication";
+import { instructorLogin, instructorResendOtp } from "../../api/authentication";
 import { userActions } from "../../redux/userSlice";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
@@ -8,11 +8,13 @@ import { loginSchema } from "../../validations/loginSchema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LockClosedIcon } from '@heroicons/react/20/solid'
-
+import Signdialog from "../auth/StudentLogin";
+import Registerdialog from "../auth/StudentSignup";
+import InstructorSignIn from "../auth/instructorLogin";
 // import {socket} from '../socket/Socket'
 
 
-interface StudentData {
+interface InstructorData {
   email: string;
   password: string;
 }
@@ -37,25 +39,25 @@ const Signin:FC= () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<StudentData>({
+  } = useForm<InstructorData>({
     resolver: zodResolver(loginSchema),
   });
 
-  const submitData = async (data: StudentData) => {
+  const submitData = async (data: InstructorData) => {
     try {
       dispatch(userActions.setEmail(data.email));
-      const response = await studentLogin(data);
+      const response = await instructorLogin(data);
       console.log("Login response:", response); // Log response
   
       dispatch(userActions.saveUser(response)); // Save user data
-      navigate("/"); // Redirect to home
+      navigate("/instructor"); // Redirect to home
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error("Caught error:", error); // Log the entire error
       if (error === "Not verified") {
         console.log("User not verified, redirecting to OTP verification page."); // Log redirection
-        await resendOtp(data.email); // Resend OTP
-        navigate("/verifyOtp"); // Redirect to OTP verification page
+        await instructorResendOtp(data.email); // Resend OTP
+        navigate("instructor/verifyOtp"); // Redirect to OTP verification page
       } else {
         setErr(error); // Set specific error message
         console.log("Error set:", error); // Log the error message set
@@ -71,7 +73,7 @@ const Signin:FC= () => {
             <div className="absolute inset-y-0 right-0 flex items-center sm:static sm:inset-auto sm:pr-3">
                 <div className='hidden lg:block mr-3'>
                     <button type="button" className='text-base text-Blueviolet bg-transparent font-medium ' onClick={openModal}>
-                        Log In
+                        Login as Instructor
                     </button>
                 </div>
             </div>
@@ -109,7 +111,7 @@ const Signin:FC= () => {
                                             
 
 <h2 className="mt-4 text-center text-2xl font-bold tracking-tight text-gray-900">
-    Sign in to your account
+    Instructor Login
 </h2>
 
                                             </div>
@@ -179,22 +181,16 @@ const Signin:FC= () => {
                                                 </div>
                                                 {err && <p className="text-red text-opacity-20 text-sm">{err}</p>}
                                             </form>
-                                            <div>
-                                            <p className="text-center text-sm">
-            Don't have an account!{" "}
-            <Link to={"/signup"}>
-              <span className="text-sky-600 cursor-pointer hover:text-sky-900 hover:underline">
-                Sign up
-              </span>
-            </Link>
-          </p>
+                                            {/* <div>
+                                           
+         
           <Link to={"/instructor/login"}>
             <p className="text-center text-sm text-sky-600 cursor-pointer underline">
-              Login as Instructor
+              Login as Student
             </p>
           </Link>
           
-                                            </div>
+                                            </div> */}
                                         </div>
                                     </div>
 
