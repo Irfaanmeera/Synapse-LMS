@@ -10,22 +10,6 @@ import TableOne from '../../components/instructor/Tables/TableOne';
 const Dashboard: React.FC = () => {
   return (
     <>
-  <div className="p-4 bg-paleblue dark:bg-midnightblue dark:text-white shadow-md rounded-md mb-4 flex justify-between items-center">
-  <div>
-    <h2 className="text-xl font-bold mb-3">Welcome to Synapse</h2>
-    <button className="mt-2 px-2 py-2 bg-Blueviolet  text-white rounded hover:bg-blue-600">
-      Create New Course
-    </button>
-  </div>
-  <div className="ml-3">
-    <img
-      src="https://www.uni-prep.com/online-education/assest/intro/intro_image01.png"
-      alt="Welcome to Synapse"
-      className="w-80 h-40 object-cover"
-    />
-  </div>
-</div>
-
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
         <CardDataStats title="Total views" total="$3.456K" rate="0.43%" levelUp>
           <svg

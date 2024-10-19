@@ -11,8 +11,8 @@ import { signupSchema } from "../../validations/signupSchema";
 // import Signdialog from "../auth/StudentLogin";
 // import Registerdialog from "../auth/StudentSignup";
 import InstructorSignup from "../auth/instructorSignup";
-import PhoneInput from 'react-phone-input-2';
-import 'react-phone-input-2/lib/style.css';
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 
 interface StudentData {
   name: string;
@@ -25,7 +25,7 @@ const StudentSignupForm: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [err, setErr] = useState('');
+  const [err, setErr] = useState("");
 
   const closeModal = () => {
     setIsOpen(false);
@@ -46,24 +46,23 @@ const StudentSignupForm: React.FC = () => {
 
   const submitData = async (data: StudentData) => {
     try {
-      console.log('response sent');
+      console.log("response sent");
       const response = await studentSignup(data);
-      
+
       // Only navigate if signup is successful
       if (response?.success) {
         dispatch(userActions.setEmail(data.email));
-        navigate('/verifyOtp'); // Navigate only if there's no error
+        navigate("/verifyOtp"); // Navigate only if there's no error
       }
     } catch (error) {
-      console.log('Error:', error);
+      console.log("Error:", error);
       if (typeof error === "string") {
         setErr(error); // Show error to user
       } else {
         setErr("An unexpected error occurred.");
       }
     }
-};
-
+  };
 
   return (
     <>
@@ -111,7 +110,10 @@ const StudentSignupForm: React.FC = () => {
                           Sign Up
                         </h2>
                       </div>
-                      <form onSubmit={handleSubmit(submitData)} className="mt-8 space-y-6">
+                      <form
+                        onSubmit={handleSubmit(submitData)}
+                        className="mt-8 space-y-6"
+                      >
                         <div className="-space-y-px rounded-md shadow-sm">
                           <div>
                             <label htmlFor="user_name" className="sr-only">
@@ -127,7 +129,7 @@ const StudentSignupForm: React.FC = () => {
                             />
                             {errors.name && (
                               <span className="text-red-600 text-sm italic">
-                             *{errors.name.message}
+                                *{errors.name.message}
                               </span>
                             )}
                           </div>
@@ -145,7 +147,7 @@ const StudentSignupForm: React.FC = () => {
                             />
                             {errors.email && (
                               <span className="text-red text-sm italic">
-                                 *{errors.email.message}
+                                *{errors.email.message}
                               </span>
                             )}
                           </div>
@@ -168,30 +170,34 @@ const StudentSignupForm: React.FC = () => {
                             )}
                           </div> */}
 
-<div>
-        <label htmlFor="mobile" className="sr-only">
-          Phone No
-        </label>
+                          <div>
+                            <label htmlFor="mobile" className="sr-only">
+                              Phone No
+                            </label>
 
-        {/* React Phone Input */}
-        <PhoneInput
-          country={'us'} // default country, you can change it
-          inputProps={{
-            name: 'mobile',
-            id: 'mobile',
-            required: true,
-            className:
-              'relative block w-full appearance-none rounded-none rounded-b-md border border-grey500 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm',
-          }}
-          onChange={(value: string) => setValue('mobile', value, { shouldValidate: true })} // This is the key for react-hook-form
-        />
+                            {/* React Phone Input */}
+                            <PhoneInput
+                              country={"us"} // default country, you can change it
+                              inputProps={{
+                                name: "mobile",
+                                id: "mobile",
+                                required: true,
+                                className:
+                                  "relative block w-full appearance-none rounded-none rounded-b-md border border-grey500 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm",
+                              }}
+                              onChange={(value: string) =>
+                                setValue("mobile", value, {
+                                  shouldValidate: true,
+                                })
+                              } // This is the key for react-hook-form
+                            />
 
-        {errors.mobile && (
-          <span className="text-red text-sm italic">
-            *{errors.mobile.message}
-          </span>
-        )}
-      </div>
+                            {errors.mobile && (
+                              <span className="text-red text-sm italic">
+                                *{errors.mobile.message}
+                              </span>
+                            )}
+                          </div>
                           <div>
                             <label htmlFor="password" className="sr-only">
                               Password
@@ -206,7 +212,7 @@ const StudentSignupForm: React.FC = () => {
                             />
                             {errors.password && (
                               <span className="text-red text-sm italic">
-                                 *{errors.password.message}
+                                *{errors.password.message}
                               </span>
                             )}
                           </div>
@@ -229,17 +235,19 @@ const StudentSignupForm: React.FC = () => {
                         {err && <p className="text-red text-sm">{err}</p>}
                       </form>
                     </div>
-                    
                   </div>
-                  <div className="flex "> {/* Add margin-right for spacing */}
+                  <div className="flex ">
+                    {" "}
+                    {/* Add margin-right for spacing */}
                     {/* <Signdialog />
                     <Registerdialog /> */}
-                     <p className="text-sm flex ml-16">
-                     Become an Instructor!{" "}
-                    <span><InstructorSignup/></span>
+                    <p className="text-sm flex ml-16">
+                      Become an Instructor!{" "}
+                      <span>
+                        <InstructorSignup />
+                      </span>
                     </p>
-                    
-                </div>
+                  </div>
 
                   <div className="mt-4 flex justify-end">
                     <button

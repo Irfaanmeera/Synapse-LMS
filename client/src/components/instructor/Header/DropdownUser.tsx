@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link,useNavigate } from 'react-router-dom';
 import ClickOutside from '../ClickOutside';
-import UserOne from '../../../images/user/Irfaan Meera.E Photo.jpeg';
+// import UserOne from '../../../images/user/Irfaan Meera.E Photo.jpeg';
 import { useSelector, useDispatch} from "react-redux";
 import { userActions } from "../../../redux/userSlice";
 import { RootState } from "../../../redux/store";
@@ -38,7 +38,7 @@ const DropdownUser = () => {
         </span>
 
         <span className="h-9 w-9 rounded-full">
-          <img className='rounded-full' src={UserOne} alt="User" />
+          <img className='rounded-full' src={user?.image} alt="User" />
         </span>
 
         <svg
@@ -66,7 +66,7 @@ const DropdownUser = () => {
           <ul className="flex flex-col gap-5 border-b border-stroke px-6 py-7.5 dark:border-strokedark">
             <li>
               <Link
-                to="/profile"
+                to="/instructor/instructorProfile"
                 className="flex items-center gap-3.5 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base"
               >
                 <svg

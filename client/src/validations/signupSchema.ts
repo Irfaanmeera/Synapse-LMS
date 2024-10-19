@@ -3,7 +3,7 @@ import { z, ZodType } from "zod";
 interface SignupSchema {
     name: string;
     email: string;
-    mobile: number;
+    mobile: string;
     password: string;
     
   }

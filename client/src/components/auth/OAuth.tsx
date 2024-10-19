@@ -60,10 +60,10 @@ const Oauth: React.FC<Props> = ({ setError }) => {
       <button
         type="button"
         onClick={handleGoogleClick}
-        className="rounded text-black-500 px-6 ml-12 pb-2 pt-2 text-sm font-medium border border-gray-500 flex mt-2 items-center justify-center hover:bg-blue-500"
+        className="rounded text-black-500 px-6 ml-24 pb-2 pt-2 text-sm font-medium border border-gray-500 flex mt-2 items-center justify-center hover:bg-blue-500"
       >
         <FcGoogle size={30} className="mr-2" />
-        <span>Continue with Google</span>
+        <span className="text-base text-charcoal">Google</span>
       </button>
     </div>
   );

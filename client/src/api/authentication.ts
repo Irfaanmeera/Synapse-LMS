@@ -16,6 +16,10 @@ interface InstructorData {
     mobile?: number | string; 
     email?: string; 
 }
+interface AdminData{
+  email?:string;
+  password?:string
+}
 
 
     const handleAxiosError = (error: any) => {
@@ -92,9 +96,9 @@ const googleLogin = async (name: string | null, email: string | null, photoUrl: 
       return result;
   } catch (error) {
       console.error('Error occurred:', error);
-      if (error.response) {
-          console.log('Error response:', error.response.data); // Log the server response for more context
-      }
+      // if (error.response) {
+      //     console.log('Error response:', error.response.data); // Log the server response for more context
+      // }
       console.log('Error coming from here...');
   }
 };
@@ -152,15 +156,33 @@ const instructorLogin = async (instructorData: InstructorData) => {
     return await handleAxiosError(error); // Await the error handling to properly catch it
   }
 };
+const adminLogin = async (adminData: AdminData) => {
+  try {
+    const response = await axiosInstance.post('admin/login', adminData);
+    const { token, refreshToken, admin } = response.data;
+    
+    // Store tokens in local storage
+    localStorage.setItem('token', token);
+    localStorage.setItem('refreshToken', refreshToken);
+    
+    // Return student data upon successful login
+    return admin;
+  } catch (error) {
+    console.error("Error during login:", error);
+    return await handleAxiosError(error); // Await the error handling to properly catch it
+  }
+};
 
 
 
 const userLogout = async () => {
     // socket.disconnect();
     localStorage.removeItem("token");
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('user');
   };
 
 
 
 
-export { studentSignup, verifyOtp, resendOtp, studentLogin, googleLogin,userLogout,instructorSignup,instructorVerifyOtp,instructorResendOtp, instructorLogin};
+export { studentSignup, verifyOtp, resendOtp, studentLogin, googleLogin,userLogout,instructorSignup,instructorVerifyOtp,instructorResendOtp, instructorLogin,adminLogin};

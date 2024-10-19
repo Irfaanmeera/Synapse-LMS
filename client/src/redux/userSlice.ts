@@ -21,6 +21,12 @@ const userSlice = createSlice({
         saveUser:(state, action:PayloadAction<User|null>)=>{
              state.user = action.payload;
         },
+        updateUserImage: (state, action: PayloadAction<string>) => {
+            if (state.user) {
+                state.user.image = action.payload;
+            }
+        },
+       
         userLogout(state) {
             state.user = null;
             state.userEmail= null;

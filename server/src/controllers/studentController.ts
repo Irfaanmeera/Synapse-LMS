@@ -118,7 +118,7 @@ export class StudentController {
               role: "student",
             },
             process.env.JWT_SECRET!,
-            { expiresIn: "15m" } // Access token expires in 15 minutes
+            { expiresIn: "15m" } 
           );
 
           const refreshToken = jwt.sign(
@@ -126,8 +126,8 @@ export class StudentController {
               studentId: student.id,
               role: "student",
             },
-            process.env.JWT_REFRESH_SECRET!, // Make sure you have a separate secret for refresh tokens
-            { expiresIn: "7d" } // Refresh token expires in 7 days
+            process.env.JWT_REFRESH_SECRET!, 
+            { expiresIn: "7d" } 
           );
           const studentData = {
             _id: student.id,
@@ -142,8 +142,8 @@ export class StudentController {
 
           res.status(200).json({
             message: "Student Verified",
-            token, // Return access token
-            refreshToken, // Return refresh token
+            token, 
+            refreshToken, 
             student: studentData,
           });
         } else {
@@ -165,8 +165,8 @@ export class StudentController {
   async googleLogin(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
         const { name, email, googlePhotoUrl } = req.body;
-        const accessTokenMaxAge = 5 * 60 * 1000; // 5 minutes
-        const refreshTokenMaxAge = 7 * 24 * 60 * 60 * 1000; // 7 days
+        const accessTokenMaxAge = 5 * 60 * 1000;
+        const refreshTokenMaxAge = 7 * 24 * 60 * 60 * 1000; 
 
         // Check if user already exists
         const student = await studentService.getUserByEmail(email);
@@ -280,6 +280,41 @@ export class StudentController {
         return; // Exiting the function after sending the error response
     }
 }
+
+   async updateUser(req:Request,res:Response,next:NextFunction){
+  try{
+    const id = req.currentUser;
+    const {name,mobile} = req.body;
+    const student = await studentService.updateStudent({id,name,mobile});
+    res.status(200).json(student)
+  }
+
+    catch(error){
+      console.log(error);
+        res.status(INTERNAL_SERVER_ERROR).json({ success: false, message: 'Internal server error' });
+        return; 
+    }
+  
+   }
+
+   async updateImage(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = req.currentUser;
+      const file = req.file;
+      if (!id) {
+        throw new BadRequestError("Id not found");
+      }
+      if (!file) {
+        throw new BadRequestError("Image not found");
+      }
+      const student = await studentService.updateImage(id!, file);
+      res.status(200).json(student);
+    } catch (error) {
+      if (error instanceof Error) {
+        return next(error);
+      }
+    }
+  }
 
 }
 

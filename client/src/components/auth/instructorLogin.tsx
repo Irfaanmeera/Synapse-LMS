@@ -1,5 +1,5 @@
-import { Dialog, Transition } from '@headlessui/react'
-import { FC, Fragment, useState } from 'react'
+import { Dialog, Transition } from "@headlessui/react";
+import { FC, Fragment, useState } from "react";
 import { instructorLogin, instructorResendOtp } from "../../api/authentication";
 import { userActions } from "../../redux/userSlice";
 import { useDispatch } from "react-redux";
@@ -7,33 +7,30 @@ import { Link, useNavigate } from "react-router-dom";
 import { loginSchema } from "../../validations/loginSchema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LockClosedIcon } from '@heroicons/react/20/solid'
-import Signdialog from "../auth/StudentLogin";
-import Registerdialog from "../auth/StudentSignup";
-import InstructorSignIn from "../auth/instructorLogin";
+import { LockClosedIcon } from "@heroicons/react/20/solid";
+// import Signdialog from "../auth/StudentLogin";
+// import Registerdialog from "../auth/StudentSignup";
+// import InstructorSignIn from "../auth/instructorLogin";
 // import {socket} from '../socket/Socket'
-
 
 interface InstructorData {
   email: string;
   password: string;
 }
 
-const Signin:FC= () => {
-   
+const Signin: FC = () => {
   const [err, setErr] = useState<string | null>(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
 
   const closeModal = () => {
-      setIsOpen(false)
-  }
+    setIsOpen(false);
+  };
 
   const openModal = () => {
-      setIsOpen(true)
-  }
-
+    setIsOpen(true);
+  };
 
   const {
     register,
@@ -48,10 +45,10 @@ const Signin:FC= () => {
       dispatch(userActions.setEmail(data.email));
       const response = await instructorLogin(data);
       console.log("Login response:", response); // Log response
-  
+
       dispatch(userActions.saveUser(response)); // Save user data
       navigate("/instructor"); // Redirect to home
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error("Caught error:", error); // Log the entire error
       if (error === "Not verified") {
@@ -64,61 +61,65 @@ const Signin:FC= () => {
       }
     }
   };
-  
-  
 
+  return (
+    <>
+      <div className="absolute inset-y-0 right-0 flex items-center sm:static sm:inset-auto sm:pr-3">
+        <div className="hidden lg:block mr-3">
+          <button
+            type="button"
+            className="text-base text-Blueviolet bg-transparent font-medium "
+            onClick={openModal}
+          >
+            Login as Instructor
+          </button>
+        </div>
+      </div>
 
-    return (
-        <>
-            <div className="absolute inset-y-0 right-0 flex items-center sm:static sm:inset-auto sm:pr-3">
-                <div className='hidden lg:block mr-3'>
-                    <button type="button" className='text-base text-Blueviolet bg-transparent font-medium ' onClick={openModal}>
-                        Login as Instructor
-                    </button>
-                </div>
-            </div>
+      <Transition appear show={isOpen} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={closeModal}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black bg-opacity-25" />
+          </Transition.Child>
 
-            <Transition appear show={isOpen} as={Fragment}>
-                <Dialog as="div" className="relative z-10" onClose={closeModal}>
-                    <Transition.Child
-                        as={Fragment}
-                        enter="ease-out duration-300"
-                        enterFrom="opacity-0"
-                        enterTo="opacity-100"
-                        leave="ease-in duration-200"
-                        leaveFrom="opacity-100"
-                        leaveTo="opacity-0"
-                    >
-                        <div className="fixed inset-0 bg-black bg-opacity-25" />
-                    </Transition.Child>
-
-                    <div className="fixed inset-0 overflow-y-auto">
-                        <div className="flex min-h-full items-center justify-center p-2 text-center">
-                            <Transition.Child
-                                as={Fragment}
-                                enter="ease-out duration-300"
-                                enterFrom="opacity-0 scale-95"
-                                enterTo="opacity-100 scale-100"
-                                leave="ease-in duration-200"
-                                leaveFrom="opacity-100 scale-100"
-                                leaveTo="opacity-0 scale-95"
-                            >
-                                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-
-                                    <div className="flex min-h-full items-center justify-center py-2 px-4 sm:px-6 lg:px-8">
-                                        <div className="w-full max-w-md space-y-8">
-                                            <div>
-                                            
-
-<h2 className="mt-4 text-center text-2xl font-bold tracking-tight text-gray-900">
-    Instructor Login
-</h2>
-
-                                            </div>
-                                            <form onSubmit={handleSubmit(submitData)} className="mt-6 space-y-6" >
-                                                <input type="hidden" name="remember" defaultValue="true" />
-                                                <div className="-space-y-px rounded-md shadow-sm">
-                                                <div>
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-2 text-center">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                  <div className="flex min-h-full items-center justify-center py-2 px-4 sm:px-6 lg:px-8">
+                    <div className="w-full max-w-md space-y-8">
+                      <div>
+                        <h2 className="mt-4 text-center text-2xl font-bold tracking-tight text-gray-900">
+                          Instructor Login
+                        </h2>
+                      </div>
+                      <form
+                        onSubmit={handleSubmit(submitData)}
+                        className="mt-6 space-y-6"
+                      >
+                        <input
+                          type="hidden"
+                          name="remember"
+                          defaultValue="true"
+                        />
+                        <div className="-space-y-px rounded-md shadow-sm">
+                          <div>
                             <label htmlFor="email-address" className="sr-only">
                               Email Id
                             </label>
@@ -132,7 +133,7 @@ const Signin:FC= () => {
                             />
                             {errors.email && (
                               <span className="text-red text-sm italic">
-                                 *{errors.email.message}
+                                *{errors.email.message}
                               </span>
                             )}
                           </div>
@@ -150,38 +151,43 @@ const Signin:FC= () => {
                             />
                             {errors.password && (
                               <span className="text-red text-sm italic">
-                                 *{errors.password.message}
+                                *{errors.password.message}
                               </span>
                             )}
                           </div>
-                                                </div>
+                        </div>
 
-                                                <div className="flex items-center justify-end">
-                                                   
+                        <div className="flex items-center justify-end">
+                          <div className="text-sm">
+                            <Link to={"/forgot-password"}>
+                              <p className="text-center text-sm text-sky-600 cursor-pointer">
+                                Forgot password ?
+                              </p>
+                            </Link>
+                          </div>
+                        </div>
 
-                                                    <div className="text-sm">
-                                                    <Link to={"/forgot-password"}>
-            <p className="text-center text-sm text-sky-600 cursor-pointer">
-              Forgot password ?
-            </p>
-          </Link>
-                                                    </div>
-                                                </div>
-
-                                                <div>
-                                                    <button
-                                                        type="submit"
-                                                        className="group relative flex w-full justify-center rounded-md border border-transparent bg-Blueviolet py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                                                    >
-                                                        <span className="absolute inset-y-0 left-0 flex items-center pl-3">
-                                                            <LockClosedIcon className="h-5 w-5 text-indigo-500 group-hover:text-indigo-400" aria-hidden="true" />
-                                                        </span>
-                                                        Sign In
-                                                    </button>
-                                                </div>
-                                                {err && <p className="text-red text-opacity-20 text-sm">{err}</p>}
-                                            </form>
-                                            {/* <div>
+                        <div>
+                          <button
+                            type="submit"
+                            className="group relative flex w-full justify-center rounded-md border border-transparent bg-Blueviolet py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                          >
+                            <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                              <LockClosedIcon
+                                className="h-5 w-5 text-indigo-500 group-hover:text-indigo-400"
+                                aria-hidden="true"
+                              />
+                            </span>
+                            Sign In
+                          </button>
+                        </div>
+                        {err && (
+                          <p className="text-red text-opacity-20 text-sm">
+                            {err}
+                          </p>
+                        )}
+                      </form>
+                      {/* <div>
                                            
          
           <Link to={"/instructor/login"}>
@@ -191,11 +197,10 @@ const Signin:FC= () => {
           </Link>
           
                                             </div> */}
-                                        </div>
-                                    </div>
+                    </div>
+                  </div>
 
-
-                                    {/* <div className="mt-4 flex justify-end">
+                  {/* <div className="mt-4 flex justify-end">
                                         <button
                                             type="button"
                                             className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
@@ -204,14 +209,14 @@ const Signin:FC= () => {
                                             Got it, thanks!
                                         </button>
                                     </div> */}
-                                </Dialog.Panel>
-                            </Transition.Child>
-                        </div>
-                    </div>
-                </Dialog>
-            </Transition>
-        </>
-    )
-}
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
+    </>
+  );
+};
 
 export default Signin;

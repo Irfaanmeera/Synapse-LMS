@@ -7,7 +7,8 @@ import { ErrorMiddleware } from './src/middlewares/error'
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import studentRouter from "./src/routes/studentRoutes";
-import instructorRouter from './src/routes/instructorRoutes'
+import instructorRouter from './src/routes/instructorRoutes';
+import adminRouter from './src/routes/adminRoutes'
 // import { io } from "./src/services/socketIoService";
 // import http from 'http'
 dotenv.config();
@@ -27,6 +28,7 @@ app.use(morgan('dev'))
 
 app.use('/', studentRouter);
 app.use("/instructor", instructorRouter);
+app.use("/admin",adminRouter)
 
 // const httpServer = http.createServer(app);
 // io.attach(httpServer);

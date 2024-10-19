@@ -76,7 +76,7 @@ const Navbar = () => {
             </div>
 
             {/* EXPLORE BUTTON WITH DROPDOWN */}
-            <div ref={dropdownRef} className="relative">
+            <div ref={dropdownRef} className="relative z-50">
               {/* Button to toggle dropdown */}
               <button
                 className="flex py-2 px-4  items-center text-blue-500 justify-center text-sm focus:outline-none border bg-transparent rounded-xl border-Blueviolet"
@@ -222,7 +222,7 @@ const Navbar = () => {
                 </Typography>
 
                 {/* Dropdown Menu */}
-                <div ref={dropdownRef2} className="relative">
+                <div ref={dropdownRef2}  className="relative z-50">
                   {/* Button to toggle dropdown */}
                   <button
                     className="flex items-center text-blue-500 justify-center text-sm focus:outline-none bg-transparent rounded-xl border-Blueviolet"
@@ -235,7 +235,7 @@ const Navbar = () => {
                   {isOpenDrop2 && (
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg">
                   <ul className="py-1 text-sm text-slategray">
-                    <Link to="/category/science">
+                    <Link to="/profile">
                       <li className="block px-4 py-2 hover:bg-gray-100 hover:text-blue-600 transition duration-150">
                         My Profile
                       </li>

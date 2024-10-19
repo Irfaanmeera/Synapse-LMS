@@ -3,7 +3,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import SidebarLinkGroup from './SidebarLinkGroup';
-
+import {useSelector} from 'react-redux'
+import { userActions } from "../../../redux/userSlice";
+import { RootState } from "../../../redux/store";
+import { Roles } from "../../../interfaces/Roles";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -13,7 +16,7 @@ interface SidebarProps {
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const location = useLocation();
   const { pathname } = location;
-
+  const role = useSelector((state: RootState) => state.user?.user?.role);
   const trigger = useRef<any>(null);
   const sidebar = useRef<any>(null);
 
@@ -67,7 +70,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
       {/* <!-- SIDEBAR HEADER --> */}
       <div className="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5">
         <NavLink to="/">
-         <h1 className='text-white text-2xl' >Synapse Instructor</h1>
+        <h1 className='text-white text-2xl'>
+      {role === 'admin' ? 'Synapse Admin' : 'Synapse Instructor'}
+    </h1>
         </NavLink>
 
         <button

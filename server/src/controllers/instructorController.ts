@@ -8,6 +8,7 @@ import { IInstructor } from '../interfaces/instructor';
 import jwt from "jsonwebtoken";
 import ErrorHandler from '../utils/ErrorHandler';
 import { InstructorRepository } from '../repositories/implements/instructorRepository';
+import { BadRequestError } from '../constants/errors/badrequestError';
 
 const { BAD_REQUEST, OK, INTERNAL_SERVER_ERROR } = STATUS_CODES
 
@@ -156,6 +157,41 @@ export class InstructorController {
       console.log(error as Error)
     }
   }
+  async updateInstructor(req:Request,res:Response,next:NextFunction){
+    try{
+      const id = req.currentUser;
+      const {name,mobile,qualification} = req.body;
+      const instructor = await instructorService.updateInstructor({id, name, mobile, qualification});
+      res.status(200).json(instructor)
+    }
+  
+      catch(error){
+        console.log(error);
+          res.status(INTERNAL_SERVER_ERROR).json({ success: false, message: 'Internal server error' });
+          return; 
+      }
+    
+     }
+  
+     async updateImage(req: Request, res: Response, next: NextFunction) {
+      try {
+        const id = req.currentUser;
+        const file = req.file;
+        if (!id) {
+          throw new BadRequestError("Id not found");
+        }
+        if (!file) {
+          throw new BadRequestError("Image not found");
+        }
+        const student = await instructorService.updateInstructorImage(id!, file);
+        res.status(200).json(student);
+      } catch (error) {
+        if (error instanceof Error) {
+          return next(error);
+        }
+      }
+    }
+  
 }
 
 

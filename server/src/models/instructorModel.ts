@@ -10,6 +10,7 @@ interface InstructorDoc extends Document {
     password: string;
     email: string;
     mobile: number;
+    image:string;
     qualification?: string;
     isBlocked?: boolean;
     isVerified?: boolean;
@@ -34,6 +35,9 @@ const instructorSchema = new mongoose.Schema(
       mobile: {
         type: Number,
         required: true,
+      },
+      image:{
+        type:String,
       },
       qualification: {
         type: String,
@@ -71,6 +75,7 @@ const instructorSchema = new mongoose.Schema(
       ],
     },
     {
+      timestamps: true,
       toJSON: {
         transform(doc, ret) {
           ret.id = ret._id;

@@ -3,14 +3,22 @@ import { Routes, Route } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
 import ProtectedRoute from "../components/Common/protectedRoutes/ProtectedRoutes";
 import {Roles} from '../interfaces/Roles'
+import AdminLogin from '../components/auth/adminLogin'
+import Profile from "../pages/student/Profile";
+import Dashboard from '../pages/instructor/Dashboard'
+import InstructorLayout from '../pages/instructor/InstructorLayout'
+import InstructorProfile from '../pages/instructor/InstructorProfile'
 
 const StudentHomeLazy = React.lazy(
   () => import("../pages/student/StudentHome")
 );
 const VerifyOtpLazy = React.lazy(() => import("../pages/student/VerifyOtp"));
-const InstructorHomeLazy = React.lazy(
-  () => import("../pages/instructor/InstructorHome")
+
+const AdminHomeLazy = React.lazy(
+  () => import("../pages/admin/AdminHome")
 );
+
+
 
 
 const RoutePage = () => {
@@ -61,14 +69,12 @@ const RoutePage = () => {
           }
         ></Route>
 
-
-
         <Route
-          path="/instructor"
+          path="/admin"
           
          element={
           <ProtectedRoute
-              allowedRoles={[Roles.instructor]}
+              allowedRoles={[Roles.admin]}
               element={
                 <Suspense
                   fallback={
@@ -78,15 +84,50 @@ const RoutePage = () => {
                   }
 
                 >
-                  <InstructorHomeLazy />
+                  <AdminHomeLazy />
                 </Suspense>
               }
               />
             }
               >
           </Route>
+          <Route
+          path="/admin/login"
+          element={<AdminLogin/>} 
+        />
+        <Route path="/profile"
+         element={
+          <ProtectedRoute
+            allowedRoles={[Roles.student]}
+            element={<Profile/>}
+          />
+        }
+        />
        
       </Routes>
+
+
+      
+      <Routes>
+      {/* Define the layout route */}
+      <Route path="/instructor" element={<InstructorLayout />}>
+        {/* Nested routes inside InstructorLayout */}
+
+        {/* Dashboard as default route */}
+        <Route index element={<Dashboard />} />
+
+        {/* Instructor Profile route */}
+        <Route
+          path="instructorProfile"
+          element={
+            <ProtectedRoute
+              allowedRoles={[Roles.instructor]}
+              element={<InstructorProfile/>}
+            />
+          }
+        />
+      </Route>
+    </Routes>
     </>
   );
 };
