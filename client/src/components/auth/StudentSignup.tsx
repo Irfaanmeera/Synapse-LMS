@@ -110,6 +110,7 @@ const StudentSignupForm: React.FC = () => {
                           Sign Up
                         </h2>
                       </div>
+                      <div className="text-center">{err && <p className="text-danger text-sm">{err}</p>}</div>
                       <form
                         onSubmit={handleSubmit(submitData)}
                         className="mt-8 space-y-6"
@@ -232,7 +233,7 @@ const StudentSignupForm: React.FC = () => {
                             Send OTP
                           </button>
                         </div>
-                        {err && <p className="text-red text-sm">{err}</p>}
+                      
                       </form>
                     </div>
                   </div>

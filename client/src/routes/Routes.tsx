@@ -8,10 +8,15 @@ import Profile from "../pages/student/Profile";
 import Dashboard from '../pages/instructor/Dashboard'
 import InstructorLayout from '../pages/instructor/InstructorLayout'
 import InstructorProfile from '../pages/instructor/InstructorProfile'
+import Settings from "../pages/instructor/Settings";
+import Course from  '../pages/student/Course'
+import CreateCourse from "../components/instructor/CreateCourse";
+import CourseDisplay from "../components/instructor/CourseCard";
 
 const StudentHomeLazy = React.lazy(
   () => import("../pages/student/StudentHome")
 );
+
 const VerifyOtpLazy = React.lazy(() => import("../pages/student/VerifyOtp"));
 
 const AdminHomeLazy = React.lazy(
@@ -53,6 +58,13 @@ const RoutePage = () => {
             </Suspense>
           }
         ></Route>
+        {/* <Route
+        path="/courses"
+        element={<Course/>} 
+        />
+           */}
+
+     
         <Route
           path="instructor/verifyOtp"
          
@@ -115,6 +127,7 @@ const RoutePage = () => {
 
         {/* Dashboard as default route */}
         <Route index element={<Dashboard />} />
+        
 
         {/* Instructor Profile route */}
         <Route
@@ -126,7 +139,28 @@ const RoutePage = () => {
             />
           }
         />
+        <Route
+          path="myCourses"
+          element={
+            <ProtectedRoute
+              allowedRoles={[Roles.instructor]}
+              element={<CourseDisplay/>}
+            />
+          }
+        />
+        <Route
+          path="settings"
+          element={
+            <ProtectedRoute
+              allowedRoles={[Roles.instructor]}
+              element={<Settings/>}
+            />
+          }
+        />
+        <Route path="createCourse" element={<CreateCourse />} />
       </Route>
+      <Route path="/courses" element={<Course />}/>
+      
     </Routes>
     </>
   );

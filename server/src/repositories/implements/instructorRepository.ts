@@ -22,14 +22,16 @@ export class InstructorRepository implements IInstructorRepository{
         return await instructor!.save()
     }
     async updateInstructor(instructorData:IInstructor): Promise<IInstructor>{
-        const {id,name,mobile} = instructorData;
+        const {id,name,mobile,qualification,description} = instructorData;
         const instructor = await Instructor.findById(id)
         if(!instructor){
             throw new BadRequestError('Instructor not found')
         }
         instructor.set({
             name,
-            mobile
+            mobile,
+            qualification,
+            description
         })
         return await instructor.save()
     }
@@ -44,4 +46,6 @@ export class InstructorRepository implements IInstructorRepository{
         })
         return await instructor.save()
     }
+
+    
 }

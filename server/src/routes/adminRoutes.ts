@@ -7,5 +7,6 @@ const adminRouter:Router = express.Router()
 const adminController = new AdminController()
 
 adminRouter.post('/login', adminController.login)
+adminRouter.post('/addCategory', adminController.addCategory)
 
 export default adminRouter;

@@ -1,18 +1,23 @@
 import { IStudentService } from "../interfaces/studentService.interface";
 import { IStudent } from "../../interfaces/student";
 import { StudentRepository } from "../../repositories/implements/studentRepository";
-import { STATUS_CODES } from "../../constants/httpStatusCodes";
-import ErrorHandler from "../../utils/ErrorHandler";
 import { BadRequestError } from "../../constants/errors/badrequestError";
 import s3 from '../../../config/aws.config'
 import { PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { ICourse } from "../../interfaces/course";
+import { CourseRepository } from "../../repositories/implements/courseRepository";
+import { CategoryRepository } from "../../repositories/implements/categoryRepository";
+import { InstructorRepository } from "../../repositories/implements/instructorRepository";
+import { ICategory } from "../../interfaces/category";
 
 
-const { BAD_REQUEST } = STATUS_CODES;
 
 export class StudentService implements IStudentService {
     constructor(
         private studentRepository: StudentRepository,
+        private instructorRepository: InstructorRepository,
+        private courseRepository: CourseRepository,
+        private categoryRepository: CategoryRepository,
     ) {
         this.studentRepository = new StudentRepository();
     }
@@ -36,7 +41,7 @@ export class StudentService implements IStudentService {
     async login(email: string): Promise<IStudent> {
         const student = await this.studentRepository.findStudentByEmail(email)
         if (!student) {
-            throw new ErrorHandler('User not found', BAD_REQUEST)
+            throw new BadRequestError('User not found')
         } else {
             return student;
         }
@@ -96,4 +101,16 @@ export class StudentService implements IStudentService {
           throw new BadRequestError("Couldn't upload profile image");
         }
       }
+      async getAllCourses(page: number): Promise<{
+        courses: ICourse[];
+        totalCount: number;
+    } |null> {
+        return await this.courseRepository.getAllCourses(page);
+        
+      }
+      
+ async getAllCategories(): Promise<ICategory[]| null> {
+     return await this.categoryRepository.getAllCategories()
+
+ }
 }

@@ -1,4 +1,5 @@
-import React from 'react';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, {useState} from 'react';
 import CardDataStats from '../../components/instructor/CardDataStats';
 import ChartOne from '../../components/instructor/Charts/ChartOne';
 import ChartThree from '../../components/instructor/Charts/ChartThree';
@@ -6,17 +7,32 @@ import ChartTwo from '../../components/instructor/Charts/ChartTwo';
 import ChatCard from '../../components/instructor/Chat/ChatCard';
 import MapOne from '../../components/instructor/Maps/MapOne';
 import TableOne from '../../components/instructor/Tables/TableOne';
+import { authorizedAxios } from '../../api/config';
+import { Link } from 'react-router-dom';
 
 const Dashboard: React.FC = () => {
+ 
+
+  const handleCreateCourse = async (courseData: any) => {
+    try {
+      await authorizedAxios.post('/instructor/addCourse', courseData);
+      alert('Course created successfully!');
+      // Close modal after successful creation
+    } catch (error) {
+      console.error('Error creating course:', error);
+    }
+  };
   return (
     <>
   <div className="p-4 bg-paleblue dark:bg-midnightblue dark:text-white shadow-md rounded-md mb-4 flex justify-between items-center">
   <div>
-    <h2 className="text-xl font-bold mb-3">Welcome to Synapse</h2>
-    <button className="mt-2 px-2 py-2 bg-Blueviolet  text-white rounded hover:bg-blue-600">
+  <h2 className="text-xl font-bold mb-3">Welcome to Synapse</h2>
+  <Link to="createCourse">
+    <button className="mt-2 px-2 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
       Create New Course
     </button>
-  </div>
+  </Link>
+</div>
   <div className="ml-3">
     <img
       src="https://www.uni-prep.com/online-education/assest/intro/intro_image01.png"
@@ -25,6 +41,7 @@ const Dashboard: React.FC = () => {
     />
   </div>
 </div>
+
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
         <CardDataStats title="Total views" total="$3.456K" rate="0.43%" levelUp>

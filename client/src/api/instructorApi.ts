@@ -16,7 +16,7 @@ const handleAxiosError = (error: any) => {
 const updateInstructor = async(data:{name:string})=>{
 try{
 const response = await authorizedAxios.put('instructor/updateInstructor',data)
-console.log(response.data)
+console.log('Update Resposne :', response.data)
 
 if(response){
     return Promise.resolve(response.data)
@@ -26,7 +26,7 @@ if(response){
 }
 }
 
-const updateImage = async(file:File,onUploadProgress?: (progressEvent: AxiosProgressEvent) => void)=>{
+const updateInstructorImage = async(file:File,onUploadProgress?: (progressEvent: AxiosProgressEvent) => void)=>{
 try{
   
   const formData = new FormData()
@@ -47,7 +47,50 @@ try{
 }
     
 }
+// const handleCreateCourse = async (courseData) => {
+//   try {
+//     await authorizedAxios.post('/instructor/addCourse', courseData);
+//     alert('Course created successfully!');
+//   } catch (error) {
+//     console.error('Error creating course:', error);
+//   }
+// };
+const fetchInstructorCourses = async (page: number = 1) => {
+  try {
+    const response = await authorizedAxios.get(`/instructor/myCourses`, {
+      params: {
+        page: page,  // Pass the page number if pagination is needed
+      }
+    });
 
+    console.log("Api response fetcjhcourse: ", response.data)
+    if(response.data){
+      return Promise.resolve(response.data)
+    }
+  } catch (error) {
+    console.error('Error fetching courses:', error);
+    throw error;
+  }
+};
+const addCourseImage = async (file: File, onUploadProgress?: (progressEvent: AxiosProgressEvent) => void) => {
+  try {
+    const formData = new FormData();
+    formData.append('image', file); // Append the image file to the FormData object
 
+    const response = await authorizedAxios.post('/instructor/addCourseImage', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      onUploadProgress, // Optional upload progress handler
+    });
 
-export {updateUser,updateImage}
+    if (response.data) {
+      return Promise.resolve(response.data); // Resolve with the response data
+    } else {
+      return Promise.reject('Upload Image Failed'); // Reject if response does not contain data
+    }
+  } catch (error) {
+    return handleAxiosError(error); // Handle any errors that occur
+  }
+};
+export {updateInstructor,updateInstructorImage,fetchInstructorCourses,addCourseImage}

@@ -118,7 +118,7 @@ export default class MultipleItems extends Component {
                 <div className='mx-auto max-w-7xl sm:py-8 px-4 lg:px-8 '>
                     <div className="sm:flex justify-between items-center">
                         <h3 className="text-midnightblue text-4xl lg:text-55xl font-semibold mb-5 sm:mb-0">Popular courses.</h3>
-                        <a href='/' className="text-Blueviolet text-lg font-medium space-links">Explore courses&nbsp;&gt;&nbsp;</a>
+                        <a href='/courses' className="text-Blueviolet text-lg font-medium space-links">Explore courses&nbsp;&gt;&nbsp;</a>
                     </div>
 
                     <Slider {...settings}>

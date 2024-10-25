@@ -17,5 +17,7 @@ studentRouter.post('/google-login',studentController.googleLogin);
 
 studentRouter.put('/updateUser',isStudentAuth, studentController.updateUser)
 studentRouter.put("/updateImage",isStudentAuth,upload.single("image"),studentController.updateImage);
+studentRouter.get("/courses", studentController.getAllCourses)
+studentRouter.get('/categories',studentController.getAllCategories)
 
 export default studentRouter;

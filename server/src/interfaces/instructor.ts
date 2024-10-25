@@ -12,6 +12,7 @@ export interface IInstructor {
     mobile?: number;
     image?:string;
     qualification?: string;
+    description?:string;
     isBlocked?: boolean;
     isVerified?: boolean;
     wallet?: number;

@@ -1,13 +1,13 @@
 import Breadcrumb from '../../components/instructor/Breadcrumbs/Breadcrumb';
 import CoverOne from '../../images/cover/cover-01.png';
-import {useState,useEffect} from 'react'
+import {useState,useEffect,useRef} from 'react'
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
 import { userActions } from "../../redux/userSlice";
 import Typography from "@mui/material/Typography";
 import { LinearProgress } from "@mui/material";
 import { RootState } from "../../redux/store";
-import {updateImage} from '../../api/instructorApi'
+import {updateInstructorImage} from '../../api/instructorApi'
 
 const InstructorProfile = () => {
   const user = useSelector((store: RootState) => store.user.user);
@@ -17,14 +17,14 @@ const InstructorProfile = () => {
   const [progress, setProgress] = useState(0); 
   
 
-//   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-// // Function to handle file input click
-// const handleIconClick = () => {
-//   if (fileInputRef.current) {
-//     fileInputRef.current.click(); // Trigger the file input click
-//   }
-// };
+// Function to handle file input click
+const handleIconClick = () => {
+  if (fileInputRef.current) {
+    fileInputRef.current.click(); // Trigger the file input click
+  }
+};
 
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -34,7 +34,7 @@ const InstructorProfile = () => {
       setLoading(true)
       try {
        
-        const response = await updateImage(file, (progressEvent) => {
+        const response = await updateInstructorImage(file, (progressEvent) => {
           if (progressEvent.total) {
             const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
             setProgress(percentCompleted); // Update progress
@@ -54,9 +54,7 @@ const InstructorProfile = () => {
       }
     }
   };
-  useEffect(() => {
-    console.log("Redux user state updated:");
-  }, [dispatch]);
+ 
   return (
     <>
       <Breadcrumb pageName="Profile" />
@@ -115,6 +113,7 @@ const InstructorProfile = () => {
       viewBox="0 0 14 14"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      onClick={handleIconClick}
       
     >
       <path

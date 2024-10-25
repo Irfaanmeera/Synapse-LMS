@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { authorizedAxios } from './config'
+import { authorizedAxios, axiosInstance } from './config'
 import axios, {AxiosProgressEvent} from 'axios'
 
 const handleAxiosError = (error: any) => {
@@ -48,6 +48,33 @@ try{
     
 }
 
+const getAllCourses = async(page:number)=>{
+  try{
+    const response= await axiosInstance.get(`/courses?page=${page}`,)
+    console.log("CoursesApi", response.data)
+
+if(response){
+    return Promise.resolve(response.data)
+}
+  }catch(error){
+    return handleAxiosError(error);
+  }
+}
+const getAllCategories = async()=>{
+  try{
+    const response= await axiosInstance.get('/categories')
+    console.log(response.data)
+
+if(response){
+    return Promise.resolve(response.data)
+}
+  }catch(error){
+    return handleAxiosError(error);
+  }
+}
 
 
-export {updateUser,updateImage}
+
+
+
+export {updateUser,updateImage,getAllCourses,getAllCategories}

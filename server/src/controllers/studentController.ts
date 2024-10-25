@@ -9,11 +9,17 @@ import jwt from "jsonwebtoken";
 import ErrorHandler from '../utils/ErrorHandler';
 import { StudentRepository } from '../repositories/implements/studentRepository';
 import { BadRequestError } from '../constants/errors/badrequestError';
+import { InstructorRepository } from '../repositories/implements/instructorRepository';
+import { CourseRepository } from '../repositories/implements/courseRepository';
+import { CategoryRepository } from '../repositories/implements/categoryRepository';
 
 const { BAD_REQUEST, OK, INTERNAL_SERVER_ERROR } = STATUS_CODES
 
 const studentRepository = new StudentRepository();
-const studentService = new StudentService(studentRepository);
+const instructorRepository = new InstructorRepository();
+const courseRepository = new CourseRepository();
+const categoryRepository = new CategoryRepository();
+const studentService = new StudentService(studentRepository,instructorRepository,courseRepository,categoryRepository);
 const otpService = new OtpService();
 
 export class StudentController {
@@ -107,60 +113,57 @@ export class StudentController {
 
   async login(req: Request, res: Response, next: NextFunction) {
     try {
-      const { email, password } = req.body
-      const student: IStudent = await studentService.login(email)
-      const validPassword = await bcrypt.compare(password, student.password!)
-      if (validPassword) {
-        if (student.isVerified) {
-          const token = jwt.sign(
-            {
-              studentId: student.id,
-              role: "student",
-            },
-            process.env.JWT_SECRET!,
-            { expiresIn: "15m" } 
-          );
-
-          const refreshToken = jwt.sign(
-            {
-              studentId: student.id,
-              role: "student",
-            },
-            process.env.JWT_REFRESH_SECRET!, 
-            { expiresIn: "7d" } 
-          );
-          const studentData = {
-            _id: student.id,
-            name: student.name,
-            email: student.email,
-            mobile: student.mobile,
-            wallet: student.wallet,
-            courses: student.courses,
-            image: student.image,
-            role: "student",
-          };
-
-          res.status(200).json({
-            message: "Student Verified",
-            token, 
-            refreshToken, 
-            student: studentData,
-          });
-        } else {
-          const otp = otpService.generateOtp();
-          await otpService.createOtp({ email, otp });
-          otpService.sendOtpMail(email, otp);
-          res.status(400).json({ message: "Not verified" });  
-          throw new ErrorHandler("Not verified", BAD_REQUEST);
-        }
-      } else {
-        res.status(400).json({ message: "Incorrect password" });             
-        throw new ErrorHandler("Incorrect Password", BAD_REQUEST);
+      const { email, password } = req.body;
+      const student: IStudent = await studentService.login(email);
+      
+      const validPassword = await bcrypt.compare(password, student.password!);
+      if (!validPassword) {
+        return res.status(400).json({ message: "Incorrect password" });
       }
+  
+      if (!student.isVerified) {
+        const otp = otpService.generateOtp();
+        await otpService.createOtp({ email, otp });
+        otpService.sendOtpMail(email, otp);
+        return res.status(400).json({ message: "Not verified" });
+      }
+  
+      // If password is valid and student is verified
+      const token = jwt.sign(
+        { studentId: student.id, role: "student" },
+        process.env.JWT_SECRET!,
+        { expiresIn: "15m" }
+      );
+  
+      const refreshToken = jwt.sign(
+        { studentId: student.id, role: "student" },
+        process.env.JWT_REFRESH_SECRET!,
+        { expiresIn: "7d" }
+      );
+  
+      const studentData = {
+        _id: student.id,
+        name: student.name,
+        email: student.email,
+        mobile: student.mobile,
+        wallet: student.wallet,
+        courses: student.courses,
+        image: student.image,
+        role: "student",
+      };
+  
+      return res.status(200).json({
+        message: "Student Verified",
+        token, 
+        refreshToken, 
+        student: studentData,
+      });
     } catch (error) {
-      console.log(error as Error)
+      console.error(error);
+      next(error); // Forward error to global error handler
     }
   }
+  
 
   async googleLogin(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
@@ -315,7 +318,32 @@ export class StudentController {
       }
     }
   }
+  async getAllCourses(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { page } = req.params;
 
+      const pageNumber = Number(page);
+  
+      // Call the service function with the converted number
+      const courses = await studentService.getAllCourses(pageNumber);
+  
+      res.status(200).json(courses);
+    } catch (error) {
+      if (error instanceof Error) {
+        return next(error);
+      }
+    }
+  }
+  async getAllCategories(req: Request, res: Response, next: NextFunction){
+    try{
+      const categories = await studentService.getAllCategories()
+      res.status(200).json(categories)
+    }catch(error){
+      if (error instanceof Error) {
+        return next(error);
+      }
+    }
+  }
 }
 
 

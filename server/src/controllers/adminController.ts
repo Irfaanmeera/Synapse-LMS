@@ -6,10 +6,12 @@ import bcrypt from 'bcryptjs'; // Import bcryptjs for password comparison
 import ErrorHandler from '../utils/ErrorHandler';
 import { STATUS_CODES } from '../constants/httpStatusCodes';
 import { AdminRepository } from '../repositories/implements/adminRepository';
+import { CategoryRepository } from '../repositories/implements/categoryRepository';
 
 const { BAD_REQUEST } = STATUS_CODES;
 const adminRepository = new AdminRepository();
-const adminService = new AdminService(adminRepository);
+const categoryRepository = new CategoryRepository()
+const adminService = new AdminService(adminRepository,categoryRepository);
 
 export class AdminController {
   async login(req: Request, res: Response, next: NextFunction) {
@@ -71,6 +73,18 @@ export class AdminController {
         return next(error);
       } else {
         console.log("An unknown error occurred");
+      }
+    }
+  }
+  async addCategory(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { category } = req.body;
+      const upperCaseCategory = category.toUpperCase();
+      const newCategory = await adminService.addCategory(upperCaseCategory);
+      res.status(201).json({ category: newCategory });
+    } catch (error) {
+      if (error instanceof Error) {
+        next(error);
       }
     }
   }

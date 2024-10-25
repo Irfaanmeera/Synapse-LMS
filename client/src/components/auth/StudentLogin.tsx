@@ -44,23 +44,17 @@ const Signin: FC = () => {
       dispatch(userActions.setEmail(data.email));
       const response = await studentLogin(data);
       console.log("Login response:", response); // Log response
-
+  
       dispatch(userActions.saveUser(response)); // Save user data
       navigate("/"); // Redirect to home
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      console.error("Caught error:", error); // Log the entire error
-      if (error === "Not verified") {
-        console.log("User not verified, redirecting to OTP verification page."); // Log redirection
-        await resendOtp(data.email); // Resend OTP
-        navigate("/verifyOtp"); // Redirect to OTP verification page
-      } else {
-        setErr(error); // Set specific error message
-        console.log("Error set:", error); // Log the error message set
-      }
+      console.error("Caught error:", error);
+  
+      // Display the error message received from handleAxiosError
+      setErr(error); // `error` will be the message returned from `handleAxiosError`
     }
   };
-
+  
   return (
     <>
       <div className="absolute inset-y-0 right-0 flex items-center sm:static sm:inset-auto sm:pr-3">
@@ -108,6 +102,7 @@ const Signin: FC = () => {
                           Sign in to your account
                         </h2>
                       </div>
+                      <div>{err && <p className="text-red text-sm">{err}</p>}</div>
                       <form
                         onSubmit={handleSubmit(submitData)}
                         className="mt-6 space-y-6"
@@ -180,11 +175,7 @@ const Signin: FC = () => {
                             Sign In
                           </button>
                         </div>
-                        {err && (
-                          <p className="text-red text-opacity-20 text-sm">
-                            {err}
-                          </p>
-                        )}
+                        
                       </form>
                       <div className="flex justify-center items-center">
                         <span className="w-full border border-gray-blue"></span>
