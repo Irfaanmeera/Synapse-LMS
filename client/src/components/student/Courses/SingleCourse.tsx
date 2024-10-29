@@ -1,6 +1,9 @@
 import React from "react";
-import { Course } from "../../interfaces/";
+import { Course } from "../../interfaces/course";
 import { useNavigate } from "react-router-dom";
+import { TooltipCustomStyles } from "../../utils/Tooltip";
+import { toTitleCase } from "alter-case";
+
 
 // import { TooltipCustomStyles } from "../common/utils/Tooltip";
 // import { FaSmile } from "react-icons/fa";

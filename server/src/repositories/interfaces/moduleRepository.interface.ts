@@ -1,8 +1,9 @@
-import { IModule,IChapter} from "../../interfaces/module";
+import { IChapter, IModule,} from "../../interfaces/module";
 
 export interface IModuleRepository {
-    createModule(moduleDetails: IModule): Promise<IModule>;
-    updateModule(moduleDetails: IModule): Promise<IModule>;
-    findModuleById(moduleId: string): Promise<IModule | null>;
-    addChapter(moduleId: string, chapter: IChapter): Promise<IModule>;
+  createModule(moduleData: IModule): Promise<IModule>;
+  updateModule(moduleId: string, updateData: Partial<IModule>): Promise<IModule | null>;
+  deleteModule(moduleId: string): Promise<IModule | null>;
+  addChapter(moduleId: string, chapterData: IChapter): Promise<IModule | null>;
+  findModuleById(moduleId: string): Promise<IModule | null>;
 }

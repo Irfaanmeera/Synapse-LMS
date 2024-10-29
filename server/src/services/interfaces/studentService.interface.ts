@@ -13,6 +13,9 @@ export interface IStudentService{
     findStudentById(studentId:string):Promise<IStudent | null>;
     updateStudent(studentData:IStudent):Promise<IStudent>;
     updateImage(stduentId:string,file:Express.Multer.File): Promise<IStudent>;
+    updatePassword(studentId: string, password: string): Promise<IStudent>;
+    resetForgotPassword(email: string, password: string): Promise<IStudent>;
     getAllCourses(page:number):Promise<{courses: ICourse[];totalCount: number;}|null>;
     getAllCategories():Promise<ICategory[] |null>;
+    getSingleCourse(courseId: string): Promise<ICourse>;
 }

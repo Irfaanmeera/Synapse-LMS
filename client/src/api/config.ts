@@ -1,4 +1,5 @@
 import axios, { AxiosInstance, AxiosError } from 'axios'
+import toast from 'react-hot-toast'
 
 const BASE_URL = 'http://localhost:4000'
 
@@ -28,9 +29,28 @@ authorizedAxios.interceptors.request.use(
 
 authorizedAxios.interceptors.response.use(
     (response) => response,
-    (error: AxiosError) => {
+    (error) => {
+        const { response } = error;
+        if (response) {
+          if (
+            response.status === 401 &&
+            response.data?.message === "Profile is blocked"
+          ) {
+            window.location.href = "/login";
+            toast.error("Your profile is blocked. Please contact support.");
+          } else if (response.status === 404) {
+            window.location.href = "/error404";
+          } else if (response.status === 500) {
+            window.location.href = "/error500";
+          } else {
+            toast.error("An error occurred. Please try again later.");
+          }
+        } else {
+          // Handle network errors
+          toast.error("Network error. Please check your internet connection.");
+        }
         return Promise.reject(error);
-    }
+      }
 )
 
 export { axiosInstance, authorizedAxios }

@@ -50,7 +50,6 @@ export class CourseRepository implements ICourseRepository {
     ): Promise<ICourse | null> {
         return await Course.findById(courseId)
             .populate("instructor")
-            .populate("level")
             .populate("category")
             .populate({
                 path: "modules.module",
@@ -72,10 +71,10 @@ export class CourseRepository implements ICourseRepository {
         return course;
     }
 
-    async updateCourse(courseDetails: ICourse): Promise<ICourse> {
-        const { id, name, category, description, price, image, level } =
+    async updateCourse(courseId :string, courseDetails: ICourse): Promise<ICourse> {
+        const {name, category, description, price, image, level } =
             courseDetails;
-        const course = await Course.findById(id);
+        const course = await Course.findById(courseId);
         course!.set({
             name,
             category,

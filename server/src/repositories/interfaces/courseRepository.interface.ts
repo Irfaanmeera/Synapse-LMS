@@ -6,7 +6,7 @@ export interface ICourseRepository {
     getCourseByInstructor(instructorId: string,page: number): Promise<{ courses: ICourse[]; totalCount: number } | null>;
     getSingleCourseForInstructor(courseId: string): Promise<ICourse | null>;
     getCoursesByApproval(approval: CourseApproval): Promise<ICourse[] | null>;
-    updateCourse(courseDeatils: ICourse): Promise<ICourse>;
+    updateCourse(courseId:string, courseDetails: ICourse): Promise<ICourse>;
     addModule(courseId: string,module: { module: string; order: number }): Promise<ICourse>;
     findCourseById(courseId: string): Promise<ICourse | null>;
     courseApproval(courseId: string, status: string): Promise<ICourse>;

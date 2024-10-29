@@ -2,7 +2,7 @@ import {IInstructor } from "../../interfaces/instructor";
 import { ICourse } from "../../interfaces/course";
 import {IModule,IChapter} from '../../interfaces/module';
 import { ICategory } from "../../interfaces/category";
-import { IEnrolledCourse } from "../../interfaces/enrolledCourse";
+
 
 
 
@@ -15,11 +15,12 @@ export interface IInstructorService{
     updateInstructorImage(instructorId:string,file:Express.Multer.File): Promise<IInstructor>;
     getMyCourses(instructorId: string,page: number): Promise<{ courses: ICourse[]; totalCount: number } | null>;
     createCourse(courseDetails: ICourse, file: Express.Multer.File): Promise<ICourse>;
-    getSingleCourse(courseId: string): Promise<{ course: ICourse; enrollments: IEnrolledCourse[] } | null>;
-    updateCourse(courseDetails: ICourse): Promise<ICourse>;
-    addCourseImage(courseId: string, file: Express.Multer.File): Promise<ICourse>;
+    getSingleCourse(courseId: string): Promise< ICourse| null>;
+    updateCourse(courseId: string, courseDetails: ICourse,file:Express.Multer.File): Promise<ICourse>;
     deleteCourse(courseId: string): Promise<ICourse>;
     getAllCategories(): Promise<ICategory[] | null>;
-    createModule(moduleDetails: IModule,order: number,file: Express.Multer.File): Promise<IModule>;
-    addChapter(courseId: string, chapter: IChapter): Promise<IModule>;
+    createModule(moduleDetails: IModule, order:number): Promise<IModule>;
+    updateModule(moduleId: string, updateData: Partial<IModule>): Promise<IModule | null>;
+    deleteModule(moduleId: string): Promise<IModule | null>;
+    addChapter(moduleId: string, chapter: IChapter,file: Express.Multer.File): Promise<IModule |null>;
     }

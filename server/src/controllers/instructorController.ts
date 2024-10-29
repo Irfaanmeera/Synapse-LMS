@@ -15,6 +15,7 @@ import { CategoryRepository } from '../repositories/implements/categoryRepositor
 import { EnrolledCourseRepository } from '../repositories/implements/enrolledCourseRepository';
 import { ModuleRepository } from '../repositories/implements/moduleRepository';
 import { ICourse } from '../interfaces/course';
+import { IModule } from '../interfaces/module';
 
 
 const { BAD_REQUEST, OK, INTERNAL_SERVER_ERROR } = STATUS_CODES
@@ -285,10 +286,12 @@ export class InstructorController {
     async getSingleCourse(req: Request, res: Response, next: NextFunction) {
       try {
         const { courseId } = req.params;
+        console.log("Course Id: ",courseId)
         if (!courseId) {
           throw new BadRequestError("Course id not found");
         }
         const course = await instructorService.getSingleCourse(courseId);
+        console.log(course)
         res.status(200).json(course);
       } catch (error) {
         if (error instanceof Error) {
@@ -299,26 +302,32 @@ export class InstructorController {
   
     async updateCourse(req: Request, res: Response, next: NextFunction) {
       try {
-        const { name, description, price, level, category } = req.body;
-        const imageUrl = req.file ? req.file.location : null; // Get the uploaded image URL from S3
-
-    // Create the new course in the database
-    const courseCredentials= {
-      name,
-      description,
-      price,
-      level,
-      category,
-      image: imageUrl, // Save the S3 image URL
-    };
-        const course = await instructorService.updateCourse(courseCredentials);
-        res.status(200).json(course);
+          const { courseId } = req.params;
+          const { name, description, price, level, category } = req.body;
+          
+          // Gather course details from the request body
+          const courseDetails = {
+              name,
+              description,
+              price,
+              level,
+              category,
+          };
+  
+          // Check if there is an image file uploaded and pass it to the service
+          const file = req.file ? req.file : undefined;
+  
+          // Call the service function to update the course details
+          const updatedCourse = await instructorService.updateCourse(courseId, courseDetails, file);
+  
+          // Respond with the updated course data
+          res.status(200).json(updatedCourse);
       } catch (error) {
-        if (error instanceof Error) {
-          next(error);
-        }
+          console.error("Error updating course:", error);
+          next(error); // Pass the error to the error-handling middleware
       }
-    }
+  }
+
   
     async deleteCourse(req: Request, res: Response, next: NextFunction) {
       try {
@@ -334,22 +343,22 @@ export class InstructorController {
         }
       }
     }
-    async updateCourseImage(req: Request, res: Response, next: NextFunction) {
-      try {
-        const { courseId } = req.body;
-        const file = req.file;
-        if (!file) {
-          throw new BadRequestError("file not found");
-        }
-        await instructorService.addCourseImage(courseId, file);
-        const course = await instructorService.getSingleCourse(courseId);
-        res.status(200).json(course);
-      } catch (error) {
-        if (error instanceof Error) {
-          next(error);
-        }
-      }
-    }
+    // async updateCourseImage(req: Request, res: Response, next: NextFunction) {
+    //   try {
+    //     const { courseId } = req.body;
+    //     const file = req.file;
+    //     if (!file) {
+    //       throw new BadRequestError("file not found");
+    //     }
+    //     await instructorService.addCourseImage(courseId, file);
+    //     const course = await instructorService.getSingleCourse(courseId);
+    //     res.status(200).json(course);
+    //   } catch (error) {
+    //     if (error instanceof Error) {
+    //       next(error);
+    //     }
+    //   }
+    // }
 
     async getCategories(req: Request, res: Response, next: NextFunction){
     try {
@@ -361,8 +370,65 @@ export class InstructorController {
     }
   }
 }
-  
+  async createModule(req: Request, res: Response,next: NextFunction){
+    try {
+        const moduleData = req.body;
+        const existingModule = await instructorService.getSingleCourse(moduleData.courseId);
+
+      console.log("existing module:", existingModule)
+        const order = (existingModule?.modules?.length|| 0) + 1;
+        const module = await instructorService.createModule(moduleData,order);
+        res.status(201).json(module);
+    } catch (error) {
+      if (error instanceof Error) {
+        next(error);
+      }
+    }
 }
+async updateModule (req: Request, res: Response,next: NextFunction) {
+  try {
+      const { moduleId } = req.params;
+      const updateData = req.body;
+      const updatedModule = await instructorService.updateModule(moduleId, updateData);
+      res.status(200).json(updatedModule);
+  } catch (error) {
+    if (error instanceof Error) {
+      next(error);
+    }};
+  }
+
+ async deleteModule(req: Request, res: Response,next: NextFunction) {
+  try {
+      const { moduleId } = req.params;
+      await instructorService.deleteModule(moduleId);
+      res.status(200).json({ message: 'Module deleted successfully' });
+  } catch (error) {
+    if (error instanceof Error) {
+      next(error);
+    }
+  }
+};
+async addChapter(req: Request, res: Response,next: NextFunction){
+  try {
+      const { moduleId} = req.params;
+      const chapterData = req.body;
+      const file = req.file;
+
+      console.log("Add Chapter backend Response :", moduleId,chapterData,file)
+      const module = await instructorService.addChapter(moduleId, chapterData, file!);
+      console.log("add chapter response:", module)
+      res.status(201).json(module);
+  } catch (error) {
+    if (error instanceof Error) {
+      next(error);
+    }
+  }
+};
+
+}
+
+
+
 
 
 

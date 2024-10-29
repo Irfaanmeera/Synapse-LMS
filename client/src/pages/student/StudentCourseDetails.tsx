@@ -1,21 +1,19 @@
 import React from 'react'
 import Navbarin from '../../components/student/Common/Navbar'
 import Footer from '../../components/student/Common/Footer/Footer'
-import UserCourses from '../../components/student/Courses/UserCourses'
+import CourseView from '../../components/student/Courses/CourseView'
 
 
-
-const Course: React.FC= () => {
+const StudentCourseDetails: React.FC= () => {
 
   return (
     <>
       <Navbarin/>
       {/* <ResponsiveAppBar/> */}
-     
-      <UserCourses/>
+      <CourseView/>
       <Footer/>
     </>
   )
 }
 
-export default Course;
+export default StudentCourseDetails;

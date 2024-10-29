@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import {
   Box,
@@ -17,15 +16,17 @@ import {
 } from '@mui/material';
 import { Editor } from '@tinymce/tinymce-react';
 import { Upload } from 'lucide-react';
-import { authorizedAxios } from '../../api/config'; // Adjust the import path
-import { Course } from '../../interfaces/course';
+import { authorizedAxios } from '../../../api/config';
+import { useParams } from 'react-router-dom';
+import { Course } from '../../../interfaces/course';
 
 interface Category {
   id: string;
   category: string;
 }
 
-const CreateCourse: React.FC = () => {
+const UpdateCourse: React.FC = () => {
+  const { courseId } = useParams();
   const [formData, setFormData] = useState<Course>({
     name: '',
     description: '',
@@ -44,18 +45,53 @@ const CreateCourse: React.FC = () => {
     severity: 'success' as 'success' | 'error',
   });
 
-  // Fetch categories on component mount
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchCategoriesAndCourseData = async () => {
       try {
-        const response = await authorizedAxios.get('/categories');
-        setCategories(response.data);
+        const categoriesResponse = await authorizedAxios.get('/categories');
+        setCategories(categoriesResponse.data);
+
+        const courseResponse = await authorizedAxios.get(
+            `/instructor/course/${courseId}`
+          );
+        const courseData = courseResponse.data;
+
+        setFormData({
+          name: courseData.name,
+          description: courseData.description,
+          price: courseData.price,
+          level: courseData.level,
+          category: courseData.category,
+          image: courseData.image,
+        });
+
+        setThumbnailPreview(courseData.image);
       } catch (error) {
-        console.error('Error fetching categories:', error);
+        console.error('Error fetching data:', error);
       }
     };
-    fetchCategories();
-  }, []);
+
+    fetchCategoriesAndCourseData();
+  }, [courseId]);
+
+
+
+//   useEffect(() => {
+//     const fetchCourseDetails = async () => {
+//       try {
+//         const { data } = await authorizedAxios.get(
+//           `/instructor/course/${courseId}`
+//         );
+//         console.log("fetch course detials", data.modules);
+
+      
+//       } catch (error) {
+//         console.error("Error fetching course details:", error);
+//       }
+//     };
+
+//     fetchCourseDetails();
+//   }, [courseId]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>) => {
     const { name, value } = e.target;
@@ -66,144 +102,69 @@ const CreateCourse: React.FC = () => {
   };
 
   const handleEditorChange = (content: string) => {
-    setFormData(prev => ({
-      ...prev,
-      description: content,
-    }));
+    setFormData({ ...formData, description: content.replace(/<\/?p>/g, '') });
   };
 
   const handleThumbnailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) { // 5MB limit
-        setSnackbar({
-          open: true,
-          message: 'File size too large. Please choose a smaller image.',
-          severity: 'error',
-        });
-        return;
-      }
-  
-      // Generate local preview
       const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result as string;
-        setThumbnailPreview(base64String);
-      };
+      reader.onloadend = () => setThumbnailPreview(reader.result as string);
       reader.readAsDataURL(file);
-  
-      // Temporarily store the file in state for uploading
+
       setFormData(prev => ({
         ...prev,
-        image: file.name, // Set the name or a placeholder, actual upload happens during submit
+        image: file,
       }));
     }
-  };
-  
-
-  const handleCloseSnackbar = () => {
-    setSnackbar({ ...snackbar, open: false });
-  };
-
-  const validateForm = (): boolean => {
-    if (!formData.name.trim()) {
-      setSnackbar({
-        open: true,
-        message: 'Course name is required',
-        severity: 'error',
-      });
-      return false;
-    }
-    if (!formData.description.trim()) {
-      setSnackbar({
-        open: true,
-        message: 'Course description is required',
-        severity: 'error',
-      });
-      return false;
-    }
-    if (formData.price < 0) {
-      setSnackbar({
-        open: true,
-        message: 'Price cannot be negative',
-        severity: 'error',
-      });
-      return false;
-    }
-    return true;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
-    if (!validateForm()) {
-      return;
-    }
-  
     setLoading(true);
-  
+
     try {
-      // Create a new FormData object to hold course data and the image
       const formDataToSubmit = new FormData();
-      
-      // Append course data to FormData
-      if(formData){
-        formDataToSubmit.append('name', formData.name);
-        formDataToSubmit.append('description', formData.description);
-        formDataToSubmit.append('level', formData.level);
-        formDataToSubmit.append('category', formData.category);
-        formDataToSubmit.append('price', String(formData.price));
+      formDataToSubmit.append('name', formData.name);
+      formDataToSubmit.append('description', formData.description);
+      formDataToSubmit.append('level', formData.level);
+      formDataToSubmit.append('category', formData.category);
+      formDataToSubmit.append('price', String(formData.price));
+      if (formData.image instanceof File) {
+        formDataToSubmit.append('image', formData.image);
       }
-      // Append the image file if it exists
-      if (formData.image) {
-        formDataToSubmit.append('image', formData.image); // Assuming formData.image is of type File or Blob
-      }
-  
-      console.log('Sending course data:', formDataToSubmit);
-  
-      // Submit the form data including the image
-      const response = await authorizedAxios.post('/instructor/addCourse', formDataToSubmit, {
+
+      const response = await authorizedAxios.put(`/instructor/updateCourse/${courseId}`, formDataToSubmit, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-  
+
+      console.log("Update Response:", response)
+
       setSnackbar({
         open: true,
-        message: 'Course created successfully!',
+        message: 'Course updated successfully!',
         severity: 'success',
       });
-  
-      // Reset form
-      setFormData({
-        name: '',
-        description: '',
-        price: 0,
-        image: '',
-        level: 'Beginner',
-        category: '',
-      });
-      setThumbnailPreview('');
-  
     } catch (error: any) {
-      console.error('Error creating course:', error);
       setSnackbar({
         open: true,
-        message: error.response?.data?.message || 'Error creating course. Please try again.',
+        message: error.response?.data?.message || 'Error updating course. Please try again.',
         severity: 'error',
       });
+
+       console.log("Update error", error.response?.data?.message)
     } finally {
       setLoading(false);
     }
   };
-  
-  
-  
+
   return (
     <Box sx={{ p: 3, maxWidth: '1200px', margin: '0 auto' }}>
       <Paper elevation={3} sx={{ p: 4 }}>
         <Typography variant="h5" gutterBottom>
-          Create New Course
+          Update Course
         </Typography>
 
         <form onSubmit={handleSubmit}>
@@ -230,23 +191,7 @@ const CreateCourse: React.FC = () => {
                   height: 300,
                   menubar: false,
                   plugins: [
-                    'advlist',
-                    'autolink',
-                    'lists',
-                    'link',
-                    'charmap',
-                    'preview',
-                    'anchor',
-                    'searchreplace',
-                    'visualblocks',
-                    'code',
-                    'fullscreen',
-                    'insertdatetime',
-                    'media',
-                    'table',
-                    'code',
-                    'help',
-                    'wordcount',
+                    'advlist autolink lists link charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table code help wordcount',
                   ],
                   toolbar:
                     'undo redo | blocks | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
@@ -347,7 +292,7 @@ const CreateCourse: React.FC = () => {
                 type="submit"
                 disabled={loading}
               >
-                {loading ? 'Creating Course...' : 'Create Course'}
+                {loading ? 'Updating Course...' : 'Update Course'}
               </Button>
             </Grid>
           </Grid>
@@ -355,22 +300,22 @@ const CreateCourse: React.FC = () => {
       </Paper>
 
       <Snackbar
-  open={snackbar.open}
-  autoHideDuration={4000}
-  onClose={handleCloseSnackbar}
-  anchorOrigin={{ vertical: 'top', horizontal: 'right' }} // Positioning
->
-  <Alert
-    onClose={handleCloseSnackbar}
-    severity={snackbar.severity}
-    sx={{ width: '100%' }}
-  >
-    {snackbar.message}
-  </Alert>
-</Snackbar>
-
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      >
+        <Alert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          severity={snackbar.severity}
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
 
-export default CreateCourse;
+export default UpdateCourse;
+

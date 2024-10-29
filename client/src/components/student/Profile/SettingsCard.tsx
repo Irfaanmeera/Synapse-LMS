@@ -193,7 +193,7 @@ export default function SettingsCard() {
                 variant="contained"
                 onClick={handleSubmit}
               >
-                {edit.isEdit ? "EDIT" : "UPDATE"}
+                Update
               </Button>
             </Box>
             <Box mt={2}>

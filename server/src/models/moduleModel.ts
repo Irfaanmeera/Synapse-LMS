@@ -1,7 +1,6 @@
-import mongoose, { Model, Document } from 'mongoose'
-import { IModule } from '../interfaces/module'
-import { IChapter } from '../interfaces/module'
-
+import mongoose, { Model, Document } from 'mongoose';
+import { IModule } from '../interfaces/module';
+import { IChapter } from '../interfaces/module';
 
 interface ModuleModel extends Model<IModule> {
     build(attrs: IModule): ModuleDoc;
@@ -11,7 +10,6 @@ interface ModuleDoc extends Document {
     id?: string;
     name?: string;
     courseId?: string;
-    module?: string;
     description?: string;
     duration?: string;
     status?: boolean;
@@ -28,18 +26,7 @@ const moduleSchema = new mongoose.Schema(
         courseId: {
             type: mongoose.Schema.Types.ObjectId,
             required: true,
-        },
-        module: {
-            type: String,
-            required: true,
-        },
-        description: {
-            type: String,
-            required: true,
-        },
-        duration: {
-            type: String,
-            required: true,
+            ref: 'Course' // Assuming Course is another model, if applicable
         },
         status: {
             type: Boolean,
@@ -53,28 +40,36 @@ const moduleSchema = new mongoose.Schema(
         },
         chapters: [
             {
-              title: {
-                type: String,
-                required: true
-              },
-              description: {
-                type: String
-              },
-              videoUrl: {
-                type: String, // Optional video URL
-                default: null
-              },
-              notes: {
-                type: String, // Optional notes for the chapter
-                default: null
-              },
-              duration: {
-                type: Number, // Optional duration in minutes, applicable for video
-                default: null
-              }
+                title: {
+                    type: String,
+                    required: true,
+                },
+                description: {
+                    type: String,
+                    
+                },
+                videoUrl: {
+                    type: String,
+                    required: true,
+                },
+                videoThumbnail: {
+                    type: Object,
+                  
+                },
+                videoSection: {
+                    type: String,
+                   
+                },
+                videoLength: {
+                    type: Number,
+                    
+                },
+                videoPlayer: {
+                    type: String,
+                  
+                },
             }
-          ]
-          
+        ]
     },
     {
         toJSON: {
@@ -90,6 +85,6 @@ moduleSchema.statics.build = (module: IModule) => {
     return new Module(module);
 };
 
-const Module = mongoose.model<ModuleDoc, ModuleModel>("module", moduleSchema);
+const Module = mongoose.model<ModuleDoc, ModuleModel>('module', moduleSchema);
 
 export { Module };

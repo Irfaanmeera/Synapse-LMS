@@ -9,6 +9,7 @@ import { CourseRepository } from "../../repositories/implements/courseRepository
 import { CategoryRepository } from "../../repositories/implements/categoryRepository";
 import { InstructorRepository } from "../../repositories/implements/instructorRepository";
 import { ICategory } from "../../interfaces/category";
+import { NotFoundError } from "../../constants/errors/notFoundError";
 
 
 
@@ -113,4 +114,26 @@ export class StudentService implements IStudentService {
      return await this.categoryRepository.getAllCategories()
 
  }
+ async getSingleCourse(courseId: string): Promise<ICourse> {
+    const course = await this.courseRepository.getSingleCourseForInstructor(
+      courseId
+    );
+    if (!course) {
+      throw new NotFoundError("Course not found");
+    }
+    return course;
+  }
+  async updatePassword(studentId: string, password: string): Promise<IStudent> {
+    return await this.studentRepository.udpatePassword(studentId, password);
+  }
+  async resetForgotPassword(
+    email: string,
+    password: string
+  ): Promise<IStudent> {
+    const student = await this.studentRepository.findStudentByEmail(email);
+    if (!student) {
+      throw new BadRequestError("Student not found");
+    }
+    return await this.studentRepository.udpatePassword(student.id!, password);
+  }
 }

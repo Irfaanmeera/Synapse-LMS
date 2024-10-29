@@ -1,7 +1,6 @@
 export interface Module {
     id?: string;
     name?: string;
-    module?: string;
     description?: string;
     duration?: string;
     status?: boolean;
@@ -10,7 +9,12 @@ export interface Module {
   }
   
   export interface IChapter {
-    chapter: string;
-    seconds: number;
-    duration: string;
-  }
+    title: string;
+    description?: string;
+    videoUrl?: string;
+    videoThumbnail?: object;
+    videoSection?: string;
+    videoLength?: number;
+    videoPlayer?: string;
+    }
+    

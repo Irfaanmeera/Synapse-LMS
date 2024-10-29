@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { IChapter, Module } from '../interfaces/module';
 import { authorizedAxios } from './config'
 import axios, {AxiosProgressEvent} from 'axios'
 
@@ -72,25 +73,76 @@ const fetchInstructorCourses = async (page: number = 1) => {
     throw error;
   }
 };
-const addCourseImage = async (file: File, onUploadProgress?: (progressEvent: AxiosProgressEvent) => void) => {
+
+const fetchSingleCourseDetails = async (courseId: any) => {
   try {
-    const formData = new FormData();
-    formData.append('image', file); // Append the image file to the FormData object
-
-    const response = await authorizedAxios.post('/instructor/addCourseImage', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-      onUploadProgress, // Optional upload progress handler
-    });
-
-    if (response.data) {
-      return Promise.resolve(response.data); // Resolve with the response data
-    } else {
-      return Promise.reject('Upload Image Failed'); // Reject if response does not contain data
+    const response = await authorizedAxios.get(`/instructor/course/${courseId}`);
+   console.log("Single course api:", response.data)
+   if(response.data){
+    return Promise.resolve(response.data)
+  } else {
+      throw new Error('Failed to fetch course details');
     }
   } catch (error) {
-    return handleAxiosError(error); // Handle any errors that occur
+    console.error('Error fetching course details:', error);
+    throw error; // Rethrow the error for handling in the calling component
   }
 };
-export {updateInstructor,updateInstructorImage,fetchInstructorCourses,addCourseImage}
+const createModule = async (moduleData: Module): Promise<any> => {
+  try {
+    const response = await authorizedAxios.post('/instructor/createModule', moduleData);
+    console.log("Created Module Data:", response.data);
+    return Promise.resolve(response.data);
+  } catch (error) {
+    return handleAxiosError(error);
+  }
+};
+
+// API for updating a module
+const updateModule = async (moduleId: string, moduleData: Partial<Module>): Promise<any> => {
+  try {
+    const response = await authorizedAxios.put(`/instructor/updateModule/${moduleId}`, moduleData);
+    console.log("Updated Module Data:", response.data);
+    return Promise.resolve(response.data);
+  } catch (error) {
+    return handleAxiosError(error);
+  }
+};
+
+// API for deleting a module
+const deleteModule = async (moduleId: string): Promise<any> => {
+  try {
+    const response = await authorizedAxios.delete(`/instructor/deleteModule/${moduleId}`);
+    console.log("Deleted Module Response:", response.data);
+    return Promise.resolve(response.data);
+  } catch (error) {
+    return handleAxiosError(error);
+  }
+};
+
+// API for adding a chapter to a module, including file upload to S3
+const addChapter = async (
+  moduleId: string |undefined,
+  chapterData: IChapter,
+  file: File,
+  onUploadProgress?: (progressEvent: AxiosProgressEvent) => void
+): Promise<any> => {
+  try {
+    const formData = new FormData();
+    formData.append('video', file);
+    Object.keys(chapterData).forEach((key) => {
+      formData.append(key, (chapterData as any)[key]);
+    });
+
+    const response = await authorizedAxios.post(`/instructor/modules/${moduleId}/addChapter`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      onUploadProgress,
+    });
+    console.log("Added Chapter Response:", response.data);
+    return Promise.resolve(response.data);
+  } catch (error) {
+    return handleAxiosError(error);
+  }
+}
+
+export {updateInstructor,updateInstructorImage,fetchInstructorCourses,fetchSingleCourseDetails,createModule,addChapter,deleteModule,updateModule}

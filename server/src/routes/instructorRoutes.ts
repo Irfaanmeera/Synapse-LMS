@@ -19,9 +19,12 @@ instructorRouter.put("/updateImage",isInstructorAuth,upload.single("image"),inst
 instructorRouter.get("/myCourses", isInstructorAuth, instructorController.getMycourses);
 instructorRouter.get("/course/:courseId",isInstructorAuth,instructorController.getSingleCourse);
 instructorRouter.post("/addCourse",upload.single("image"),isInstructorAuth,instructorController.createCourse);
-instructorRouter.put("/updateCourse", isInstructorAuth, instructorController.updateCourse);
+instructorRouter.put("/updateCourse/:courseId",upload.single("image"),isInstructorAuth,instructorController.updateCourse);
 instructorRouter.patch("/deleteCourse",isInstructorAuth,instructorController.deleteCourse);
-// instructorRouter.put("/addCourseImage",upload.single("image"),instructorController.updateCourseImage);
 instructorRouter.get('/categories',isInstructorAuth, instructorController.getCategories)
+instructorRouter.post( "/createModule", isInstructorAuth,instructorController.createModule);
+instructorRouter.put('/modules/:moduleId', isInstructorAuth,instructorController.updateModule);
+instructorRouter.delete('/modules/:moduleId', isInstructorAuth, instructorController.deleteModule);
+instructorRouter.post('/modules/:moduleId/addChapter', upload.single('video'), isInstructorAuth, instructorController.addChapter);
 
 export default instructorRouter;

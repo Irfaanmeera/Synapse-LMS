@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import SingleCourse from "./SingleCourse";
+import SingleCourse from "./Courses/SingleCourse";
 import { getCourses } from "../../api/studentApi";
 import { Course } from "../../dtos/Course";
 import CardSkeleton from "../common/utils/CardSkeleton";

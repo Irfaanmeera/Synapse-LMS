@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import { Link } from "react-router-dom";
-// import Ratings from "../../instructor/utils/Ratings";
-import { AiOutlineUnorderedList } from "react-icons/ai";
+// import { AiOutlineUnorderedList, AiFillStar } from "react-icons/ai";
+// import { FaGraduationCap } from "react-icons/fa";
 
 type Props = {
   course: any; // Expecting a course object as a prop
@@ -10,37 +10,58 @@ type Props = {
 
 const CourseCard: React.FC<Props> = ({ course }) => {
   return (
-    <Link to={`/course_details/${course?._id}`}>
-      <div className="w-[100%] h-[100%] backdrop-blur border border-[#00000015] rounded-lg p-3 shadow-sm">
-        <div className="relative h-[20vh]">
+    <Link to={`/courseDetails/${course?.id}`}>
+      <div className="w-75 h-full backdrop-blur border border-2 border-opacity-20 border-Blueviolet rounded-lg p-3 transition-transform transform hover:scale-105 duration-300 shadow-sm hover:shadow-lg">
+        <div className="relative h-[30vh] overflow-hidden rounded-t-lg">
           <img
             src={course.image}
-            className="absolute inset-0 w-full h-full object-cover rounded-t-lg"
-            alt=""
+            className="absolute inset-0 w-full h-full object-cover rounded-t-lg "
+            alt="Course Thumbnail"
           />
         </div>
         <div className="p-3 flex flex-col justify-between h-[calc(15vh - 3rem)]">
           <div className="h-[50px] overflow-hidden overflow-ellipsis mb-2">
-            <h1 className="font-Poppins text-[16px]">
+            <h1 className="font-Poppins text-midnightblue font-sem text-[17px] mt-5">
               {course.name.slice(0, 70)}
             </h1>
           </div>
-          <div className="flex items-center justify-between">
-            <h5>{course.enrolled} students</h5>
+          <div className="flex items-center justify-between -mt-2 text-gray-600">
+            <h5 className="flex items-center text-gray-700">
+             {course.level}
+            </h5>
+            {/* <AiFillStar className="text-yellow-400" /> */}
+          </div>
+          <div className="flex items-center justify-between mt-2 text-gray-600">
+            <h5 className="flex items-center text-gray-700">
+            {course.price === 0 ? "Free" : "₹" + course.price}
+            </h5>
+            {/* <AiFillStar className="text-yellow-400" /> */}
           </div>
         </div>
-        <div className="flex w-full items-center justify-between pt-3">
-          <div className="flex">
-            <h3>{course.price === 0 ? "Free" : "₹"+ course.price }</h3>
-            {/* <h5 className="pl-3 text-[14px] mt-[-5px] line-through opacity-80">
-              {course.estimatedPrice}₹
-            </h5> */}
+        <hr style={{ color: "#C4C4C4" }} />
+
+        {/* <div className="flex w-full items-center justify-between pt-2 ml-1">
+          <div className="flex items-center">
+            <h3 className="text-charcoal text-base font-semibold">
+              Students {course.enrolled}
+            </h3>
           </div>
-          <div className="flex items-center pb-3">
-            {/* <AiOutlineUnorderedList size={20} /> */}
-            <h5 className="pl-2">{course.modules?.length} Chapters</h5>
+          <div className="flex items-center text-gray-600">
+            <AiOutlineUnorderedList size={20} />
+            <h5 className="pl-2">{course.modules?.length || 0} Chapters</h5>
           </div>
-        </div>
+        </div> */}
+        
+        <div className="flex justify-between pt-6">
+                                            <div className="flex gap-4">
+                                                <img src='/assets/courses/book-open.svg' alt="classes" width={24} height={24} className="inline-block m-auto" />
+                                                <h3 className="text-base font-medium text-black opacity-75">{course.modules?.length} chapters</h3>
+                                            </div>
+                                            <div className="flex gap-4">
+                                                <img src='/assets/courses/users.svg' alt="students" width={24} height={24} className="inline-block m-auto" />
+                                                <h3 className="text-base font-medium text-black opacity-75">{course.enrolled} students</h3>
+                                            </div>
+                                        </div>
       </div>
     </Link>
   );

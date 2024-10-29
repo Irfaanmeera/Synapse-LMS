@@ -7,5 +7,5 @@ export interface IStudentRepository {
   updateUserVerification(email: string): Promise<IStudent>;
   updateStudent(studentData:IStudent):Promise<IStudent>;
   updateImage(studentId:string,image:string):Promise<IStudent>;
-
+  udpatePassword(studentId: string, password: string): Promise<IStudent | null>;
 }

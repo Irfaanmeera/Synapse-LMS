@@ -19,5 +19,8 @@ studentRouter.put('/updateUser',isStudentAuth, studentController.updateUser)
 studentRouter.put("/updateImage",isStudentAuth,upload.single("image"),studentController.updateImage);
 studentRouter.get("/courses", studentController.getAllCourses)
 studentRouter.get('/categories',studentController.getAllCategories)
+studentRouter.get("/course/:courseId",studentController.getSingleCourse);
+studentRouter.post("/verify-forgot-password-otp",studentController.forgotPasswordOtpVerification);
+studentRouter.post("/forgot-password", studentController.resetForgottedPassword);
 
 export default studentRouter;

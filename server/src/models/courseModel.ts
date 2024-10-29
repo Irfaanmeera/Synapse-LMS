@@ -57,6 +57,10 @@ const courseSchema = new mongoose.Schema(
             ref: "category",
            
         },
+        enrolled:{
+            type:Number,
+            default:0
+        },
        
         modules: [
             {

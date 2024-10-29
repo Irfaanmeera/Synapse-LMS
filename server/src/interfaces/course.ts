@@ -14,7 +14,7 @@ export interface ICourse {
     image?: string;
     price?: number;
     level?: string;
-    language?: string;
+    enrolled?: number;
     category?: string;
     modules?: { module: string | IModule; order: number }[];
     createdAt?: Date;

@@ -48,4 +48,14 @@ export class StudentRepository implements IStudentRepository {
         })
         return await student.save()
     }
+    async udpatePassword(studentId: string, password: string): Promise<IStudent> {
+        const student = await Student.findById(studentId);
+        if (!student) {
+          throw new BadRequestError("Id not valid");
+        }
+        student.set({
+          password,
+        });
+        return await student.save();
+      }
 }

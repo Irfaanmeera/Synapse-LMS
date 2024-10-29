@@ -144,7 +144,7 @@ const instructorLogin = async (instructorData: InstructorData) => {
   try {
     const response = await axiosInstance.post('instructor/login', instructorData);
     const { token, refreshToken, instructor } = response.data;
-    
+    console.log("Instructor Info:" ,response.data)
     // Store tokens in local storage
     localStorage.setItem('token', token);
     localStorage.setItem('refreshToken', refreshToken);
@@ -173,7 +173,9 @@ const adminLogin = async (adminData: AdminData) => {
   }
 };
 
-
+// const InstructorResendOtp = async (email: string) => {
+//   await axiosInstance.post("/instructor/resend-otp", { email });
+// };
 
 const userLogout = async () => {
     // socket.disconnect();
@@ -181,8 +183,64 @@ const userLogout = async () => {
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
   };
+  const updateInstructorForgotPassword = async (
+  email: string,
+  password: string
+) => {
+  try {
+    const response = await axiosInstance.post("/instructor/forgot-password", {
+      email,
+      password,
+    });
+    return Promise.resolve(response.data);
+  } catch (error) {
+    console.error("Error during login:", error);
+    return await handleAxiosError(error); 
+  }
+};
+
+
+const InstructorOtpVerfication = async (email: string, otp: string) => {
+  try {
+    const response = await axiosInstance.post<{ success: boolean }>(
+      "/instructor/verify-forgot-password-otp",
+      { email, otp }
+    );
+    return Promise.resolve(response.data);
+  } catch (error) {
+    console.error("Error during login:", error);
+    return await handleAxiosError(error); 
+  }
+};
+const updateStudentForgotPassword = async (email: string, password: string) => {
+  try {
+    const response = await axiosInstance.post("/forgot-password", {
+      email,
+      password,
+    });
+    return Promise.resolve(response.data);
+  } catch (error) {
+    console.error("Error during login:", error);
+    return await handleAxiosError(error); 
+  }
+};
+const studentOtpVerfication = async (email: string, otp: string) => {
+  try {
+    const response = await axiosInstance.post<{ success: boolean }>(
+      "/verify-forgot-password-otp",
+      {
+        email,
+        otp,
+      }
+    );
+    return Promise.resolve(response.data);
+  } catch (error) {
+    console.error("Error during login:", error);
+    return await handleAxiosError(error); 
+  }
+};
 
 
 
 
-export { studentSignup, verifyOtp, resendOtp, studentLogin, googleLogin,userLogout,instructorSignup,instructorVerifyOtp,instructorResendOtp, instructorLogin,adminLogin};
+export { studentSignup, verifyOtp, resendOtp, studentLogin, googleLogin,userLogout,instructorSignup,instructorVerifyOtp,instructorResendOtp, instructorLogin,adminLogin, InstructorOtpVerfication,updateInstructorForgotPassword,studentOtpVerfication,updateStudentForgotPassword};

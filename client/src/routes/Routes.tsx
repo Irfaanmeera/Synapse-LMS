@@ -2,6 +2,7 @@ import React, { Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
 import ProtectedRoute from "../components/Common/protectedRoutes/ProtectedRoutes";
+import AuthProtected from "../components/Common/protectedRoutes/AuthProtectedRoles";
 import {Roles} from '../interfaces/Roles'
 import AdminLogin from '../components/auth/adminLogin'
 import Profile from "../pages/student/Profile";
@@ -10,8 +11,17 @@ import InstructorLayout from '../pages/instructor/InstructorLayout'
 import InstructorProfile from '../pages/instructor/InstructorProfile'
 import Settings from "../pages/instructor/Settings";
 import Course from  '../pages/student/Course'
-import CreateCourse from "../components/instructor/CreateCourse";
-import CourseDisplay from "../components/instructor/CourseCard";
+import CreateCourse from "../components/instructor/Course/CreateCourse";
+import CourseDisplay from "../components/instructor/Course/CourseCard";
+import CourseDetails from "../components/instructor/Course/CourseDetails";
+import StudentCourseDetails from "../pages/student/StudentCourseDetails";
+import Error404 from "../components/Common/errorPages/Error404";
+import UpdateCourse from "../components/instructor/Course/UpdateCourse";
+import StudentForgotPassword from "../pages/student/StudentForgotPassword";
+import EnterMailForgotPasswordForm from "../components/auth/emailPassword";
+import VerifyOtp from "../pages/student/VerifyOtp";
+// import CourseCard from "../components/student/Courses/CourseCard";
+
 
 const StudentHomeLazy = React.lazy(
   () => import("../pages/student/StudentHome")
@@ -54,15 +64,41 @@ const RoutePage = () => {
                 </div>
               }
             >
-              <VerifyOtpLazy isInstructor={false} />
+              <VerifyOtpLazy isForgotPassword={true} isInstructor={false} />
             </Suspense>
           }
         ></Route>
-        {/* <Route
+        
+        <Route
+          path="/update-forgot-password"
+          element={<AuthProtected element={<StudentForgotPassword/>} />}
+          />
+<Route
+          path="/forgot-password"
+          element={<AuthProtected element={<EnterMailForgotPasswordForm isInstructor={false} />} />}
+        />
+
+        <Route
+          path="/forgot-password-otp-verfication"
+          element={
+            <AuthProtected
+              element={
+                <VerifyOtp isForgotPassword={true} isInstructor={false} />
+              }
+            />
+          }
+        />
+
+       
+        <Route
         path="/courses"
         element={<Course/>} 
         />
-           */}
+        <Route
+        path="/courseDetails/:courseId"
+        element ={<StudentCourseDetails/>}
+        />
+          
 
      
         <Route
@@ -76,7 +112,7 @@ const RoutePage = () => {
                 </div>
               }
             >
-              <VerifyOtpLazy isInstructor={true} />
+              <VerifyOtpLazy isForgotPassword={true} isInstructor={true} />
             </Suspense>
           }
         ></Route>
@@ -140,7 +176,7 @@ const RoutePage = () => {
           }
         />
         <Route
-          path="myCourses"
+          path="courses"
           element={
             <ProtectedRoute
               allowedRoles={[Roles.instructor]}
@@ -157,9 +193,38 @@ const RoutePage = () => {
             />
           }
         />
-        <Route path="createCourse" element={<CreateCourse />} />
+        <Route
+          path="createCourse"
+          element={
+            <ProtectedRoute
+              allowedRoles={[Roles.instructor]}
+              element={<CreateCourse/>}
+            />
+          }
+        />
+      
+        <Route
+  path="courseDetails/:courseId"
+  element={
+    <ProtectedRoute
+      allowedRoles={[Roles.instructor]}
+      element={<CourseDetails/>}
+    />
+  }
+/>
+        <Route
+  path="updateCourse/:courseId"
+  element={
+    <ProtectedRoute
+      allowedRoles={[Roles.instructor]}
+      element={<UpdateCourse/>}
+    />
+  }
+/>
       </Route>
-      <Route path="/courses" element={<Course />}/>
+     
+      <Route path="error404/" element={<Error404 />} />
+      <Route path="*" element={<Error404 />} />
       
     </Routes>
     </>

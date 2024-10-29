@@ -13,12 +13,13 @@ import Registerdialog from "../../../auth/StudentSignup";
 import InstructorSignIn from "../../../auth/instructorLogin";
 
 import { Link, useNavigate } from "react-router-dom";
-import Typography from "@mui/material/Typography";
+
 import { useSelector, useDispatch} from "react-redux";
 import { userActions } from "../../../../redux/userSlice";
 import { RootState } from "../../../../redux/store";
 import { Roles } from "../../../../interfaces/Roles";
 import {toast} from 'react-hot-toast'
+import { Avatar, Typography} from "@mui/material";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -66,7 +67,7 @@ const Navbar = () => {
   return (
     <Disclosure as="nav" className="navbar">
       <>
-        <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 shadow-4 ">
           <div className="relative flex h-16 items-center justify-between my-1">
             {/* LOGO */}
             <div className="flex items-center">
@@ -156,9 +157,23 @@ const Navbar = () => {
 
             {/* Links */}
             <div className="hidden lg:block m-auto">
+           
               <div className="flex space-x-4">
                 {(user?.role === Roles.student) && (
                   <ul className="mt-2 mb-4 px-4 font-semibold flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6">
+                    <Link to={"/"}>
+                      <Typography
+                        as="li"
+                        variant="body2"
+                        color="gray"
+                        className="p-1 font-semibold"
+                      >
+                        <div className="flex items-center text-slategray">
+                          Home
+                        </div>
+                      </Typography>
+                    </Link>
+                
                     <Link to={"/courses"}>
                       <Typography
                         as="li"
@@ -167,7 +182,7 @@ const Navbar = () => {
                         className="p-1 font-semibold"
                       >
                         <div className="flex items-center text-slategray">
-                          My Courses
+                          Courses
                         </div>
                       </Typography>
                     </Link>
@@ -212,7 +227,7 @@ const Navbar = () => {
                 {/* User name */}
                 <Typography
                   as="div"
-                  variant="small"
+                  variant="inherit"
                   color="blue-gray"
                   className="p-1 font-semibold cursor-pointer"
                 >
@@ -220,6 +235,13 @@ const Navbar = () => {
                     {user?.name}
                   </div>
                 </Typography>
+                <Avatar
+                  alt={user?.name}
+                  src={user?.image|| ""}
+                  className="w-8 h-8"
+                >
+                  {user?.name?.charAt(0)}
+                </Avatar>
 
                 {/* Dropdown Menu */}
                 <div ref={dropdownRef2}  className="relative z-50">

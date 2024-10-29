@@ -344,6 +344,106 @@ export class StudentController {
       }
     }
   }
+  async updatePassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { newPassword, currentPassword } = req.body;
+      const studentId = req.currentUser;
+      if (!studentId) {
+        throw new Error("Invalid token");
+      }
+      const student: IStudent |null = await studentService.findStudentById(studentId);
+
+      const isPasswordVerified = await bcrypt.compare(
+        currentPassword,
+        student!.password!
+      );
+
+      if (!isPasswordVerified) {
+        throw new BadRequestError("Incorrect password");
+      } else {
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        const {
+          name,
+          email,
+          id,
+          mobile,
+          courses,
+          wallet,
+          isBlocked,
+          isVerified,
+        } = await studentService.updatePassword(studentId, hashedPassword);
+        const updatedData = {
+          name,
+          email,
+          id,
+          mobile,
+          courses,
+          wallet,
+          isBlocked,
+          isVerified,
+        };
+        res.status(200).json(updatedData);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        return next(error);
+      }
+    }
+  }
+
+  async getSingleCourse(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { courseId } = req.params;
+      const course = await studentService.getSingleCourse(courseId);
+      res.status(200).json(course);
+    } catch (error) {
+      if (error instanceof Error) {
+        return next(error);
+      }
+    }
+  }
+  async forgotPasswordOtpVerification(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { otp, email } = req.body;
+      console.log(otp, email);
+
+      const savedOtp = await otpService.findOtp(email);
+      if (savedOtp?.otp === otp) {
+        res.status(200).json({ success: true });
+      } else {
+        res.status(200).json({ success: false });
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        return next(error);
+      }
+    }
+  }
+
+  async resetForgottedPassword(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { email, password } = req.body;
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const student = await studentService.resetForgotPassword(
+        email,
+        hashedPassword
+      );
+      res.status(200).json(student);
+    } catch (error) {
+      if (error instanceof Error) {
+        return next(error);
+      }
+    }
+  }
+
 }
 
 

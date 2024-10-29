@@ -72,9 +72,18 @@ if(response){
     return handleAxiosError(error);
   }
 }
+const getSingleCourse = async (courseId: string | undefined) => {
+  try {
+    const response = await authorizedAxios.get(`/course/${courseId}`);
+    console.log(response)
+    return Promise.resolve(response.data);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
 
 
 
 
 
-export {updateUser,updateImage,getAllCourses,getAllCategories}
+export {updateUser,updateImage,getAllCourses,getAllCategories,getSingleCourse}
