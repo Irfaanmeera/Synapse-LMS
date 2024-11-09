@@ -63,7 +63,7 @@ const ForgotPassword: React.FC<{ isInstructor: boolean }> = ({
         if (response) {
           setSuccess("Password updated successfully");
           setTimeout(() => {
-            navigate("/instructor");
+            navigate("/");
           }, 1000);
         } else {
           setErr("Error in changing password");

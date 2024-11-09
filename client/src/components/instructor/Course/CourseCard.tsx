@@ -59,10 +59,10 @@ const CourseDisplay = () => {
       {loading ? (
         <CircularProgress />
       ) : (
-        <Grid container spacing={3}>
+        <Grid container spacing={4} >
           {courses.map((course) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={course.id}>
-              <Card sx={{ height: '100%', width:'140%', display: 'flex', flexDirection: 'column' }}>
+            <Grid item xs={12} sm={6} md={4} lg={4} key={course.id}>
+              <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column'}}>
                 <Link to={`/instructor/courseDetails/${course.id}`}>
                   <CardMedia
                     component="img"

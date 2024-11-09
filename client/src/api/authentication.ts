@@ -173,9 +173,6 @@ const adminLogin = async (adminData: AdminData) => {
   }
 };
 
-// const InstructorResendOtp = async (email: string) => {
-//   await axiosInstance.post("/instructor/resend-otp", { email });
-// };
 
 const userLogout = async () => {
     // socket.disconnect();
@@ -243,4 +240,4 @@ const studentOtpVerfication = async (email: string, otp: string) => {
 
 
 
-export { studentSignup, verifyOtp, resendOtp, studentLogin, googleLogin,userLogout,instructorSignup,instructorVerifyOtp,instructorResendOtp, instructorLogin,adminLogin, InstructorOtpVerfication,updateInstructorForgotPassword,studentOtpVerfication,updateStudentForgotPassword};
+export { studentSignup, verifyOtp, resendOtp, studentLogin, googleLogin,userLogout,instructorResendOtp, instructorSignup,instructorVerifyOtp, instructorLogin,adminLogin, InstructorOtpVerfication,updateInstructorForgotPassword,studentOtpVerfication,updateStudentForgotPassword};

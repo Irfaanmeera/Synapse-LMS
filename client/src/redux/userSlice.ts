@@ -31,6 +31,9 @@ const userSlice = createSlice({
             state.user = null;
             state.userEmail= null;
           },
+          addCourse(state, action: PayloadAction<string | null>) {
+            state.user?.courses?.push(action.payload!);
+          },
     }
 })
 

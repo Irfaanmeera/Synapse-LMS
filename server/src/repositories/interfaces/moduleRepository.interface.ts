@@ -6,4 +6,5 @@ export interface IModuleRepository {
   deleteModule(moduleId: string): Promise<IModule | null>;
   addChapter(moduleId: string, chapterData: IChapter): Promise<IModule | null>;
   findModuleById(moduleId: string): Promise<IModule | null>;
+  getTotalChapterCount(courseId:string):Promise<number>;
 }

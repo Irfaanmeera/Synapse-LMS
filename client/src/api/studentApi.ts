@@ -82,8 +82,74 @@ const getSingleCourse = async (courseId: string | undefined) => {
   }
 };
 
+const courseEnroll = async (courseId:string)=>{
+  try{
+ const response = await authorizedAxios.post('/createPayment',{courseId,})
+ if(response.data){
+  return Promise.resolve(response.data.url)
+ }
+  }catch(error){
+    return Promise.reject(error)
+  }
+}
+
+const enrollment = async (courseId:string)=>{
+  try{
+const response = await authorizedAxios.post('/enrollcourse', {courseId})
+if(response.data){
+  return Promise.resolve(response.data)
+}
+  }catch(error){
+    return Promise.reject(error)
+  }
+}
+const getEnrolledCourse = async (courseId: string) => {
+  try {
+    console.log("Course id in api:", courseId)
+    const response = await authorizedAxios.get(`/getEnrolledCourse/${courseId}`);
+    console.log("REsponsein get enrolled course;", response.data)
+    if (response) {
+      return Promise.resolve(response.data);
+    }
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+const getAllEnrolledCourse = async () => {
+  try {
+    const response = await authorizedAxios.get("/getEnrolledCoursesByStudent");
+    return Promise.resolve(response.data);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+const addProgression = async (enrollmentId: string, chapterTitle: string) => {
+  try {
+    const response = await authorizedAxios.get(
+      `/addProgression?enrollmentId=${enrollmentId}&chapterTitle=${chapterTitle}`
+    );
+    console.log("Response from add progress:", response)
+    if (response) {
+      return Promise.resolve(response);
+    }
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+const getTotalChapterCountByCourseId = async (courseId:string)=>{
+  try{
+  const response = await authorizedAxios.get(`/totalChapterCount/${courseId}`)
+  if (response) {
+    return Promise.resolve(response.data);
+  }
+  }catch(error){
+    return Promise.reject(error);
+  }
+}
 
 
 
-
-export {updateUser,updateImage,getAllCourses,getAllCategories,getSingleCourse}
+export {updateUser,updateImage,getAllCourses,getAllCategories,getSingleCourse,courseEnroll,enrollment,getEnrolledCourse,getAllEnrolledCourse,addProgression,getTotalChapterCountByCourseId}

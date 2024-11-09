@@ -50,7 +50,7 @@ const moduleSchema = new mongoose.Schema(
                 },
                 videoUrl: {
                     type: String,
-                    required: true,
+                   
                 },
                 videoThumbnail: {
                     type: Object,
@@ -68,6 +68,9 @@ const moduleSchema = new mongoose.Schema(
                     type: String,
                   
                 },
+                content:{
+                    type:String,
+                }
             }
         ]
     },

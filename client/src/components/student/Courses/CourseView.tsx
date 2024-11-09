@@ -75,7 +75,7 @@ const CourseView = () => {
               </h5>
               <h5 className="text-sm italic font-sans text-[#2F327D] pt-2">
                 <i className="fa-solid fa-rectangle-list text-base "></i>
-              {course.level}
+            
               </h5>
 
               <h2 className="py-2 ">

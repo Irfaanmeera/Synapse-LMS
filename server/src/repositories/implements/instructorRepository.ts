@@ -46,6 +46,40 @@ export class InstructorRepository implements IInstructorRepository{
         })
         return await instructor.save()
     }
+    async updatePassword(
+        instructorId: string,
+        password: string
+      ): Promise<IInstructor> {
+        const instructor = await Instructor.findById(instructorId);
+        if (!instructor) {
+          throw new BadRequestError("Id not valid");
+        }
+        instructor.set({
+          password,
+        });
+        return await instructor.save();
+      }
+      async addToWallet(instructorId: string, amount: number): Promise<IInstructor> {
+          const instructor = await Instructor.findById(instructorId)
+          if(!instructor){
+            throw new BadRequestError('Instructor not found')
+          }
+          instructor.set({wallet: (instructor.wallet??0) +amount})
+          return await instructor.save()
+      }
 
+      async addWalletHistory(instructorId: string, amount: number, description: string): Promise<IInstructor> {
+        const instructor = await Instructor.findById(instructorId)
+        if(!instructor){
+          throw new BadRequestError('Instructor not found')
+        }
+        const walletDetails ={
+            amount,
+            description,
+            date:new Date(),
+        }
+        instructor.walletHistory?.push(walletDetails)
+        return await instructor.save()
+      }
     
 }

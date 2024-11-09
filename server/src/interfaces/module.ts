@@ -11,6 +11,7 @@ export interface IModule {
   title: string;
   description?: string;
   videoUrl?: string;
+  content?:string;
   videoThumbnail?: object;
   videoSection?: string;
   videoLength?: number;

@@ -9,7 +9,7 @@ import jwt from "jsonwebtoken";
 import ErrorHandler from '../utils/ErrorHandler';
 import { InstructorRepository } from '../repositories/implements/instructorRepository';
 import { BadRequestError } from '../constants/errors/badrequestError';
-import {ForbiddenError} from '../constants/errors/forbiddenError'
+import { ForbiddenError } from '../constants/errors/forbiddenError'
 import { CourseRepository } from '../repositories/implements/courseRepository';
 import { CategoryRepository } from '../repositories/implements/categoryRepository';
 import { EnrolledCourseRepository } from '../repositories/implements/enrolledCourseRepository';
@@ -25,7 +25,7 @@ const courseRepository = new CourseRepository();
 const categoryRepository = new CategoryRepository()
 const moduleRepository = new ModuleRepository()
 const enrolledCourseRepository = new EnrolledCourseRepository()
-const instructorService = new InstructorService(instructorRepository,courseRepository,categoryRepository,moduleRepository,enrolledCourseRepository);
+const instructorService = new InstructorService(instructorRepository, courseRepository, categoryRepository, moduleRepository, enrolledCourseRepository);
 
 const otpService = new OtpService();
 
@@ -92,16 +92,16 @@ export class InstructorController {
           { expiresIn: "7d" } // Refresh token expires in 7 days
         );
         const instructorData = {
-            _id: instructor.id,
-            name: instructor.name,
-            email: instructor.email,
-            mobile: instructor.mobile,
-            image:instructor.image,
-            wallet: instructor.wallet,
-            qualification:instructor.qualification,
-            description:instructor.description,
-            courses: instructor.courses,
-            role: "instructor",
+          _id: instructor.id,
+          name: instructor.name,
+          email: instructor.email,
+          mobile: instructor.mobile,
+          image: instructor.image,
+          wallet: instructor.wallet,
+          qualification: instructor.qualification,
+          description: instructor.description,
+          courses: instructor.courses,
+          role: "instructor",
         };
         console.log(instructorData)
 
@@ -148,15 +148,15 @@ export class InstructorController {
             name: instructor.name,
             email: instructor.email,
             mobile: instructor.mobile,
-            image:instructor.image,
-            qualification:instructor.qualification,
-            description:instructor.description,
+            image: instructor.image,
+            qualification: instructor.qualification,
+            description: instructor.description,
             wallet: instructor.wallet,
             courses: instructor.courses,
             walletHistory: instructor.walletHistory,
             role: "instructor",
           };
-          
+
           res.status(200).json({
             message: "Instructor Verified",
             token, // Return access token
@@ -170,260 +170,283 @@ export class InstructorController {
           throw new ErrorHandler("Not verified", BAD_REQUEST);
         }
       } else {
-        res.status(400).json({ message: "Incorrect password" });   
+        res.status(400).json({ message: "Incorrect password" });
         throw new ErrorHandler("Incorrect password", BAD_REQUEST);
       }
     } catch (error) {
       console.log(error as Error)
     }
   }
-  async updateInstructor(req:Request,res:Response,next:NextFunction){
-    try{
+  async updateInstructor(req: Request, res: Response, next: NextFunction) {
+    try {
       const id = req.currentUser;
-      const {name,mobile,qualification,description} = req.body;
-      const instructor = await instructorService.updateInstructor({id, name, mobile, qualification,description});
+      const { name, mobile, qualification, description } = req.body;
+      const instructor = await instructorService.updateInstructor({ id, name, mobile, qualification, description });
       res.status(200).json(instructor)
     }
-  
-      catch(error){
-        console.log(error);
-          res.status(INTERNAL_SERVER_ERROR).json({ success: false, message: 'Internal server error' });
-          return; 
-      }
-    
-     }
-  
-     async updateImage(req: Request, res: Response, next: NextFunction) {
-      try {
-        const id = req.currentUser;
-        const file = req.file;
-        if (!id) {
-          throw new BadRequestError("Id not found");
-        }
-        if (!file) {
-          throw new BadRequestError("Image not found");
-        }
-        const student = await instructorService.updateInstructorImage(id!, file);
-        res.status(200).json(student);
-      } catch (error) {
-        if (error instanceof Error) {
-          return next(error);
-        }
-      }
+
+    catch (error) {
+      console.log(error);
+      res.status(INTERNAL_SERVER_ERROR).json({ success: false, message: 'Internal server error' });
+      return;
     }
 
-    async getMycourses(req: Request, res: Response, next: NextFunction) {
-      try {
-        let pageNo = 0;
-        const { page } = req.query;
-        if (page !== undefined && !isNaN(Number(page))) {
-          pageNo = Number(page);
-        }
-        const instructorId = req.currentUser;
-        if (!instructorId) {
-          throw new ForbiddenError("Invalid token");
-        }
-        const courses = await instructorService.getMyCourses(
-          instructorId,
-          pageNo
-        );
-        res.status(200).json(courses);
-      } catch (error) {
-        if (error instanceof Error) {
-          next(error);
-        }
-      }
-    }
-  
-    // async addCourse(req: Request, res: Response, next: NextFunction) {
-    //   try {
-    //     const instructorId = req.currentUser;
-    //     const { name, description, level, category, price } = req.body;
-    //     const courseCredentials = {
-    //       name,
-    //       description,
-    //       level,
-    //       category,
-    //       price,
-    //       instructor: instructorId,
-    //     };
-    //     const course = await instructorService.createCourse(courseCredentials);
-    //     res.status(200).json(course);
-    //   } catch (error) {
-    //     if (error instanceof Error) {
-    //       next(error);
-    //     }
-    //   }
-    // }
-    async createCourse(req: Request, res: Response) {
-      try {
-        const instructorId = req.currentUser;
-            const { name, description, level, category, price } = req.body;
-            console.log('Incoming course data:', req.body);
-            console.log('Incoming file:', req.file);
-            const courseDetails = {
-              name,
-              description,
-              level,
-              category,
-              price,
-              instructor: instructorId,
-            };
-          const file: Express.Multer.File | undefined = req.file; // Ensure file can be undefined
-          console.log(file)
-          // Check if file is provided
-          if (!file) {
-              return res.status(400).json({ error: 'Image file is required.' }); // Handle missing file
-          }
-  
-          const createdCourse = await instructorService.createCourse(courseDetails, file); // Call the service method
-          return res.status(201).json(createdCourse); // Return the created course with a 201 status
-      } catch (error) {
-          console.error(error);
-          return res.status(500).json({ error: 'An error occurred while creating the course.' }); // Handle errors
-      }
-  }
-    async getSingleCourse(req: Request, res: Response, next: NextFunction) {
-      try {
-        const { courseId } = req.params;
-        console.log("Course Id: ",courseId)
-        if (!courseId) {
-          throw new BadRequestError("Course id not found");
-        }
-        const course = await instructorService.getSingleCourse(courseId);
-        console.log(course)
-        res.status(200).json(course);
-      } catch (error) {
-        if (error instanceof Error) {
-          next(error);
-        }
-      }
-    }
-  
-    async updateCourse(req: Request, res: Response, next: NextFunction) {
-      try {
-          const { courseId } = req.params;
-          const { name, description, price, level, category } = req.body;
-          
-          // Gather course details from the request body
-          const courseDetails = {
-              name,
-              description,
-              price,
-              level,
-              category,
-          };
-  
-          // Check if there is an image file uploaded and pass it to the service
-          const file = req.file ? req.file : undefined;
-  
-          // Call the service function to update the course details
-          const updatedCourse = await instructorService.updateCourse(courseId, courseDetails, file);
-  
-          // Respond with the updated course data
-          res.status(200).json(updatedCourse);
-      } catch (error) {
-          console.error("Error updating course:", error);
-          next(error); // Pass the error to the error-handling middleware
-      }
   }
 
-  
-    async deleteCourse(req: Request, res: Response, next: NextFunction) {
-      try {
-        const { courseId } = req.body;
-        if (!courseId) {
-          throw new BadRequestError("Course id not found");
-        }
-        const course = await instructorService.deleteCourse(courseId);
-        res.status(200).json(course);
-      } catch (error) {
-        if (error instanceof Error) {
-          next(error);
-        }
-      }
-    }
-    // async updateCourseImage(req: Request, res: Response, next: NextFunction) {
-    //   try {
-    //     const { courseId } = req.body;
-    //     const file = req.file;
-    //     if (!file) {
-    //       throw new BadRequestError("file not found");
-    //     }
-    //     await instructorService.addCourseImage(courseId, file);
-    //     const course = await instructorService.getSingleCourse(courseId);
-    //     res.status(200).json(course);
-    //   } catch (error) {
-    //     if (error instanceof Error) {
-    //       next(error);
-    //     }
-    //   }
-    // }
-
-    async getCategories(req: Request, res: Response, next: NextFunction){
+  async updateImage(req: Request, res: Response, next: NextFunction) {
     try {
-      const categories = await instructorService.getAllCategories()
-      res.status(200).json(categories);
-  } catch (error) {
-    if (error instanceof Error) {
-      next(error);
+      const id = req.currentUser;
+      const file = req.file;
+      if (!id) {
+        throw new BadRequestError("Id not found");
+      }
+      if (!file) {
+        throw new BadRequestError("Image not found");
+      }
+      const student = await instructorService.updateInstructorImage(id!, file);
+      res.status(200).json(student);
+    } catch (error) {
+      if (error instanceof Error) {
+        return next(error);
+      }
     }
   }
-}
-  async createModule(req: Request, res: Response,next: NextFunction){
+  async forgotPasswordOtpVerification(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
-        const moduleData = req.body;
-        const existingModule = await instructorService.getSingleCourse(moduleData.courseId);
+      const { otp, email } = req.body;
+      const savedOtp = await otpService.findOtp(email);
+      if (savedOtp?.otp === otp) {
+        res.status(200).json({ success: true });
+      } else {
+        res.status(200).json({ success: false });
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        return next(error);
+      }
+    }
+  }
 
-      console.log("existing module:", existingModule)
-        const order = (existingModule?.modules?.length|| 0) + 1;
-        const module = await instructorService.createModule(moduleData,order);
-        res.status(201).json(module);
+  async resetForgottedPassword(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { email, password } = req.body;
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const instructor = await instructorService.resetForgotPassword(
+        email,
+        hashedPassword
+      );
+      res.status(200).json(instructor);
+    } catch (error) {
+      if (error instanceof Error) {
+        return next(error);
+      }
+    }
+  }
+
+  async getMycourses(req: Request, res: Response, next: NextFunction) {
+    try {
+      let pageNo = 0;
+      const { page } = req.query;
+      if (page !== undefined && !isNaN(Number(page))) {
+        pageNo = Number(page);
+      }
+      const instructorId = req.currentUser;
+      if (!instructorId) {
+        throw new ForbiddenError("Invalid token");
+      }
+      const courses = await instructorService.getMyCourses(
+        instructorId,
+        pageNo
+      );
+      res.status(200).json(courses);
     } catch (error) {
       if (error instanceof Error) {
         next(error);
       }
     }
-}
-async updateModule (req: Request, res: Response,next: NextFunction) {
-  try {
+  }
+
+  async createCourse(req: Request, res: Response) {
+    try {
+      const instructorId = req.currentUser;
+      const { name, description, level, category, price } = req.body;
+      console.log('Incoming course data:', req.body);
+      console.log('Incoming file:', req.file);
+      const courseDetails = {
+        name,
+        description,
+        level,
+        category,
+        price,
+        instructor: instructorId,
+      };
+      const file: Express.Multer.File | undefined = req.file; // Ensure file can be undefined
+      console.log(file)
+      // Check if file is provided
+      if (!file) {
+        return res.status(400).json({ error: 'Image file is required.' }); // Handle missing file
+      }
+
+      const createdCourse = await instructorService.createCourse(courseDetails, file); // Call the service method
+      return res.status(201).json(createdCourse); // Return the created course with a 201 status
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: 'An error occurred while creating the course.' }); // Handle errors
+    }
+  }
+  async getSingleCourse(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { courseId } = req.params;
+      console.log("Course Id: ", courseId)
+      if (!courseId) {
+        throw new BadRequestError("Course id not found");
+      }
+      const course = await instructorService.getSingleCourse(courseId);
+      console.log(course)
+      res.status(200).json(course);
+    } catch (error) {
+      if (error instanceof Error) {
+        next(error);
+      }
+    }
+  }
+
+  async updateCourse(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { courseId } = req.params;
+      const { name, description, price, level, category } = req.body;
+
+      // Gather course details from the request body
+      const courseDetails = {
+        name,
+        description,
+        price,
+        level,
+        category,
+      };
+
+      // Check if there is an image file uploaded and pass it to the service
+      const file = req.file ? req.file : undefined;
+
+      // Call the service function to update the course details
+      const updatedCourse = await instructorService.updateCourse(courseId, courseDetails, file);
+
+      // Respond with the updated course data
+      res.status(200).json(updatedCourse);
+    } catch (error) {
+      console.error("Error updating course:", error);
+      next(error); // Pass the error to the error-handling middleware
+    }
+  }
+
+
+  async deleteCourse(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { courseId } = req.params;
+      console.log("Delete Course: ", courseId)
+      if (!courseId) {
+        throw new BadRequestError("Course id not found");
+      }
+      const course = await instructorService.deleteCourse(courseId);
+      res.status(200).json(course);
+    } catch (error) {
+      if (error instanceof Error) {
+        next(error);
+      }
+    }
+  }
+  
+  async listCourse(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { courseId } = req.params;
+      console.log("List Course: ", courseId)
+      if (!courseId) {
+        throw new BadRequestError("Course id not found");
+      }
+      const course = await instructorService.listCourse(courseId);
+      res.status(200).json(course);
+    } catch (error) {
+      if (error instanceof Error) {
+        next(error);
+      }
+    }
+  }
+
+
+  async getCategories(req: Request, res: Response, next: NextFunction) {
+    try {
+      const categories = await instructorService.getAllCategories()
+      res.status(200).json(categories);
+    } catch (error) {
+      if (error instanceof Error) {
+        next(error);
+      }
+    }
+  }
+  async createModule(req: Request, res: Response, next: NextFunction) {
+    try {
+      const moduleData = req.body;
+      const existingModule = await instructorService.getSingleCourse(moduleData.courseId);
+
+      console.log("existing module:", existingModule)
+      const order = (existingModule?.modules?.length || 0) + 1;
+      const module = await instructorService.createModule(moduleData, order);
+      res.status(201).json(module);
+    } catch (error) {
+      if (error instanceof Error) {
+        next(error);
+      }
+    }
+  }
+  async updateModule(req: Request, res: Response, next: NextFunction) {
+    try {
       const { moduleId } = req.params;
       const updateData = req.body;
       const updatedModule = await instructorService.updateModule(moduleId, updateData);
       res.status(200).json(updatedModule);
-  } catch (error) {
-    if (error instanceof Error) {
-      next(error);
-    }};
+    } catch (error) {
+      if (error instanceof Error) {
+        next(error);
+      }
+    };
   }
 
- async deleteModule(req: Request, res: Response,next: NextFunction) {
-  try {
+  async deleteModule(req: Request, res: Response, next: NextFunction) {
+    try {
       const { moduleId } = req.params;
       await instructorService.deleteModule(moduleId);
       res.status(200).json({ message: 'Module deleted successfully' });
-  } catch (error) {
-    if (error instanceof Error) {
-      next(error);
+    } catch (error) {
+      if (error instanceof Error) {
+        next(error);
+      }
     }
-  }
-};
-async addChapter(req: Request, res: Response,next: NextFunction){
-  try {
-      const { moduleId} = req.params;
+  };
+  async addChapter(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { moduleId } = req.params;
       const chapterData = req.body;
       const file = req.file;
 
-      console.log("Add Chapter backend Response :", moduleId,chapterData,file)
+      console.log("Add Chapter backend Response :", moduleId, chapterData, file)
       const module = await instructorService.addChapter(moduleId, chapterData, file!);
       console.log("add chapter response:", module)
       res.status(201).json(module);
-  } catch (error) {
-    if (error instanceof Error) {
-      next(error);
+    } catch (error) {
+      if (error instanceof Error) {
+        next(error);
+      }
     }
-  }
-};
+  };
+
 
 }
 

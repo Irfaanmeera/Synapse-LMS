@@ -1,7 +1,7 @@
 import React from 'react'
 import Navbarin from '../../components/student/Common/Navbar'
 import Footer from '../../components/student/Common/Footer/Footer'
-import CourseView from '../../components/student/Courses/CourseView'
+import CourseDetails1 from '../../components/student/Courses/CourseDetails1'
 
 
 const StudentCourseDetails: React.FC= () => {
@@ -10,7 +10,7 @@ const StudentCourseDetails: React.FC= () => {
     <>
       <Navbarin/>
       {/* <ResponsiveAppBar/> */}
-      <CourseView/>
+      <CourseDetails1/>
       <Footer/>
     </>
   )

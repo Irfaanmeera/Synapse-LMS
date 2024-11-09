@@ -18,7 +18,7 @@ app.use(express.json({ limit: '50mb' }))
 app.use(cookieParser())
 app.use(cors({
     origin: '*', // Replace with your frontend URL
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allowed methods
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', "PATCH"], // Allowed methods
     credentials: true // If you need to send cookies or authorization headers
 }));
 app.options('*', cors()); // This will allow preflight requests for all routes

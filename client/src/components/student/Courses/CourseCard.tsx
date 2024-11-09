@@ -11,7 +11,8 @@ type Props = {
 const CourseCard: React.FC<Props> = ({ course }) => {
   return (
     <Link to={`/courseDetails/${course?.id}`}>
-      <div className="w-75 h-full backdrop-blur border border-2 border-opacity-20 border-Blueviolet rounded-lg p-3 transition-transform transform hover:scale-105 duration-300 shadow-sm hover:shadow-lg">
+   
+   <div className="w-80 h-full backdrop-blur border border-2 border-opacity-20 border-Blueviolet rounded-lg p-3 transition-transform transform hover:scale-105 duration-300 shadow-sm hover:shadow-lg">
         <div className="relative h-[30vh] overflow-hidden rounded-t-lg">
           <img
             src={course.image}
@@ -63,6 +64,7 @@ const CourseCard: React.FC<Props> = ({ course }) => {
                                             </div>
                                         </div>
       </div>
+    
     </Link>
   );
 };

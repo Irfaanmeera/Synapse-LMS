@@ -14,12 +14,29 @@ import Course from  '../pages/student/Course'
 import CreateCourse from "../components/instructor/Course/CreateCourse";
 import CourseDisplay from "../components/instructor/Course/CourseCard";
 import CourseDetails from "../components/instructor/Course/CourseDetails";
-import StudentCourseDetails from "../pages/student/StudentCourseDetails";
+// import StudentCourseDetails from "../pages/student/StudentCourseDetails";
 import Error404 from "../components/Common/errorPages/Error404";
 import UpdateCourse from "../components/instructor/Course/UpdateCourse";
 import StudentForgotPassword from "../pages/student/StudentForgotPassword";
-import EnterMailForgotPasswordForm from "../components/auth/emailPassword";
+import EnterMailForgotPasswordForm from "../components/auth/EnterEmailPassword";
 import VerifyOtp from "../pages/student/VerifyOtp";
+import InstructorEnterMailForgotPassword from "../pages/instructor/InstructorEnterEmailForgotpassword";
+import InstructorForgotPassword from "../pages/instructor/InstructorForgotPassword";
+// import StudentViewCourseDetailsPage from "../pages/student/StudentViewCourseDetails";
+// import StudentCourseDetails from "../pages/student/StudentCourseDetails";
+// import StudentViewCourseDetail from "../pages/student/StudentViewCourseDetails";
+// import CourseDetailsPage from "../pages/student/courseDetails/CourseDetailsPage";
+// import CourseDetailsStudent from "../components/student/Courses/CourseDetailsStudent";
+// import CourseDetailsPage from "../pages/student/courseDetails/CourseDetailsPage";
+// import CourseView from "../components/student/Courses/CourseView";
+import StudentCourseDetails from "../pages/student/StudentCourseDetails";
+// import CourseDetails1 from "../components/student/Courses/CourseDetails1";
+// import StudentViewCourseDetail from "../pages/student/StudentViewCourseDetails";
+import StripeStatus from "../pages/student/StripeStatus";
+import MyLearning from "../pages/student/MyLearning";
+import SingleEnrolledCoursePage from "../pages/student/SingleEnrolledCourse";
+
+
 // import CourseCard from "../components/student/Courses/CourseCard";
 
 
@@ -88,6 +105,33 @@ const RoutePage = () => {
             />
           }
         />
+        <Route
+          path="/status"
+          element={
+            <ProtectedRoute
+              allowedRoles={[Roles.student]}
+              element={<StripeStatus />}
+            />
+          }
+        />
+        <Route
+          path="/myLearning"
+          element={
+            <ProtectedRoute
+              allowedRoles={[Roles.student]}
+              element={<MyLearning />}
+            />
+          }
+        />
+        <Route
+          path="/singleEnrolledCourse/:courseId"
+          element={
+            <ProtectedRoute
+              allowedRoles={[Roles.student]}
+              element={<SingleEnrolledCoursePage/>}
+            />
+          }
+        />
 
        
         <Route
@@ -99,7 +143,26 @@ const RoutePage = () => {
         element ={<StudentCourseDetails/>}
         />
           
-
+          <Route
+          path="/instructor/forgot-password"
+          element={
+            <AuthProtected element={<InstructorEnterMailForgotPassword />} />
+          }
+        />
+        <Route
+          path="/instructor/forgot-password-otp-verfication"
+          element={
+            <AuthProtected
+              element={
+                <VerifyOtp isForgotPassword={true} isInstructor={true} />
+              }
+            />
+          }
+        />
+        <Route
+          path="/instructor/update-forgot-password"
+          element={<AuthProtected element={<InstructorForgotPassword />} />}
+        />
      
         <Route
           path="instructor/verifyOtp"
@@ -157,6 +220,7 @@ const RoutePage = () => {
 
       
       <Routes>
+
       {/* Define the layout route */}
       <Route path="/instructor" element={<InstructorLayout />}>
         {/* Nested routes inside InstructorLayout */}

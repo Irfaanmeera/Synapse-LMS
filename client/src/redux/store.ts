@@ -1,5 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import userReducer from './userSlice';
+import enrolledCourseReducer from './enrolledCourseSlice'
 import { persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage'; // Default storage: localStorage for web
 import { FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
@@ -12,11 +13,12 @@ const persistConfig = {
 
 // Wrap the user reducer with persistReducer
 const persistedUserReducer = persistReducer(persistConfig, userReducer);
-
+const persistEnrolledCourseReducer = persistReducer(persistConfig, enrolledCourseReducer);
 // Configure the store
 const store = configureStore({
   reducer: {
     user: persistedUserReducer, // Persisted reducer for the user slice
+    enrolledCourse: persistEnrolledCourseReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

@@ -24,10 +24,18 @@ export class ModuleRepository implements IModuleRepository {
   }
 
 
-
-
   async findModuleById(moduleId: string): Promise<IModule | null> {
       return await Module.findById(moduleId);
+  }
+
+  async getTotalChapterCount(courseId: string): Promise<number> {
+    const modules = await Module.find({ courseId }); // Find modules by courseId
+
+    
+ // Sum up the number of chapters in each module
+ const totalChapterCount = modules.reduce((count, module) => count + module!.chapters!.length, 0);
+ return totalChapterCount;
+      
   }
 }
 

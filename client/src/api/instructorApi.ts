@@ -56,6 +56,31 @@ try{
 //     console.error('Error creating course:', error);
 //   }
 // };
+
+const deleteCourse = async (courseId: string | undefined) => {
+  try {
+    const response = await authorizedAxios.patch(`/instructor/deleteCourse/${courseId}`)
+    
+    if(response.data){
+      return Promise.resolve(response.data)
+    }
+  } catch (error: any) {
+    console.error('Error deleting course:', error);
+    return handleAxiosError(error);
+  }
+};
+const listCourse = async (courseId: string | undefined) => {
+  try {
+    const response = await authorizedAxios.patch(`/instructor/listCourse/${courseId}`)
+    
+    if(response.data){
+      return Promise.resolve(response.data)
+    }
+  } catch (error: any) {
+    console.error('Error listing course:', error);
+    return handleAxiosError(error);
+  }
+};
 const fetchInstructorCourses = async (page: number = 1) => {
   try {
     const response = await authorizedAxios.get(`/instructor/myCourses`, {
@@ -145,4 +170,4 @@ const addChapter = async (
   }
 }
 
-export {updateInstructor,updateInstructorImage,fetchInstructorCourses,fetchSingleCourseDetails,createModule,addChapter,deleteModule,updateModule}
+export {updateInstructor,updateInstructorImage,fetchInstructorCourses,deleteCourse,listCourse, fetchSingleCourseDetails,createModule,addChapter,deleteModule,updateModule}

@@ -18,9 +18,10 @@ export interface IInstructorService{
     getSingleCourse(courseId: string): Promise< ICourse| null>;
     updateCourse(courseId: string, courseDetails: ICourse,file:Express.Multer.File): Promise<ICourse>;
     deleteCourse(courseId: string): Promise<ICourse>;
+    listCourse(courseId:string): Promise <ICourse>;
     getAllCategories(): Promise<ICategory[] | null>;
     createModule(moduleDetails: IModule, order:number): Promise<IModule>;
-    updateModule(moduleId: string, updateData: Partial<IModule>): Promise<IModule | null>;
-    deleteModule(moduleId: string): Promise<IModule | null>;
+    // updateModule(moduleId: string, updateData: Partial<IModule>): Promise<IModule | null>;
+    // deleteModule(moduleId: string): Promise<IModule | null>;
     addChapter(moduleId: string, chapter: IChapter,file: Express.Multer.File): Promise<IModule |null>;
     }

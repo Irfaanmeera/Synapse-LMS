@@ -11,7 +11,14 @@ export class EnrolledCourseRepository implements IEnrolledCourseRepository {
     }
   
     async getCourseById(courseId: string): Promise<IEnrolledCourse> {
-      const enrolledCourse = await EnrolledCourse.findById(courseId);
+      const enrolledCourse = await EnrolledCourse.findById(courseId).populate({
+        path: "courseId",
+        populate: {
+          path: "modules.module",
+          model: "module",
+        },
+      });
+
       if (!enrolledCourse) {
         throw new BadRequestError("Course not found");
       }
@@ -32,8 +39,9 @@ export class EnrolledCourseRepository implements IEnrolledCourseRepository {
             path:"courseId",
             populate:[
               {path:"modules.module",model:'module'},
-              {path:'level',model:'level'},
               {path:'category',model:'category'},
+              {path:'instructor',model:'instructor'},
+
             ]
           });
           if(!enrolledCourses){
@@ -46,5 +54,39 @@ export class EnrolledCourseRepository implements IEnrolledCourseRepository {
       ): Promise<IEnrolledCourse[]> {
         return await EnrolledCourse.find({ courseId }).populate("studentId");
       }
+
+      async checkEnrolledCourse(
+        courseId: string,
+        studentId: string
+      ): Promise<IEnrolledCourse | null> {
+        return await EnrolledCourse.findOne({ studentId, courseId });
       }
+
+      async addModuleToProgression(
+        enrollmentId: string,
+        chapterTitle: string
+      ): Promise<IEnrolledCourse> {
+        const course = await EnrolledCourse.findById(enrollmentId);
+
+        console.log("Repository course:",course)
+
+        if (!course) {
+          throw new BadRequestError("Enrollment not found");
+        }
+        if (!course.progression?.includes(chapterTitle)) {
+          course.progression?.push(chapterTitle);
+        }
+        const updatedCourse = await course.save();
+        console.log("Updated Course: ", updatedCourse)
+        return updatedCourse;
+      }
+
+      async completedStatus(enrolledId: string): Promise<void> {
+        const course = await EnrolledCourse.findById(enrolledId);
+        if (course) {
+          course.set({ completed: true });
+        }
+        await course?.save();
+      }
+  }
  

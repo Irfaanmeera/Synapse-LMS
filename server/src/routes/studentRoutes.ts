@@ -14,13 +14,21 @@ studentRouter.post("/resendOtp", studentController.resendOtp);
 studentRouter.post("/verifyOtp", studentController.verifyOtp);
 studentRouter.post("/login", studentController.login);
 studentRouter.post('/google-login',studentController.googleLogin);
+studentRouter.post("/verify-forgot-password-otp",studentController.forgotPasswordOtpVerification);
+studentRouter.post("/forgot-password", studentController.resetForgottedPassword);
 
 studentRouter.put('/updateUser',isStudentAuth, studentController.updateUser)
 studentRouter.put("/updateImage",isStudentAuth,upload.single("image"),studentController.updateImage);
+
 studentRouter.get("/courses", studentController.getAllCourses)
 studentRouter.get('/categories',studentController.getAllCategories)
 studentRouter.get("/course/:courseId",studentController.getSingleCourse);
-studentRouter.post("/verify-forgot-password-otp",studentController.forgotPasswordOtpVerification);
-studentRouter.post("/forgot-password", studentController.resetForgottedPassword);
+
+studentRouter.post('/createPayment',isStudentAuth, studentController.stripePaymentIntent)
+studentRouter.post('/enrollCourse', isStudentAuth, studentController.enrollCourse)
+studentRouter.get("/getEnrolledCourse/:courseId",isStudentAuth,studentController.getEnrolledCourseByStudent);
+studentRouter.get("/getEnrolledCoursesByStudent",isStudentAuth,studentController.getEnrolledCoursesByStudent);
+studentRouter.get("/addProgression", isStudentAuth, studentController.addProgression);
+studentRouter.get('/totalChapterCount/:courseId',studentController.getTotalChapterCountByCourseId)
 
 export default studentRouter;

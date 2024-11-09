@@ -58,4 +58,31 @@ export class StudentRepository implements IStudentRepository {
         });
         return await student.save();
       }
+
+      async courseEnroll(studentId: string, courseId: string): Promise<IStudent> {
+          const student = await Student.findById(studentId)
+          if(!student){
+            throw new BadRequestError('Student not found')
+          }
+          student.courses?.push(courseId)
+          return await student.save()
+      }
+      async getAllStudents(): Promise<IStudent[] | null> {
+        return await Student.find();
+      }
+    
+      async blockStudent(studentId: string): Promise<IStudent> {
+        const student = await Student.findOne({ _id: studentId });
+        student!.set({ isBlocked: true });
+        return await student!.save();
+      }
+    
+      async unblockStudent(studentId: string): Promise<IStudent> {
+        const student = await Student.findOne({ _id: studentId });
+        student!.set({ isBlocked: false });
+        return await student!.save();
+      }
+    
+    
+    
 }

@@ -173,6 +173,9 @@ export class InstructorService implements IInstructorService {
   async deleteCourse(courseId: string): Promise<ICourse> {
     return await this.courseRepository.unlistCourse(courseId);
   }
+  async listCourse(courseId: string): Promise<ICourse> {
+    return await this.courseRepository.listCourse(courseId);
+  }
   async getAllCategories(): Promise<ICategory[]| null> {
     return await this.categoryRepository.getListedCategories();
   }
@@ -296,6 +299,19 @@ async addChapter(moduleId: string, chapterData: IChapter, file: Express.Multer.F
   // Add chapter to module
   console.log("Attempting to update module with ID:", moduleId);
   return await this.moduleRepository.addChapter(moduleId, chapterData);
+}
+async resetForgotPassword(
+  email: string,
+  password: string
+): Promise<IInstructor> {
+  const instructor = await this.InstructorRepository.findInstructorByEmail(email)
+  if (!instructor) {
+    throw new BadRequestError("Instructor not found");
+  }
+  return await this.InstructorRepository.updatePassword(
+    instructor.id!,
+    password
+  );
 }
 
 

@@ -43,7 +43,7 @@ const enrolledCourseSchema = new mongoose.Schema(
     },
     progression: [
       {
-        type: mongoose.Schema.Types.ObjectId,
+        type: String,
       },
     ],
     completed: {

@@ -181,5 +181,8 @@ export class CourseRepository implements ICourseRepository {
     
         return { courses, totalCount };
       }
+      async incrementEnrolledCount(courseId: string): Promise<void> {
+        await Course.findByIdAndUpdate(courseId, { $inc: { enrolled: 1 } });
+    }
     
 }

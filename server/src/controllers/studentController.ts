@@ -6,12 +6,13 @@ import { STATUS_CODES } from '../constants/httpStatusCodes';
 import bcrypt from 'bcryptjs'
 import { IStudent } from '../interfaces/student';
 import jwt from "jsonwebtoken";
-import ErrorHandler from '../utils/ErrorHandler';
 import { StudentRepository } from '../repositories/implements/studentRepository';
 import { BadRequestError } from '../constants/errors/badrequestError';
 import { InstructorRepository } from '../repositories/implements/instructorRepository';
 import { CourseRepository } from '../repositories/implements/courseRepository';
 import { CategoryRepository } from '../repositories/implements/categoryRepository';
+import { EnrolledCourseRepository } from '../repositories/implements/enrolledCourseRepository';
+import { ModuleRepository } from '../repositories/implements/moduleRepository';
 
 const { BAD_REQUEST, OK, INTERNAL_SERVER_ERROR } = STATUS_CODES
 
@@ -19,7 +20,9 @@ const studentRepository = new StudentRepository();
 const instructorRepository = new InstructorRepository();
 const courseRepository = new CourseRepository();
 const categoryRepository = new CategoryRepository();
-const studentService = new StudentService(studentRepository,instructorRepository,courseRepository,categoryRepository);
+const enrolledCourseRepository = new EnrolledCourseRepository()
+const moduleRepository = new ModuleRepository()
+const studentService = new StudentService(studentRepository,instructorRepository,courseRepository,categoryRepository,moduleRepository, enrolledCourseRepository );
 const otpService = new OtpService();
 
 export class StudentController {
@@ -443,6 +446,105 @@ export class StudentController {
       }
     }
   }
+ async stripePaymentIntent(req: Request, res: Response, next: NextFunction){
+  try{
+    const id = req.currentUser
+    const {courseId} = req.body;
+    const url = await studentService.stripePayment(courseId!,id!)
+    res.status(200).json({url})
+
+  }catch(error){
+    if (error instanceof Error) {
+      return next(error);
+    }
+  }
+ }
+ async enrollCourse(req: Request, res: Response, next: NextFunction) {
+  try {
+    const id = req.currentUser;
+    const { courseId } = req.body;
+    const enrolledCourse = await studentService.enrollCourse(courseId, id!);
+    res.status(201).json(enrolledCourse);
+  } catch (error) {
+    if (error instanceof Error) {
+      return next(error);
+    }
+  }
+} 
+ 
+async getEnrolledCoursesByStudent(req: Request, res: Response, next: NextFunction) {
+  try{
+    const studentId= req.currentUser;
+ 
+
+    const enrolledCourses = await studentService.getAllEnrolledCourses(studentId!)
+    res.status(200).json(enrolledCourses);
+
+
+  }catch(error){
+    if (error instanceof Error) {
+      return next(error);
+    }
+  }
+}
+async getEnrolledCourseByStudent(req: Request, res: Response, next: NextFunction) {
+  try{
+    const studentId= req.currentUser;
+    const {courseId} = req.params;
+    console.log("Student Id:", studentId, courseId)
+
+    const enrolledCourse = await studentService.getEnrolledCourse(studentId!,courseId)
+
+    console.log("Enrolled course:", enrolledCourse)
+
+    res.status(200).json(enrolledCourse);
+
+
+  }catch(error){
+    if (error instanceof Error) {
+      return next(error);
+    }
+  }
+}
+
+async addProgression(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { enrollmentId, chapterTitle} = req.query;
+
+    console.log(req.query)
+
+    const progression = await studentService.addProgression(
+      enrollmentId as string,
+      chapterTitle as string
+    );
+    console.log(progression)
+    res.status(201).json(progression);
+  } catch (error) {
+    if (error instanceof Error) {
+      next(error);
+    }
+  }
+}
+
+async getTotalChapterCountByCourseId(req: Request, res: Response,next:NextFunction) {
+
+  const { courseId } = req.params;
+
+  if (!courseId) {
+    return res.status(400).json({ message: 'Course ID is required' });
+  }
+
+  try {
+    const totalChapterCount = await studentService.getTotalChapterCountByCourseId(courseId);
+    console.log("Total chapter controller:", totalChapterCount)
+    return res.status(200).json({ courseId, totalChapters: totalChapterCount });
+  } catch (error) {
+    if (error instanceof Error) {
+      next(error);
+    }
+  }
+}
+
 
 }
 

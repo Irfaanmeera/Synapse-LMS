@@ -12,9 +12,11 @@ export interface Module {
     title: string;
     description?: string;
     videoUrl?: string;
+    content:string;
     videoThumbnail?: object;
     videoSection?: string;
     videoLength?: number;
     videoPlayer?: string;
+    completed?:boolean;
     }
     

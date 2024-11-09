@@ -10,7 +10,14 @@ import { CategoryRepository } from "../../repositories/implements/categoryReposi
 import { InstructorRepository } from "../../repositories/implements/instructorRepository";
 import { ICategory } from "../../interfaces/category";
 import { NotFoundError } from "../../constants/errors/notFoundError";
+import { EnrolledCourseRepository } from "../../repositories/implements/enrolledCourseRepository";
+import Stripe from "stripe";
+import { IEnrolledCourse } from "../../interfaces/enrolledCourse";
+import { ModuleRepository } from "../../repositories/implements/moduleRepository";
+// import nodemailer from 'nodemailer'
 
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+const INSTRUCTOR_PERCENTAGE = 70;
 
 
 export class StudentService implements IStudentService {
@@ -19,8 +26,15 @@ export class StudentService implements IStudentService {
         private instructorRepository: InstructorRepository,
         private courseRepository: CourseRepository,
         private categoryRepository: CategoryRepository,
+        private moduleRepository: ModuleRepository,
+        private enrolledCourseRepository : EnrolledCourseRepository,
     ) {
         this.studentRepository = new StudentRepository();
+        this.instructorRepository = new InstructorRepository();
+        this.courseRepository = new CourseRepository();
+        this.enrolledCourseRepository = new EnrolledCourseRepository();
+        this.categoryRepository = new CategoryRepository();
+        this.moduleRepository = new ModuleRepository();
     }
 
     async signup(studentDetails: IStudent): Promise<IStudent | null> {
@@ -136,4 +150,135 @@ export class StudentService implements IStudentService {
     }
     return await this.studentRepository.udpatePassword(student.id!, password);
   }
+   async stripePayment(courseId: string, studentId: string): Promise<string> {
+       const course = await this.courseRepository.findCourseById(courseId)
+       const existingEnrollment = await this.enrolledCourseRepository.checkEnrolledCourse(courseId,studentId)
+       if(existingEnrollment){
+            throw new BadRequestError('Already Enrolled')
+       }
+       if(!course){
+        throw new BadRequestError("Course not found")
+       }
+       const payment = await stripe.checkout.sessions.create({
+        payment_method_types: ["card"],
+        mode: "payment",
+        line_items: [
+          {
+            price_data: {
+              currency: "inr",
+              product_data: {
+                name: course.name as string,
+              },
+              unit_amount: course.price! * 100,
+            },
+            quantity: 1,
+          },
+        ],
+        success_url: `${process.env.ORIGIN}/status?success=true&courseId=${courseId}`,
+        cancel_url: `${process.env.ORIGIN}/status`,
+      });
+      return payment.url!;
+   }
+    
+   async enrollCourse(courseId: string, studentId: string): Promise<IEnrolledCourse> {
+       const existingEnrolledCourse = await this.enrolledCourseRepository.checkEnrolledCourse(courseId,studentId)
+
+       if(existingEnrolledCourse){
+        throw new BadRequestError('Course already enrolled')
+       }
+       const course = await this.courseRepository.findCourseById(courseId)
+       await this.studentRepository.courseEnroll(studentId,courseId)
+
+       const courseDetails = {
+        courseId,
+        studentId,
+        price:course?.price,
+       }
+       const enrolledCourse = await this.enrolledCourseRepository.createCourse(courseDetails)
+       const instructorAmount = (course!.price!  * INSTRUCTOR_PERCENTAGE)/100;
+       const description = `Enrollment fee of ${course?.name} (ID: ${course?.id})`;
+       if (course) {
+        await this.instructorRepository.addToWallet(
+          course.instructor!,
+          instructorAmount
+        );
+        await this.instructorRepository.addWalletHistory(
+          course.instructor!,
+          instructorAmount,
+          description,
+        );
+        await this.courseRepository.incrementEnrolledCount(courseId);
+      }
+      return enrolledCourse;
+   }
+   
+  async getEnrolledCourse(
+    studentId: string,
+    courseId: string
+  ): Promise<IEnrolledCourse | null> {
+    const enrolledCourse=  await this.enrolledCourseRepository.getCourseByStudentIdAndCourseId(
+      studentId,courseId
+    );
+    console.log("Enrolled course in repo:", enrolledCourse)
+    return enrolledCourse;
+  }
+
+  async getAllEnrolledCourses(studentId: string): Promise<IEnrolledCourse[]> {
+    return await this.enrolledCourseRepository.getEnrolledCoursesByStudent(
+      studentId
+    );
+  }
+
+  async addProgression(
+    enrollmentId: string,
+    chapterTitle: string
+  ): Promise<IEnrolledCourse> {
+    const response = await this.enrolledCourseRepository.addModuleToProgression(
+      enrollmentId,
+      chapterTitle,
+    );
+
+    console.log("response from service:", response)
+
+    // const course = await this.courseRepository.findCourseById(
+    //   response.courseId!
+    // );
+    // if (
+    //   course?.modules?.length === response.progression?.length &&
+    //   !response.completed
+    // ) {
+    //   const student = await this.studentRepository.findStudentById(
+    //     response.studentId!
+    //   );
+    //   const transporter = nodemailer.createTransport({
+    //     host: "smtp.gmail.com",
+    //     port: 587,
+    //     service: "Gmail",
+    //     secure: true,
+    //     auth: {
+    //       user: process.env.TRANSPORTER_EMAIL,
+    //       pass: process.env.TRANSPORTER_PASSWORD,
+    //     },
+    //   });
+    //   transporter.sendMail({
+    //     to: student!.email,
+    //     from: process.env.TRANSPORTER_EMAIL,
+    //     subject: "SYNAPSE: Course Completion Certificate",
+    //     html: `<div><h1>Course completion certificate from Synapse</h1></div>`,
+    //     attachments: [
+    //       {
+    //         filename: "certificate.jpg",
+    //         path: __dirname + "/../../../src/files/certificate.jpg",
+    //       },
+    //     ],
+    //   });
+    //   await this.enrolledCourseRepository.completedStatus(response.id!);
+    // }
+    return response;
+  }
+
+  async getTotalChapterCountByCourseId(courseId: string):Promise<number>{
+    return await this.moduleRepository.getTotalChapterCount(courseId)
+  }
+
 }

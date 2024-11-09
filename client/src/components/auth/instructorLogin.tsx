@@ -159,7 +159,7 @@ const Signin: FC = () => {
 
                         <div className="flex items-center justify-end">
                           <div className="text-sm">
-                            <Link to={"/forgot-password"}>
+                            <Link to={"/instructor/forgot-password"}>
                               <p className="text-center text-sm text-sky-600 cursor-pointer">
                                 Forgot password ?
                               </p>

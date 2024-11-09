@@ -16,15 +16,21 @@ instructorRouter.post("/login", instructorController.login);
 instructorRouter.put('/updateInstructor',isInstructorAuth, instructorController.updateInstructor)
 instructorRouter.put("/updateImage",isInstructorAuth,upload.single("image"),instructorController.updateImage);
 
+instructorRouter.post("/verify-forgot-password-otp",instructorController.forgotPasswordOtpVerification);
+instructorRouter.post("/forgot-password", instructorController.resetForgottedPassword);
+
 instructorRouter.get("/myCourses", isInstructorAuth, instructorController.getMycourses);
 instructorRouter.get("/course/:courseId",isInstructorAuth,instructorController.getSingleCourse);
 instructorRouter.post("/addCourse",upload.single("image"),isInstructorAuth,instructorController.createCourse);
 instructorRouter.put("/updateCourse/:courseId",upload.single("image"),isInstructorAuth,instructorController.updateCourse);
-instructorRouter.patch("/deleteCourse",isInstructorAuth,instructorController.deleteCourse);
+instructorRouter.patch("/deleteCourse/:courseId",isInstructorAuth,instructorController.deleteCourse);
+instructorRouter.patch("/listCourse/:courseId",isInstructorAuth,instructorController.listCourse);
 instructorRouter.get('/categories',isInstructorAuth, instructorController.getCategories)
+
 instructorRouter.post( "/createModule", isInstructorAuth,instructorController.createModule);
 instructorRouter.put('/modules/:moduleId', isInstructorAuth,instructorController.updateModule);
 instructorRouter.delete('/modules/:moduleId', isInstructorAuth, instructorController.deleteModule);
 instructorRouter.post('/modules/:moduleId/addChapter', upload.single('video'), isInstructorAuth, instructorController.addChapter);
+
 
 export default instructorRouter;

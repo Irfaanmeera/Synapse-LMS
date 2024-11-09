@@ -5,6 +5,8 @@ import { Course } from "../../../interfaces/course";
 import {
   addChapter,
   createModule,
+  deleteCourse,
+  listCourse,
 } from "../../../api/instructorApi";
 import { useNavigate, useParams } from "react-router-dom";
 import {
@@ -13,6 +15,7 @@ import {
   CardMedia,
   Typography,
   Button,
+  Box,
   Modal,
   TextField,
   IconButton,
@@ -22,10 +25,11 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { authorizedAxios } from "../../../api/config";
-import { EditIcon, SidebarCloseIcon } from "lucide-react";
+import {  EditIcon, SidebarCloseIcon } from "lucide-react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ReactPlayer from "react-player";
 import Breadcrumb from "../Breadcrumbs/Breadcrumb";
+import toast from "react-hot-toast";
 
 
 // CourseDetails component
@@ -39,9 +43,31 @@ const CourseDetails = () => {
   const [newChapterVideoFile, setNewChapterVideoFile] = useState<File | null>(
     null
   );
+  const [newChapterDescription, setNewChapterDescription] = useState("");
+  const [newChapterContent, setNewChapterContent] = useState("");
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isAddChapterModalOpen, setIsAddChapterModalOpen] = useState({});
   const [selectedModuleId, setSelectedModuleId] = useState(null);
+  const [isListed, setIsListed] = useState(true); // Track whether the course is listed
+
+  const toggleCourseStatus = async () => {
+    try {
+      console.log(courseId)
+      if (isListed) {
+        // Unlist the course
+        await deleteCourse(courseId);
+        toast.success(`Course ${course!.name} unlisted successfully`)
+      } else {
+        // Re-list the course if you have a separate endpoint for listing
+        await listCourse(courseId);
+        toast.success(`Course ${course!.name} listed successfully`)
+      }
+      // Toggle local state
+      setIsListed((prevStatus) => !prevStatus);
+    } catch (error) {
+      console.error("Failed to toggle course status:", error);
+    }
+  };
   const navigate = useNavigate()
 
   const goToUpdateCoursePage = () => {
@@ -95,16 +121,20 @@ const CourseDetails = () => {
   };
   //
   const handleAddChapter = async () => {
-    if (!newChapterName || !newChapterVideoFile || !selectedModuleId) return;
-
-    const chapterData = { title: newChapterName };
-
+    if (!newChapterName || !selectedModuleId) return;
+  
+    const chapterData = {
+      title: newChapterName,
+      description: newChapterDescription,
+      content: newChapterContent || '', // Optional field
+    };
+  
     try {
-      // Call the addChapter function and upload progress tracking
+      // Call addChapter function to create a new chapter
       const newChapter = await addChapter(
         selectedModuleId,
         chapterData,
-        newChapterVideoFile,
+        newChapterVideoFile || null, // Optional video file
         (progressEvent) => {
           const percentCompleted = Math.round(
             (progressEvent.loaded * 100) / progressEvent.total
@@ -112,35 +142,55 @@ const CourseDetails = () => {
           setUploadProgress(percentCompleted);
         }
       );
-
-      // Use functional update and create a deep copy to ensure React re-renders
+  
+      // Update modules state to reflect new chapter immediately
       setModules((prevModules) => {
-        const updatedModules = prevModules.map((module) =>
-          module.moduleId === selectedModuleId
-            ? { ...module, chapters: [...(module.chapters || []), newChapter] }
-            : module
-        );
-        return [...updatedModules]; // Return a new array reference
+        const updatedModules = prevModules.map((module) => {
+          if (module.moduleId === selectedModuleId) {
+            return {
+              ...module, // spread module to ensure new reference
+              chapters: [...(module.chapters || []), newChapter] // add new chapter with a new array reference
+            };
+          }
+          return module;
+        });
+        console.log("Updated Modules:", updatedModules); // Debugging line to check updated modules
+        return updatedModules; // Return new array to trigger re-render
       });
-
-      // Reset form and close modal for the current module
+  
+      // Reset form fields and close modal
       setNewChapterName("");
+      setNewChapterDescription("");
+      setNewChapterContent("");
       setNewChapterVideoFile(null);
-      setUploadProgress(0); // Reset upload progress
+      setUploadProgress(0);
       setIsAddChapterModalOpen((prev) => ({
         ...prev,
         [selectedModuleId]: false,
       }));
       setSelectedModuleId(null); // Clear selected module ID
+  
     } catch (error) {
       console.error("Failed to add chapter:", error);
     }
   };
+  
+  
 
   const openAddChapterModal = (moduleId) => {
     setIsAddChapterModalOpen((prev) => ({ ...prev, [moduleId]: true }));
     setSelectedModuleId(moduleId); // Set selected module when opening the modal
   };
+
+  // const handleDeleteCourse = async () => {
+  //   try {
+  //     const deletedCourse = await deleteCourse(courseId);
+  //     console.log('Deleted course:', deletedCourse);
+  //     alert('Course deleted successfully!');
+  //   } catch (error: any) {
+  //     alert(error.message);
+  //   }
+  // };
 
   useEffect(() => {
     const moduleId = modules.map((module) => module.moduleId);
@@ -206,7 +256,7 @@ const CourseDetails = () => {
           />
         </CardContent>
 
-        <div className="flex justify-end -mt-14 mb-4 mr-4">
+        {/* <div className="flex justify-end -mt-14 mb-4 mr-4">
           <Button
             startIcon={<EditIcon />}
             variant="contained"
@@ -219,84 +269,138 @@ const CourseDetails = () => {
           >
             Edit Course
           </Button>
-        </div>
+        </div> */}
+        <div className="flex justify-end -mt-14 mb-4 mr-4 space-x-2"> 
+  <Button
+    startIcon={<EditIcon />}
+    variant="contained"
+    sx={{
+      backgroundColor: "#1E3A8A",
+      color: "#ffffff",
+      "&:hover": { backgroundColor: "#1E40AF" },
+    }}
+    onClick={goToUpdateCoursePage} 
+  >
+    Edit Course
+  </Button>
+
+  <Button
+    // startIcon={isListed ? <DeleteIcon /> : <AddIcon />} // Icon based on listing status
+    variant="contained"
+    color={isListed ? "primary" : "info"} // Color based on listing status
+    onClick={toggleCourseStatus}
+  >
+    {isListed ? "Unlist Course" : "List Course"} {/* Toggle button text */}
+  </Button>
+</div>
        
       </Card>
 
       <div className="mt-8 ml-4">
-        <Typography variant="h6" className="font-bold mb-4 pl-4">
-          Modules
+  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom:"25px" }}>
+    <Typography variant="h6" className="font-bold mb-4 pl-4">
+      Modules
+    </Typography>
+    <Button
+      variant="contained"
+      startIcon={<AddIcon />}
+      onClick={() => setIsAddModuleModalOpen(true)}
+      sx={{backgroundColor:"#6575E7"}}
+    >
+      Add Module
+    </Button>
+  </div>
+  {modules?.map((moduleData) => (
+    <Accordion key={moduleData.moduleId} className="mb-4" elevation={0} sx={{ boxShadow: 'none' }}>
+      <AccordionSummary
+        expandIcon={<ExpandMoreIcon />}
+        aria-controls={`module-${moduleData.moduleId}-content`}
+        id={`module-${moduleData.moduleId}-header`}
+        sx={{
+          backgroundColor: "#F7F9FA",
+          border: '1px solid #D3D3D3',  // Light gray border
+          borderRadius: '4px',         // Optional: rounded corners
+          boxShadow: 'none',
+        }}
+      >
+        <Typography variant="inherit" className="text-graydark">
+          {moduleData?.name || "Module Name Not Available"}
         </Typography>
-        <Button
-                variant="outlined"
-                color="primary"
-                startIcon={<AddIcon />}
-                onClick={() => setIsAddModuleModalOpen(true)}
-              >
-                Add Module
-              </Button>
-        {modules?.map((moduleData) => (
-          <Accordion key={moduleData.moduleId} className="mb-4">
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls={`module-${moduleData.moduleId}-content`}
-              id={`module-${moduleData.moduleId}-header`}
-            >
-              <Typography variant="inherit" className="text-graydark">
-                {moduleData?.name || "Module Name Not Available"}
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <Button
-                variant="outlined"
-                color="primary"
-                startIcon={<AddIcon />}
-                onClick={() => openAddChapterModal(moduleData.moduleId)}
-              >
-                Add Chapter
-              </Button>
-              <div className="mt-2">
-                {moduleData.chapters && moduleData.chapters.length > 0 ? (
-                  moduleData.chapters.map((chapter) => (
-                    <Accordion key={chapter.title} className="mt-2 ml-10">
-                      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                        <Typography className="text-midnightblue">{chapter.title}</Typography>
-                      </AccordionSummary>
-                      <AccordionDetails  className="text-body">
-                        {/* Chapter Content */}
-                        <Typography>
-                        {chapter.videoUrl ? (
-                  <div>
-                    <Typography>
-                      Video:
-                    </Typography>
-                    <ReactPlayer url={chapter.videoUrl} controls width="100%" />
-                  </div>
-                ) : (
+      </AccordionSummary>
+      <AccordionDetails>
+      <Box display="flex" justifyContent="flex-end" mb={2}>
+    <Button
+      variant="outlined"
+      color="primary"
+      startIcon={<AddIcon />}
+      onClick={() => openAddChapterModal(moduleData.moduleId)}
+      sx={{color:"#6575E7"}}
+    >
+      Add Chapter
+    </Button>
+  </Box>
+        <div className="mt-2">
+          {moduleData.chapters && moduleData.chapters.length > 0 ? (
+            moduleData.chapters.map((chapter) => (
+              <Accordion key={chapter.title} className="mt-2 ml-5" elevation={0} sx={{ boxShadow: 'none' }}>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}  sx={{
+          
+            border: '1px solid #D3D3D3',  // Light gray border
+            borderRadius: '4px',         // Optional: rounded corners
+            boxShadow: 'none',
+          }} >
+                  <Typography className="text-midnightblue">{chapter.title}</Typography>
+                </AccordionSummary>
+                <AccordionDetails className="text-body">
+                  {/* Chapter Content */}
                   <Typography>
-                    Video: N/A
-                  </Typography>
-                )}
-                        </Typography>
+                    {chapter.videoUrl ? (
+                      <div>
                         <Typography>
-                          Section: {chapter.videoSection || "N/A"}
+                          Video:
                         </Typography>
-                        <Typography>
-                          Description: {chapter.description || "No description"}
-                        </Typography>
-                      </AccordionDetails>
-                    </Accordion>
-                  ))
-                ) : (
-                  <Typography className="text-gray-500">
-                    No chapters available
+                        
+                        <ReactPlayer
+  url={chapter.videoUrl} 
+  controls
+  width="100%"
+  height="100%"
+  config={{
+    file: {
+      attributes: {
+        controlsList: 'nodownload' // Optional: disables download button
+      },
+      forceVideo: true // Forces ReactPlayer to use HTML5 video
+    }
+  }}
+/>
+                      </div>
+                    ) : (
+                      <Typography>
+                        Video: N/A
+                      </Typography>
+                    )}
                   </Typography>
-                )}
-              </div>
-            </AccordionDetails>
-          </Accordion>
-        ))}
-      </div>
+                  <Typography>
+                    Content: {chapter.content || "N/A"}
+                  </Typography>
+                  <Typography>
+                    Description: {chapter.description || "No description"}
+                  </Typography>
+                </AccordionDetails>
+              </Accordion>
+            ))
+          ) : (
+            <Typography className="text-gray-500">
+              No chapters available
+            </Typography>
+          )}
+        </div>
+      </AccordionDetails>
+    </Accordion>
+  ))}
+</div>
+
 
       <Modal
         open={isAddModuleModalOpen}
@@ -338,6 +442,7 @@ const CourseDetails = () => {
           <Button
             variant="contained"
             color="transparent"
+            sx={{ display: 'none' }}
             onClick={() => openAddChapterModal(module.moduleId)}
           ></Button>
 
@@ -364,11 +469,27 @@ const CourseDetails = () => {
               </IconButton>
               <Typography variant="h6">Add Chapter</Typography>
               <TextField
-                label="Chapter Name"
+                label="Title"
                 variant="outlined"
                 fullWidth
                 value={newChapterName}
                 onChange={(e) => setNewChapterName(e.target.value)}
+                style={{ marginBottom: "15px" ,marginLeft:"10px", color:"blueviolet"}}
+              />
+              <TextField
+                label="Description"
+                variant="outlined"
+                fullWidth
+                value={newChapterDescription}
+                onChange={(e) => setNewChapterDescription(e.target.value)}
+                style={{ marginBottom: "15px" ,marginLeft:"10px", color:"blueviolet"}}
+              />
+              <TextField
+                label="Content"
+                variant="outlined"
+                fullWidth
+                value={newChapterContent}
+                onChange={(e) => setNewChapterContent(e.target.value)}
                 style={{ marginBottom: "15px" ,marginLeft:"10px", color:"blueviolet"}}
               />
               <input
