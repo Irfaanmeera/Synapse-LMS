@@ -6,7 +6,6 @@ import ChartThree from '../../components/instructor/Charts/ChartThree';
 import ChartTwo from '../../components/instructor/Charts/ChartTwo';
 import ChatCard from '../../components/instructor/Chat/ChatCard';
 import MapOne from '../../components/instructor/Maps/MapOne';
-import TableOne from '../../components/instructor/Tables/TableOne';
 import { authorizedAxios } from '../../api/config';
 import { Link } from 'react-router-dom';
 
@@ -135,9 +134,9 @@ const Dashboard: React.FC = () => {
         <ChartTwo />
         <ChartThree />
         <MapOne />
-        <div className="col-span-12 xl:col-span-8">
+        {/* <div className="col-span-12 xl:col-span-8">
           <TableOne />
-        </div>
+        </div> */}
         <ChatCard />
       </div>
     </>

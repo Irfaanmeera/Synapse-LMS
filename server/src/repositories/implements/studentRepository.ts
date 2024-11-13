@@ -70,6 +70,7 @@ export class StudentRepository implements IStudentRepository {
       async getAllStudents(): Promise<IStudent[] | null> {
         return await Student.find();
       }
+      
     
       async blockStudent(studentId: string): Promise<IStudent> {
         const student = await Student.findOne({ _id: studentId });

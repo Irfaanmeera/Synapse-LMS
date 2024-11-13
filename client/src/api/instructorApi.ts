@@ -170,4 +170,14 @@ const addChapter = async (
   }
 }
 
-export {updateInstructor,updateInstructorImage,fetchInstructorCourses,deleteCourse,listCourse, fetchSingleCourseDetails,createModule,addChapter,deleteModule,updateModule}
+const fetchEnrolledStudents = async()=>{
+  try{
+  const response = await authorizedAxios.get(`/instructor/getEnrolledStudents`);
+  console.log("Fetch enrolled Students Response:", response.data);
+  return Promise.resolve(response.data);
+  }catch(error){
+    return handleAxiosError(error);
+  }
+}
+
+export {updateInstructor,updateInstructorImage,fetchInstructorCourses,deleteCourse,listCourse, fetchSingleCourseDetails,createModule,addChapter,deleteModule,updateModule,fetchEnrolledStudents}

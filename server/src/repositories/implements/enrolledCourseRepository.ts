@@ -49,6 +49,35 @@ export class EnrolledCourseRepository implements IEnrolledCourseRepository {
           }
           return enrolledCourses;
       }
+      async getEnrolledCoursesByInstructor(instructorId: string): Promise<IEnrolledCourse[]> {
+        // Fetch enrolled courses and populate necessary fields, filtering by instructor ID in course
+        const enrolledCourses = await EnrolledCourse.find({})
+          .populate({
+            path: "courseId",
+            match: { instructor: instructorId }, // Filter by instructor ID in the course document
+            populate: [
+              { path: "modules.module", model: "module" },
+              { path: "category", model: "category" },
+              { path: "instructor", model: "instructor" }
+            ]
+          })
+          .populate("studentId"); // Populate student details
+      
+        console.log("EnrolledCoursesByInstructor:", enrolledCourses);
+      
+        // Filter out any enrolled courses where courseId is null (i.e., no match for the instructor)
+        const filteredEnrolledCourses = enrolledCourses.filter(
+          (enrolledCourse) => enrolledCourse.courseId !== null
+        );
+      
+        // If no courses are found for this instructor, you could throw an error or return an empty array
+        if (!filteredEnrolledCourses.length) {
+          throw new Error("No enrolled courses found for this instructor.");
+        }
+      
+        return filteredEnrolledCourses;
+      }
+      
       async getEnrolledCoursesByCourseId(
         courseId: string
       ): Promise<IEnrolledCourse[]> {

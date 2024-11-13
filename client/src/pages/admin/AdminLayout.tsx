@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useState,useEffect } from 'react';
-import Header from '../../components/instructor/Header/index';
-import Sidebar from '../../components/instructor/Sidebar/index';
-import Dashboard from '../instructor/Dashboard';
+import React, { useState,useEffect,ReactNode} from 'react';
+import Header from '../../components/admin/Header/index';
+import Sidebar from '../../components/admin/Sidebar/index';
+import { Outlet } from 'react-router-dom';
 
 
 
-const AdminHome: React.FC = () => {
+const AdminLayout: React.FC  = ()=>{
   const [sidebarOpen, setSidebarOpen] = useState(false);
   
 
@@ -46,7 +46,7 @@ const AdminHome: React.FC = () => {
           {/* <!-- ===== Main Content Start ===== --> */}
           <main>
             <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
-              <Dashboard/>
+            <Outlet />
                           </div>
           </main>
           {/* <!-- ===== Main Content End ===== --> */}
@@ -58,4 +58,4 @@ const AdminHome: React.FC = () => {
   );
 };
 
-export default AdminHome;
+export default AdminLayout;

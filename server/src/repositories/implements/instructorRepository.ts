@@ -81,5 +81,22 @@ export class InstructorRepository implements IInstructorRepository{
         instructor.walletHistory?.push(walletDetails)
         return await instructor.save()
       }
+
+      async getAllInstructors(): Promise<IInstructor[] | null> {
+        return await Instructor.find();
+      }
+    
+      async blockInstructor(instructorId: string): Promise<IInstructor> {
+        const instructor = await Instructor.findOne({ _id: instructorId });
+        instructor!.set({ isBlocked: true });
+        return await instructor!.save();
+      }
+    
+      async unblockInstructor(instructorId: string): Promise<IInstructor> {
+        const instructor = await Instructor.findOne({ _id: instructorId });
+        instructor!.set({ isBlocked: false });
+        return await instructor!.save();
+      }
+    
     
 }

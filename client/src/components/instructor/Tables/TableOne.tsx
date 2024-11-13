@@ -1,124 +1,134 @@
-import { BRAND } from '../../../interfaces/instructor/brand';
-import BrandOne from '../../../images/brand/brand-01.svg';
-import BrandTwo from '../../../images/brand/brand-02.svg';
-import BrandThree from '../../../images/brand/brand-03.svg';
-import BrandFour from '../../../images/brand/brand-04.svg';
-import BrandFive from '../../../images/brand/brand-05.svg';
-
-const brandData: BRAND[] = [
-  {
-    logo: BrandOne,
-    name: 'Google',
-    visitors: 3.5,
-    revenues: '5,768',
-    sales: 590,
-    conversion: 4.8,
-  },
-  {
-    logo: BrandTwo,
-    name: 'Twitter',
-    visitors: 2.2,
-    revenues: '4,635',
-    sales: 467,
-    conversion: 4.3,
-  },
-  {
-    logo: BrandThree,
-    name: 'Github',
-    visitors: 2.1,
-    revenues: '4,290',
-    sales: 420,
-    conversion: 3.7,
-  },
-  {
-    logo: BrandFour,
-    name: 'Vimeo',
-    visitors: 1.5,
-    revenues: '3,580',
-    sales: 389,
-    conversion: 2.5,
-  },
-  {
-    logo: BrandFive,
-    name: 'Facebook',
-    visitors: 3.5,
-    revenues: '6,768',
-    sales: 390,
-    conversion: 4.2,
-  },
-];
+import { useEffect, useState } from 'react';
+import { Pagination, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Select, MenuItem, FormControl, InputLabel, TextField } from '@mui/material';
+import { fetchEnrolledStudents } from '../../../api/instructorApi';
+import { EnrolledCourse } from '../../../interfaces/enrolledCourse';
 
 const TableOne = () => {
+  const [courses, setCourses] = useState<EnrolledCourse[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [sortCriteria, setSortCriteria] = useState("date"); // Options: "date", "course", "instructor"
+  const [searchQuery, setSearchQuery] = useState(""); // Search for student or course name
+  const itemsPerPage = 5;
+
+  const fetchCourses = async () => {
+    try {
+      const response = await fetchEnrolledStudents();
+      setCourses(response);
+    } catch (error) {
+      console.error('Error fetching courses:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCourses();
+  }, []);
+
+  // Filter courses based on search query (by student name or course name)
+  const filteredCourses = courses.filter(course =>
+    course.studentId?.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    course.courseId?.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Sort filtered courses based on selected criteria
+  const sortedCourses = [...filteredCourses].sort((a, b) => {
+    if (sortCriteria === "date") {
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
+    } else if (sortCriteria === "course") {
+      return (a.courseId?.name || "").localeCompare(b.courseId?.name || "");
+    } else if (sortCriteria === "instructor") {
+      return (a.courseId?.instructor?.name || "").localeCompare(b.courseId?.instructor?.name || "");
+    }
+    return 0;
+  });
+
+  // Pagination calculations
+  const indexOfLastCourse = currentPage * itemsPerPage;
+  const indexOfFirstCourse = indexOfLastCourse - itemsPerPage;
+  const currentCourses = sortedCourses.slice(indexOfFirstCourse, indexOfLastCourse);
+  const totalPages = Math.ceil(filteredCourses.length / itemsPerPage);
+
+  const handlePageChange = (event: React.ChangeEvent<unknown>, pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const formatDate = (date: string) => {
+    return new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' }).format(new Date(date));
+  };
+
+  if (loading) return <p>Loading...</p>;
+
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-      <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">
-        Top Channels
-      </h4>
+      <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">Enrolled Students</h4>
 
-      <div className="flex flex-col">
-        <div className="grid grid-cols-3 rounded-sm bg-gray-2 dark:bg-meta-4 sm:grid-cols-5">
-          <div className="p-2.5 xl:p-5">
-            <h5 className="text-sm font-medium uppercase xsm:text-base">
-              Source
-            </h5>
-          </div>
-          <div className="p-2.5 text-center xl:p-5">
-            <h5 className="text-sm font-medium uppercase xsm:text-base">
-              Visitors
-            </h5>
-          </div>
-          <div className="p-2.5 text-center xl:p-5">
-            <h5 className="text-sm font-medium uppercase xsm:text-base">
-              Revenues
-            </h5>
-          </div>
-          <div className="hidden p-2.5 text-center sm:block xl:p-5">
-            <h5 className="text-sm font-medium uppercase xsm:text-base">
-              Sales
-            </h5>
-          </div>
-          <div className="hidden p-2.5 text-center sm:block xl:p-5">
-            <h5 className="text-sm font-medium uppercase xsm:text-base">
-              Conversion
-            </h5>
-          </div>
-        </div>
-
-        {brandData.map((brand, key) => (
-          <div
-            className={`grid grid-cols-3 sm:grid-cols-5 ${
-              key === brandData.length - 1
-                ? ''
-                : 'border-b border-stroke dark:border-strokedark'
-            }`}
-            key={key}
+      {/* Search and Sorting Controls */}
+      <div className="mb-4 flex gap-4 items-center">
+        <TextField
+          label="Search by Student or Course Name"
+          variant="outlined"
+          size="small"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        <FormControl sx={{ minWidth: 150 }}>
+          <InputLabel>Sort By</InputLabel>
+          <Select
+            value={sortCriteria}
+            onChange={(e) => setSortCriteria(e.target.value)}
           >
-            <div className="flex items-center gap-3 p-2.5 xl:p-5">
-              <div className="flex-shrink-0">
-                <img src={brand.logo} alt="Brand" />
-              </div>
-              <p className="hidden text-black dark:text-white sm:block">
-                {brand.name}
-              </p>
-            </div>
+            <MenuItem value="date">Date of Joining</MenuItem>
+            <MenuItem value="course">Course Name</MenuItem>
+           
+          </Select>
+        </FormControl>
+      </div>
 
-            <div className="flex items-center justify-center p-2.5 xl:p-5">
-              <p className="text-black dark:text-white">{brand.visitors}K</p>
-            </div>
+      <TableContainer component={Paper} sx={{ boxShadow: 3, borderRadius: 2, overflow: "hidden", mb: 3 }}>
+        <Table>
+          <TableHead>
+            <TableRow className='bg-bodydark2'>
+              <TableCell align="center" sx={{ fontWeight: "bold", color: "white"}}>S.No</TableCell>
+              <TableCell align="center" sx={{ fontWeight: "bold", color: "white" }}>Student</TableCell>
+              <TableCell align="center" sx={{ fontWeight: "bold", color: "white"}}>Course</TableCell>
+              <TableCell align="center" sx={{ fontWeight: "bold", color: "white"  }}>Date of Joining</TableCell>
+              <TableCell align="center" sx={{ fontWeight: "bold", color: "white"}}>Revenue</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {currentCourses.map((course, index) => (
+              <TableRow key={course.id || index} sx={{ "&:nth-of-type(even)": { bgcolor: "grey.100" } }}>
+                <TableCell align="center" sx={{ color: "text.secondary" }}>
+                  {indexOfFirstCourse + index + 1}
+                </TableCell>
+                <TableCell align="center" sx={{ color: "text.secondary" }}>
+                  {course.studentId?.name}
+                </TableCell>
+                <TableCell align="center" sx={{ color: "text.secondary" }}>
+                  {course.courseId?.name}
+                </TableCell>
+                <TableCell align="center" sx={{ color: "text.secondary" }}>
+                  {formatDate(course.date)}
+                </TableCell>
+                <TableCell align="center" sx={{ color: "success.main", fontWeight: "medium" }}>
+                  ${Math.round((course.courseId?.price ?? 0) * 0.7)}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
 
-            <div className="flex items-center justify-center p-2.5 xl:p-5">
-              <p className="text-meta-3">${brand.revenues}</p>
-            </div>
-
-            <div className="hidden items-center justify-center p-2.5 sm:flex xl:p-5">
-              <p className="text-black dark:text-white">{brand.sales}</p>
-            </div>
-
-            <div className="hidden items-center justify-center p-2.5 sm:flex xl:p-5">
-              <p className="text-meta-5">{brand.conversion}%</p>
-            </div>
-          </div>
-        ))}
+      {/* Pagination Controls */}
+      <div className="mt-4 flex justify-center items-center">
+        <Pagination
+          count={totalPages}
+          page={currentPage}
+          onChange={handlePageChange}
+          color="primary"
+        />
       </div>
     </div>
   );

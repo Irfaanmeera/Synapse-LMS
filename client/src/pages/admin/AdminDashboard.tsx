@@ -5,9 +5,10 @@ import ChartThree from '../../components/instructor/Charts/ChartThree';
 import ChartTwo from '../../components/instructor/Charts/ChartTwo';
 import ChatCard from '../../components/instructor/Chat/ChatCard';
 import MapOne from '../../components/instructor/Maps/MapOne';
-import TableOne from '../../components/instructor/Tables/TableOne';
+import TableOne from '../../components/admin/StudentManagement/StudentList';
 
-const Dashboard: React.FC = () => {
+
+const AdminDashboard: React.FC = () => {
   return (
     <>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
@@ -111,4 +112,4 @@ const Dashboard: React.FC = () => {
   );
 };
 
-export default Dashboard;
+export default AdminDashboard;

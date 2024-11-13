@@ -180,6 +180,8 @@ const userLogout = async () => {
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
   };
+
+  
   const updateInstructorForgotPassword = async (
   email: string,
   password: string

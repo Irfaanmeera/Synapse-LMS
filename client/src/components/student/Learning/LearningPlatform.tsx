@@ -15,7 +15,7 @@ const LearningPlatform = () => {
   const fetchCourses = async () => {
     try {
       const enrolledCourses = await getAllEnrolledCourse();
-      console.log(enrolledCourses[0].courseId)
+      console.log(enrolledCourses)
       setEnrolledCourses(enrolledCourses); // Update state with fetched courses
     } catch (err) {
       console.error('Error fetching enrolled courses:', err);

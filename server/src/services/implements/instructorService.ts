@@ -14,6 +14,7 @@ import { EnrolledCourseRepository } from "../../repositories/implements/enrolled
 import { ICourse } from "../../interfaces/course";
 import {IModule, IChapter} from '../../interfaces/module'
 import { ICategory } from "../../interfaces/category";
+import { IEnrolledCourse } from "../../interfaces/enrolledCourse";
 
 const { BAD_REQUEST } = STATUS_CODES;
 
@@ -313,6 +314,13 @@ async resetForgotPassword(
     password
   );
 }
+ async getEnrolledCoursesByInstructor(instructorId: string): Promise<IEnrolledCourse[] | null> {
+     const enrolledCourses = await this.enrolledCourseRepository.getEnrolledCoursesByInstructor(instructorId)
 
+     if(!enrolledCourses){
+      throw new BadRequestError('No enrollment')
+     }
+     return enrolledCourses;
+ }
 
 }

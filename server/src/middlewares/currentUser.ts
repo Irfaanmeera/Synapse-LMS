@@ -10,7 +10,7 @@ declare module 'express'{
   }
 }
 
-export const isAdminAuth = (res:Response,req:Request,next:NextFunction)=>{
+export const isAdminAuth = (req:Request,res:Response,next:NextFunction)=>{
     try{
      const authorizationHeader = req.headers.authorization;
      if(authorizationHeader){

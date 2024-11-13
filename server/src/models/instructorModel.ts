@@ -16,6 +16,7 @@ interface InstructorDoc extends Document {
     isVerified?: boolean;
     wallet?: number;
     walletHistory?: Transaction[];
+    courses?:string[];
 }
 
 const instructorSchema = new mongoose.Schema(
@@ -76,8 +77,8 @@ const instructorSchema = new mongoose.Schema(
       ],
       courses: [
         {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "courses",
+          type: String,
+          
         },
       ],
     },

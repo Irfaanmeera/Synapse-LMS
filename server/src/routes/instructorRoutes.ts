@@ -31,6 +31,6 @@ instructorRouter.post( "/createModule", isInstructorAuth,instructorController.cr
 instructorRouter.put('/modules/:moduleId', isInstructorAuth,instructorController.updateModule);
 instructorRouter.delete('/modules/:moduleId', isInstructorAuth, instructorController.deleteModule);
 instructorRouter.post('/modules/:moduleId/addChapter', upload.single('video'), isInstructorAuth, instructorController.addChapter);
-
+instructorRouter.get('/getEnrolledStudents', isInstructorAuth, instructorController.getEnrolledCoursesByInstructor)
 
 export default instructorRouter;

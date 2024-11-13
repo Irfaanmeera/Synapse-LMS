@@ -39,6 +39,7 @@ authorizedAxios.interceptors.response.use(
             window.location.href = "/login";
             toast.error("Your profile is blocked. Please contact support.");
           } else if (response.status === 404) {
+        
             window.location.href = "/error404";
           } else if (response.status === 500) {
             window.location.href = "/error500";

@@ -203,10 +203,10 @@ export class StudentController {
                 role: "student",
             };
 
-            res.status(OK).cookie('access_token', token, {
+            res.status(OK).cookie('token', token, {
                 maxAge: accessTokenMaxAge,
                 httpOnly: true, // Ensure tokens are secure
-            }).cookie('refresh_token', refreshToken, {
+            }).cookie('refreshToken', refreshToken, {
                 maxAge: refreshTokenMaxAge,
                 httpOnly: true,
             }).json({
@@ -476,8 +476,10 @@ async getEnrolledCoursesByStudent(req: Request, res: Response, next: NextFunctio
   try{
     const studentId= req.currentUser;
  
-
+console.log("Student Id: ", studentId)
     const enrolledCourses = await studentService.getAllEnrolledCourses(studentId!)
+
+    console.log("enrolledCourse: " , enrolledCourses)
     res.status(200).json(enrolledCourses);
 
 
@@ -502,6 +504,7 @@ async getEnrolledCourseByStudent(req: Request, res: Response, next: NextFunction
 
   }catch(error){
     if (error instanceof Error) {
+      console.log(error)
       return next(error);
     }
   }
@@ -544,6 +547,7 @@ async getTotalChapterCountByCourseId(req: Request, res: Response,next:NextFuncti
     }
   }
 }
+
 
 
 }

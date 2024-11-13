@@ -2,13 +2,33 @@ import { Course } from "../../models/courseModel";
 import { ICourse, CourseApproval } from "../../interfaces/course";
 import { ICourseRepository } from "../interfaces/courseRepository.interface";
 import { NotFoundError } from "../../constants/errors/notFoundError";
+import { Instructor } from "../../models/instructorModel";
 
 export class CourseRepository implements ICourseRepository {
-    async createCourse(courseDetails: ICourse): Promise<ICourse> {
-        const course = Course.build(courseDetails);
-        return await course.save();
-    }
+    // async createCourse(courseDetails: ICourse): Promise<ICourse> {
+    //     const course = Course.build(courseDetails);
+    //     return await course.save();
+    // }
 
+    async createCourse(courseDetails: ICourse): Promise<ICourse> {
+        const course = Course.build(courseDetails); // Assuming Course is a model that corresponds to your course schema
+        
+        // Save the course
+        const savedCourse = await course.save();
+    
+        // Get the instructor ID from the course details (assuming the course details include the instructor ID)
+        const instructorId = courseDetails.instructor;
+    
+        // Add course name to the instructor's courses array
+        if (instructorId) {
+            await Instructor.findByIdAndUpdate(instructorId, {
+                $push: { courses: savedCourse.name } // Push the course name to the instructor's courses array
+            });
+        }
+    
+        return savedCourse;
+    }
+    
     async getAllCourses(page: number): Promise<{
         courses: ICourse[];
         totalCount: number;

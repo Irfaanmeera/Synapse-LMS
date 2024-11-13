@@ -1,5 +1,5 @@
 export interface User {
-    _id?: string;
+    id?: string;
     name?: string;
     email?: string;
     mobile?: number;
@@ -9,5 +9,6 @@ export interface User {
     wallet?: number;
     status?: boolean;
     courses?: string[];
+    isBlocked?:boolean;
    
   }

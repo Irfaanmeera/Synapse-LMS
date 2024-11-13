@@ -17,4 +17,7 @@ export interface IInstructorRepository {
   updatePassword(instructorId: string, password: string): Promise<IInstructor>;
   addToWallet(instructorId: string, amount: number): Promise<IInstructor>;
   addWalletHistory(instructorId: string,amount: number,description: string): Promise<IInstructor>;
+  getAllInstructors(): Promise<IInstructor[] | null>;
+  blockInstructor(instructorId: string): Promise<IInstructor | null>;
+  unblockInstructor(instructorId: string): Promise<IInstructor | null>;
 }

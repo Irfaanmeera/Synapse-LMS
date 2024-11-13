@@ -447,7 +447,24 @@ export class InstructorController {
     }
   };
 
+  async getEnrolledCoursesByInstructor(req: Request, res: Response,next:NextFunction){
+    try{
+      const instructorId = req.currentUser;
 
+      console.log("instructorId:", instructorId)
+      if (!instructorId) {
+        throw new ForbiddenError("Invalid token");
+      }
+   const enrolledCourses = await instructorService.getEnrolledCoursesByInstructor(instructorId!)
+   res.status(201).json(enrolledCourses);
+    } catch(error){
+      if (error instanceof Error) {
+        console.log(error.message)
+        next(error);
+      }
+    }
+  
+  }
 }
 
 

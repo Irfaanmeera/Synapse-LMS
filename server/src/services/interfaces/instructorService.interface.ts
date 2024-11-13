@@ -2,6 +2,7 @@ import {IInstructor } from "../../interfaces/instructor";
 import { ICourse } from "../../interfaces/course";
 import {IModule,IChapter} from '../../interfaces/module';
 import { ICategory } from "../../interfaces/category";
+import { IEnrolledCourse } from "../../interfaces/enrolledCourse";
 
 
 
@@ -24,4 +25,5 @@ export interface IInstructorService{
     // updateModule(moduleId: string, updateData: Partial<IModule>): Promise<IModule | null>;
     // deleteModule(moduleId: string): Promise<IModule | null>;
     addChapter(moduleId: string, chapter: IChapter,file: Express.Multer.File): Promise<IModule |null>;
+    getEnrolledCoursesByInstructor(instructorId:string):Promise<IEnrolledCourse[] | null>
     }

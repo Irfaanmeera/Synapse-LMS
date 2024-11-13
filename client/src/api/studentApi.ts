@@ -85,6 +85,7 @@ const getSingleCourse = async (courseId: string | undefined) => {
 const courseEnroll = async (courseId:string)=>{
   try{
  const response = await authorizedAxios.post('/createPayment',{courseId,})
+ console.log("Course enroll response: ", response.data)
  if(response.data){
   return Promise.resolve(response.data.url)
  }

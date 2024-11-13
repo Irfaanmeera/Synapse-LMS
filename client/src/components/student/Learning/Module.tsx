@@ -65,7 +65,7 @@ const ModuleContent: React.FC<ModuleProps> = ({ module,onVideoSelect,onVideoComp
           {module?.module?.chapters?.map((chapter) => (
             <div
               key={chapter.title}
-              className="flex items-center px-4 py-1 hover:bg-gray cursor-pointer"
+              className="flex items-center px-4 py-1 hover:bg-gray border border-gray border-opacity-75  cursor-pointer"
               onClick={() => onVideoSelect(chapter.videoUrl,chapter.title)}
             >
              <Checkbox
@@ -76,16 +76,17 @@ const ModuleContent: React.FC<ModuleProps> = ({ module,onVideoSelect,onVideoComp
         '&.Mui-checked': {
           color: 'gray', // Color of the checkmark (when checked)
         },
+     
       }}
     />
               <div className="flex-1">
-                <div className="flex items-center">
+                <div className="flex items-center ">
                   {chapter.videoUrl ? (
-                    <PlayCircle className="w-4 h-4 mr-2 text-gray-500" />
+                    <PlayCircle className="w-4 h-4 mr-2 text-slategray" />
                   ) : (
-                    <FileText className="w-4 h-4 mr-2 text-gray-500" />
+                    <FileText className="w-4 h-4 mr-2 text-slategray" />
                   )}
-                  <span>{chapter.title}</span>
+                  <span className="text-sm font-serif  text-slategray">{chapter.title}</span>
                 </div>
               </div>
             </div>

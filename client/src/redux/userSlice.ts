@@ -30,6 +30,9 @@ const userSlice = createSlice({
         userLogout(state) {
             state.user = null;
             state.userEmail= null;
+            localStorage.removeItem("token");
+            localStorage.removeItem("refreshToken");
+            localStorage.removeItem('completedChapters')
           },
           addCourse(state, action: PayloadAction<string | null>) {
             state.user?.courses?.push(action.payload!);
