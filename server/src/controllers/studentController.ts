@@ -13,6 +13,7 @@ import { CourseRepository } from '../repositories/implements/courseRepository';
 import { CategoryRepository } from '../repositories/implements/categoryRepository';
 import { EnrolledCourseRepository } from '../repositories/implements/enrolledCourseRepository';
 import { ModuleRepository } from '../repositories/implements/moduleRepository';
+import { ForbiddenError } from '../constants/errors/forbiddenError';
 
 const { BAD_REQUEST, OK, INTERNAL_SERVER_ERROR } = STATUS_CODES
 
@@ -119,6 +120,7 @@ export class StudentController {
       const { email, password } = req.body;
       const student: IStudent = await studentService.login(email);
       
+      if (!student.isBlocked) {
       const validPassword = await bcrypt.compare(password, student.password!);
       if (!validPassword) {
         return res.status(400).json({ message: "Incorrect password" });
@@ -161,6 +163,9 @@ export class StudentController {
         refreshToken, 
         student: studentData,
       });
+    } else {
+      throw new ForbiddenError("Student Blocked");
+    }
     } catch (error) {
       console.error(error);
       next(error); // Forward error to global error handler
@@ -479,7 +484,7 @@ async getEnrolledCoursesByStudent(req: Request, res: Response, next: NextFunctio
 console.log("Student Id: ", studentId)
     const enrolledCourses = await studentService.getAllEnrolledCourses(studentId!)
 
-    console.log("enrolledCourse: " , enrolledCourses)
+   
     res.status(200).json(enrolledCourses);
 
 
@@ -493,12 +498,7 @@ async getEnrolledCourseByStudent(req: Request, res: Response, next: NextFunction
   try{
     const studentId= req.currentUser;
     const {courseId} = req.params;
-    console.log("Student Id:", studentId, courseId)
-
     const enrolledCourse = await studentService.getEnrolledCourse(studentId!,courseId)
-
-    console.log("Enrolled course:", enrolledCourse)
-
     res.status(200).json(enrolledCourse);
 
 

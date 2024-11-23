@@ -1,5 +1,5 @@
 import { Instructor } from "../../models/instructorModel";
-import { IInstructor } from "../../interfaces/instructor";
+import { IInstructor } from "../../interfaces/IInstructor";
 import { IInstructorRepository } from "../interfaces/instructorRepository.interface";
 import { BadRequestError } from "../../constants/errors/badrequestError";
 
@@ -98,5 +98,7 @@ export class InstructorRepository implements IInstructorRepository{
         return await instructor!.save();
       }
     
-    
+      async getInstructorCount(): Promise<number> {
+        return await Instructor.countDocuments();
+      }
 }

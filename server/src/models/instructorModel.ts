@@ -1,5 +1,5 @@
 import mongoose, {Document, Model} from 'mongoose'
-import { IInstructor,Transaction } from "../interfaces/instructor";
+import { IInstructor,Transaction } from "../interfaces/IInstructor";
 
 interface InstructorModel extends Model<InstructorDoc>{
     build(attrs:IInstructor): InstructorDoc;

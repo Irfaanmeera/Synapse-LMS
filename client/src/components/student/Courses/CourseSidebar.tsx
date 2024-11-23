@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Typography, Button, Card, CardContent, Dialog, IconButton } from "@mui/material";
 import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
 import { Course } from "../../../interfaces/course";
@@ -17,6 +17,7 @@ export const CourseSidebar: React.FC <CourseSidebarProps> = ({ course }) => {
   const user = useSelector((store: RootState) => store.user.user);
     const [open, setOpen] = useState(false);
     console.log("Course sidebar course" , course)
+    const [enrolled, setEnrolled] = useState<boolean>(false);
     const previewVideo = course?.modules[0]?.module?.chapters[0]?.videoUrl
     const navigate = useNavigate()
 
@@ -26,9 +27,8 @@ export const CourseSidebar: React.FC <CourseSidebarProps> = ({ course }) => {
       } else {
         try {
           const response = await courseEnroll(course!.id!);
-          if (response) {
             window.location.href = response;
-          }
+          
         } catch (error) {
           console.log(error);
         }
@@ -42,6 +42,14 @@ export const CourseSidebar: React.FC <CourseSidebarProps> = ({ course }) => {
   const handleClose = () => {
     setOpen(false);
   };
+  const goToCourse = () => {
+    navigate(`/singleEnrolledCourse/${course?.id}`);
+  };
+  useEffect(() => {
+    if (user?.courses?.includes(course?.id)) {
+      setEnrolled(true);
+    }
+  }, [user, course?.id]);
 
   return (
     <>
@@ -69,14 +77,34 @@ export const CourseSidebar: React.FC <CourseSidebarProps> = ({ course }) => {
         </Button>
 
       <CardContent>
-        <Typography variant="h5" fontWeight="bold" sx={{ mt: 2 , mb: 4}}>
+        {/* <Typography variant="h5" fontWeight="bold" sx={{ mt: 2 , mb: 4}}>
           ₹ {course?.price}
-        </Typography>
+        </Typography> */}
         
       
-        <Button variant="contained" color="primary" fullWidth sx={{  mb: 2}} onClick={handleEnroll}>
+        {/* <Button variant="contained" color="primary" fullWidth sx={{  mb: 2}} onClick={handleEnroll}>
         Enroll now 
-      </Button>
+      </Button> */}
+      {!enrolled && (
+                 <Typography variant="h5" fontWeight="bold" sx={{ mt: 2 , mb: 4}}>
+                 ₹ {course?.price}
+               </Typography>
+              )}
+              {enrolled ? (
+                <Button
+                  onClick={goToCourse}
+                  variant="contained" color="primary" fullWidth sx={{  mb: 2}}
+                >
+                  Continue to Course
+                </Button>
+              ) : (
+                <Button
+                variant="contained" color="primary" fullWidth sx={{  mb: 2}}
+                  onClick={handleEnroll}
+                >
+                  Enroll now
+                </Button>
+              )}
         <Typography variant="caption" display="block" textAlign="center" sx={{ mt: 1 }}>
           30-Day Money-Back Guarantee
         </Typography>

@@ -1,5 +1,5 @@
 import { IInstructorService } from "../interfaces/instructorService.interface";
-import { IInstructor } from "../../interfaces/instructor";
+import { IInstructor } from "../../interfaces/IInstructor";
 import { InstructorRepository } from "../../repositories/implements/instructorRepository";
 import { STATUS_CODES } from "../../constants/httpStatusCodes";
 import ErrorHandler from "../../utils/ErrorHandler";

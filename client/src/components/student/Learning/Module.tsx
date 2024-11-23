@@ -16,7 +16,7 @@ interface ModuleProps {
   module: Module;
   onVideoSelect: (videoUrl: string,ChapterTitle:string) => void;
   onVideoComplete: (ChapterTitle: string) => void;
-  chapterCount :number;
+  
 
 }
 

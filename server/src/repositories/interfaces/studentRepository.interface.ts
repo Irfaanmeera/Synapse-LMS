@@ -10,6 +10,7 @@ export interface IStudentRepository {
   udpatePassword(studentId: string, password: string): Promise<IStudent | null>;
   courseEnroll(studentId: string, courseId: string): Promise<IStudent>;
   getAllStudents(): Promise<IStudent[] | null>;
+  getStudentCount(): Promise<number>;
   blockStudent(studentId: string): Promise<IStudent | null>;
   unblockStudent(studentId: string): Promise<IStudent | null>;
 }

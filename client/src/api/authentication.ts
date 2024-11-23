@@ -153,7 +153,7 @@ const instructorLogin = async (instructorData: InstructorData) => {
     return instructor;
   } catch (error) {
     console.error("Error during login:", error);
-    return await handleAxiosError(error); // Await the error handling to properly catch it
+    return handleAxiosError(error); // Await the error handling to properly catch it
   }
 };
 const adminLogin = async (adminData: AdminData) => {

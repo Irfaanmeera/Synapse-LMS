@@ -14,4 +14,7 @@ export interface ICourseRepository {
     listCourse(courseId: string): Promise<ICourse>;
     unlistCourse(courseId: string): Promise<ICourse>;
     getListedCourses({page,category,}: {page: number;category?: string;}): Promise<{courses: ICourse[];totalCount: number;} | null>;
+    getCourseByAdmin():Promise<ICourse[]>
+    getSingleCourseForAdmin(courseId: string): Promise<ICourse | null>;
+    getCourseCount(): Promise<number>;
 }

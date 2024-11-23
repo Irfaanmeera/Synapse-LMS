@@ -1,4 +1,4 @@
-import { IInstructor } from "../../interfaces/instructor";
+import { IInstructor } from "../../interfaces/IInstructor";
 // import { ICourse } from "../../interfaces/course";
 // import { IModule } from "../../interfaces/module";
 // import { IChapter } from "../../interfaces/module";
@@ -18,6 +18,8 @@ export interface IInstructorRepository {
   addToWallet(instructorId: string, amount: number): Promise<IInstructor>;
   addWalletHistory(instructorId: string,amount: number,description: string): Promise<IInstructor>;
   getAllInstructors(): Promise<IInstructor[] | null>;
+  getInstructorCount(): Promise<number>;
   blockInstructor(instructorId: string): Promise<IInstructor | null>;
   unblockInstructor(instructorId: string): Promise<IInstructor | null>;
+  
 }

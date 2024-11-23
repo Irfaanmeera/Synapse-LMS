@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { IAdmin } from '../interfaces/admin';
+import { IAdmin } from '../interfaces/Iadmin';
 import { AdminService } from '../services/implements/adminService';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs'; // Import bcryptjs for password comparison
@@ -10,13 +10,17 @@ import { CategoryRepository } from '../repositories/implements/categoryRepositor
 import { BadRequestError } from '../constants/errors/badrequestError';
 import { StudentRepository } from '../repositories/implements/studentRepository';
 import { InstructorRepository } from '../repositories/implements/instructorRepository';
+import { CourseRepository } from '../repositories/implements/courseRepository';
+import { EnrolledCourseRepository } from '../repositories/implements/enrolledCourseRepository';
 
 const { BAD_REQUEST } = STATUS_CODES;
 const adminRepository = new AdminRepository();
 const categoryRepository = new CategoryRepository()
 const studentRepository = new StudentRepository()
 const instructorRepository = new InstructorRepository()
-const adminService = new AdminService(adminRepository, categoryRepository, studentRepository,instructorRepository);
+const courseRepository = new CourseRepository()
+const enrolledCourseRepository = new EnrolledCourseRepository()
+const adminService = new AdminService(adminRepository, categoryRepository, studentRepository,instructorRepository,courseRepository,enrolledCourseRepository);
 
 export class AdminController {
   async login(req: Request, res: Response, next: NextFunction) {
@@ -81,6 +85,17 @@ export class AdminController {
       }
     }
   }
+  async getAllCategories(req: Request, res: Response, next: NextFunction) {
+    try {
+      const categories = await adminService.getAllCategories();
+      res.status(200).json({ categories });
+    } catch (error) {
+      if (error instanceof Error) {
+        next(error);
+      }
+    }
+  }
+
   async addCategory(req: Request, res: Response, next: NextFunction) {
     try {
       const { category } = req.body;
@@ -93,6 +108,47 @@ export class AdminController {
       }
     }
   }
+
+  async editCategory(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { categoryId, data } = req.body;
+      const upperCaseData = data.toUpperCase();
+      const updatedCaetgory = await adminService.editCategory(
+        categoryId,
+        upperCaseData
+      );
+      res.status(200).json({ category: updatedCaetgory });
+    } catch (error) {
+      if (error instanceof Error) {
+        next(error);
+      }
+    }
+  }
+
+  async listCategory(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { categoryId } = req.body;
+      const listedCategory = await adminService.listCategory(categoryId);
+      res.status(200).json({ category: listedCategory, success: true });
+    } catch (error) {
+      if (error instanceof Error) {
+        next(error);
+      }
+    }
+  }
+
+  async unlistCategory(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { categoryId } = req.body;
+      const unlistedCategory = await adminService.unlistCategory(categoryId);
+      res.status(200).json({ category: unlistedCategory, success: true });
+    } catch (error) {
+      if (error instanceof Error) {
+        next(error);
+      }
+    }
+  }
+
 
   async getAllStudents(req: Request, res: Response, next: NextFunction) {
     try {
@@ -175,4 +231,75 @@ export class AdminController {
       }
     }
   }
+  async getCoursesByAdmin(req: Request, res: Response,next:NextFunction): Promise<void> {
+    try {
+        const courses = await adminService.getAllCourses();
+        res.status(200).json({ success: true, data: courses });
+    } catch (error) {
+      if (error instanceof Error) {
+        next(error);
+      }
+    }
 }
+
+async approveCourse(req: Request, res: Response, next: NextFunction){
+  try {
+    const { courseId, approval } = req.body;
+    const updatedCourse = await adminService.courseApproval(courseId, approval);
+    res.status(200).json(updatedCourse);
+  } catch (error) {
+    next(error);
+  }
+};
+async getSingleCourse(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { courseId } = req.params;
+    const course = await adminService.getSingleCourse(courseId);
+    res.status(200).json(course);
+  } catch (error) {
+    if (error instanceof Error) {
+      next(error);
+    }
+  }
+}
+async adminDashBoard(req: Request, res: Response, next: NextFunction) {
+  try {
+    const data = await adminService.adminDashboardData();
+    res.status(200).json(data);
+  } catch (error) {
+    if (error instanceof Error) {
+      next(error);
+    }
+  }
+}
+async getEnrolledCoursesByAdmin(req: Request, res: Response,next:NextFunction){
+  try{
+ const enrolledCourses = await adminService.getEnrolledCoursesByAdmin()
+ res.status(201).json(enrolledCourses);
+  } catch(error){
+    if (error instanceof Error) {
+      console.log(error.message)
+      next(error);
+    }
+  }
+
+}
+async getRevenueChartData(req: Request, res: Response,next:NextFunction) {
+  try {
+    const { filter } = req.query; // weekly, monthly, yearly
+    if (!filter) {
+      return res.status(400).json({ message: "Filter is required" });
+    }
+
+    const revenueData = await adminService.fetchSalesData(filter as "weekly" | "monthly" | "yearly");
+    console.log("Sales data in admin controller", revenueData.data)
+    res.status(200).json(revenueData);
+  } catch (error) {
+    if (error instanceof Error) {
+      next(error);
+    }
+  }
+}
+
+}
+

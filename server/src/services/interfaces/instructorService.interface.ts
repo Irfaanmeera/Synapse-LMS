@@ -1,4 +1,4 @@
-import {IInstructor } from "../../interfaces/instructor";
+import {IInstructor } from "../../interfaces/IInstructor";
 import { ICourse } from "../../interfaces/course";
 import {IModule,IChapter} from '../../interfaces/module';
 import { ICategory } from "../../interfaces/category";

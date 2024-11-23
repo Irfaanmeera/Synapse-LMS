@@ -9,8 +9,8 @@ import dotenv from 'dotenv';
 import studentRouter from "./src/routes/studentRoutes";
 import instructorRouter from './src/routes/instructorRoutes';
 import adminRouter from './src/routes/adminRoutes'
-// import { io } from "./src/services/socketIoService";
-// import http from 'http'
+import { io } from "./src/services/SocketIOServices";
+import http from 'http'
 dotenv.config();
 
 
@@ -30,8 +30,8 @@ app.use('/', studentRouter);
 app.use("/instructor", instructorRouter);
 app.use("/admin",adminRouter)
 
-// const httpServer = http.createServer(app);
-// io.attach(httpServer);
+const httpServer = http.createServer(app);
+io.attach(httpServer);
 
 //testing api
 
@@ -50,6 +50,6 @@ app.all('*', (req: Request, res: Response, next: NextFunction) => {
 })
 app.use(ErrorMiddleware)
 
-
+export { httpServer };
 
 

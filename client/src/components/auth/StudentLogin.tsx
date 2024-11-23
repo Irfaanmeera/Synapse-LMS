@@ -9,6 +9,7 @@ import { loginSchema } from "../../validations/loginSchema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import OAuth from "../auth/OAuth";
+import {socket} from '../socket/socket'
 
 // import {socket} from '../socket/Socket'
 
@@ -47,7 +48,14 @@ const Signin: FC = () => {
       console.log("Login response:", response); // Log response
   
       dispatch(userActions.saveUser(response)); // Save user data
-      navigate("/"); // Redirect to home
+      socket.on('connect', () => {
+        console.log('Socket connected:', socket.id);
+        socket.connect();
+        navigate("/"); // Redirect to home after successful socket connection
+      });
+  
+      // Try connecting the socket here too
+      socket.connect();
     } catch (error: any) {
       console.error("Caught error:", error);
   

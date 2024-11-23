@@ -24,6 +24,8 @@ const validateMobile = (mobile: string) => {
 const Settings = () => {
   const dispatch = useDispatch();
   const user = useSelector((store: RootState) => store.user.user);
+
+  console.log("Instructor Check: ",user)
   const [formData, setFormData] = useState({
     name: user?.name || "",
     mobile: user?.mobile || "",

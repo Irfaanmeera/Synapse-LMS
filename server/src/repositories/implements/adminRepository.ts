@@ -1,5 +1,5 @@
 import { Admin} from "../../models/adminModel";
-import { IAdmin } from "../../interfaces/admin";
+import { IAdmin } from "../../interfaces/Iadmin";
 import { IAdminRepository } from "../interfaces/adminRepository.interface";
 
 export class AdminRepository implements IAdminRepository{

@@ -47,17 +47,13 @@ const Signin: FC = () => {
     <div className="flex min-h-full items-center justify-center py-20 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-8">
         {/* Logo section */}
-        <div className="flex justify-center">
-          <img
-            className="h-12 w-auto"
-            src="/path-to-your-logo/logo.png" // Replace with your actual logo path
-            alt="Logo"
-          />
+        <div className=" text-2xl font-bold font-serif text-ultramarine flex justify-center">
+          Synapse
         </div>
 
         {/* Title */}
         <div>
-          <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
+          <h2 className="mt-6 text-center text-3xl font-semibold tracking-tight text-slategray">
             Admin Login
           </h2>
         </div>

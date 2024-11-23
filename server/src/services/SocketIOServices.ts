@@ -1,6 +1,6 @@
 import { Server, Socket } from "socket.io";
 import { createServer } from "http";
-import { IMessage } from "../common/types/chat";
+import { IMessage } from "../interfaces/chat";
 import { ChatRepository } from "../repositories/implements/chatRepository";
 // import {ChatREpository} from "../repositories/implements/"
 const chatRepository = new ChatRepository();
@@ -23,17 +23,20 @@ interface EventData {
 const httpServer = createServer();
 const io = new Server(httpServer, {
   cors: {
-    // origin: "http://localhost:5173",
+    origin: "http://localhost:5173",  // Allow only this origin
     methods: ["GET", "POST"],
+    credentials: true,  // Allow credentials (cookies, HTTP authentication)
   },
 });
+
 
 const activeMembers = new Map<string, number>();
 
 io.on("connection", (socket: Socket) => {
   console.log("A user connected");
 
-  const connectedClientsCount = Object.keys(io.sockets.sockets).length;
+  // Update the active connection count after the user has connected
+  const connectedClientsCount = io.engine.clientsCount;  // This gives the correct number of connections
   console.log(connectedClientsCount, "connections");
 
   // Listen for chat messages
@@ -54,15 +57,15 @@ io.on("connection", (socket: Socket) => {
 
   socket.on("get-all-messages", async ({ courseId }) => {
     const messages = await chatRepository.getChatByCourseId(courseId);
-
+    console.log("Messages in repo", messages)
     io.to(courseId).emit("get-course-response", messages);
   });
 
   socket.on("message", async (data: ChatMessage) => {
     const { courseId, message } = data;
-
+  console.log("course id", courseId)
     const existChat = await chatRepository.getChatByCourseId(courseId);
-
+   
     if (existChat) {
       await chatRepository.addMessage(courseId, message);
     } else {
@@ -70,7 +73,9 @@ io.on("connection", (socket: Socket) => {
         courseId,
         messages: [message],
       };
-      await chatRepository.createChatRoom(chatDetails);
+    
+       await chatRepository.createChatRoom(chatDetails);
+      
     }
     io.to(data.courseId!).emit("messageResponse", data);
   });

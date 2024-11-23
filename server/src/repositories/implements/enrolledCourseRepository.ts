@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { IEnrolledCourse } from "../../interfaces/enrolledCourse";
 import { IEnrolledCourseRepository } from "../interfaces/enrolledCourseRepository.interface";
 import { EnrolledCourse } from "../../models/enrolledCourse";
@@ -61,9 +62,9 @@ export class EnrolledCourseRepository implements IEnrolledCourseRepository {
               { path: "instructor", model: "instructor" }
             ]
           })
-          .populate("studentId"); // Populate student details
-      
-        console.log("EnrolledCoursesByInstructor:", enrolledCourses);
+          .populate("studentId") // Populate student details
+          .sort({ createdAt: -1 });
+    
       
         // Filter out any enrolled courses where courseId is null (i.e., no match for the instructor)
         const filteredEnrolledCourses = enrolledCourses.filter(
@@ -97,7 +98,7 @@ export class EnrolledCourseRepository implements IEnrolledCourseRepository {
       ): Promise<IEnrolledCourse> {
         const course = await EnrolledCourse.findById(enrollmentId);
 
-        console.log("Repository course:",course)
+      
 
         if (!course) {
           throw new BadRequestError("Enrollment not found");
@@ -106,7 +107,7 @@ export class EnrolledCourseRepository implements IEnrolledCourseRepository {
           course.progression?.push(chapterTitle);
         }
         const updatedCourse = await course.save();
-        console.log("Updated Course: ", updatedCourse)
+        
         return updatedCourse;
       }
 
@@ -117,5 +118,104 @@ export class EnrolledCourseRepository implements IEnrolledCourseRepository {
         }
         await course?.save();
       }
+      async getEnrolledCoursesByAdmin(): Promise<IEnrolledCourse[]> {
+        // Fetch all enrolled courses and populate necessary fields, sorted by newest first
+        const enrolledCourses = await EnrolledCourse.find({})
+          .populate({
+            path: "courseId",
+            populate: [
+              { path: "modules.module", model: "module" },
+              { path: "category", model: "category" },
+              { path: "instructor", model: "instructor" },
+            ],
+          })
+          .populate("studentId") // Populate student details
+          .sort({ createdAt: -1 }); // Sort by newest first (descending order)
+      
+        // If no enrolled courses are found, throw an error or return an empty array
+        if (!enrolledCourses.length) {
+          throw new Error("No enrolled courses found.");
+        }
+      
+        return enrolledCourses;
+      }
+      
+      async getTotalRevenue(): Promise<number> {
+        const result = await EnrolledCourse.aggregate([
+          {
+            $match: {
+              status: true, // Assuming you want to consider only enrolled courses with status true
+            },
+          },
+          {
+            $group: {
+              _id: null,
+              totalRevenue: { $sum: "$price" },
+            },
+          },
+          {
+            $project: {
+              _id: 0,
+              totalRevenue: 1,
+            },
+          },
+        ]);
+    
+        return result.length > 0 ? result[0].totalRevenue : 0;
+      }
+
+      async getRevenueData(filter: "weekly" | "monthly" | "yearly") {
+        const date = new Date();
+        let startDate: Date, groupFormat: any;
+      
+        // Determine the date range and grouping logic based on the filter
+        switch (filter) {
+          case "weekly":
+            startDate = new Date(date.setDate(date.getDate() - 7));
+            groupFormat = { $dayOfWeek: "$createdAt" }; // Group by day of the week
+            break;
+          case "monthly":
+            startDate = new Date(date.setMonth(date.getMonth() - 1));
+            groupFormat = { $dayOfMonth: "$createdAt" }; // Group by day of the month
+            break;
+          case "yearly":
+            startDate = new Date(date.setFullYear(date.getFullYear() - 1));
+            groupFormat = { $month: "$createdAt" }; // Group by month
+            break;
+          default:
+            throw new Error("Invalid filter type");
+        }
+      
+        // Aggregate query to compute revenue data
+        const revenueData = await EnrolledCourse.aggregate([
+          {
+            $match: {
+              status: true, // Only consider enrolled courses with status true
+              createdAt: { $gte: startDate }, // Filter by date range
+            },
+          },
+          {
+            $group: {
+              _id: groupFormat, // Group by the specified format
+              totalRevenue: { $sum: "$price" }, // Calculate total revenue
+            },
+          },
+          {
+            $sort: { _id: 1 }, // Sort the grouped data by the grouping field (_id)
+          },
+          {
+            $project: {
+              _id: 1,
+              totalRevenue: 1,
+            },
+          },
+        ]);
+      
+        console.log("Revenue Data:", revenueData); // Debugging output
+        return revenueData;
+      }
+      
+      
+    
   }
  

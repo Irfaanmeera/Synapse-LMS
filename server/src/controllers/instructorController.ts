@@ -4,7 +4,7 @@ import { InstructorService } from '../services/implements/instructorService';
 import { OtpService } from '../services/implements/otpService';
 import { STATUS_CODES } from '../constants/httpStatusCodes';
 import bcrypt from 'bcryptjs'
-import { IInstructor } from '../interfaces/instructor';
+import { IInstructor } from '../interfaces/IInstructor';
 import jwt from "jsonwebtoken";
 import ErrorHandler from '../utils/ErrorHandler';
 import { InstructorRepository } from '../repositories/implements/instructorRepository';
@@ -124,6 +124,7 @@ export class InstructorController {
       const { email, password } = req.body
       const instructor: IInstructor = await instructorService.login(email)
       const validPassword = await bcrypt.compare(password, instructor.password!)
+      if(!instructor.isBlocked){
       if (validPassword) {
         if (instructor.isVerified) {
           const token = jwt.sign(
@@ -173,6 +174,10 @@ export class InstructorController {
         res.status(400).json({ message: "Incorrect password" });
         throw new ErrorHandler("Incorrect password", BAD_REQUEST);
       }
+    } else {
+      res.status(403).json({ message: "Instructor Blocked" });
+      throw new ForbiddenError("Instructor Blocked");
+    }
     } catch (error) {
       console.log(error as Error)
     }

@@ -18,6 +18,7 @@ const CourseDetailsStudent = () => {
       console.log(response)
       if (response) {
         setCourse(response);
+          
         
       }
     } catch (error) {

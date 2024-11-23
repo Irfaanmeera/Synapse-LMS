@@ -84,6 +84,8 @@ export class StudentRepository implements IStudentRepository {
         return await student!.save();
       }
     
-    
+      async getStudentCount(): Promise<number> {
+        return await Student.countDocuments();
+      }
     
 }

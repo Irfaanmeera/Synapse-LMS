@@ -1,9 +1,9 @@
 import { IModule } from "./module";
 
 export enum CourseApproval {
-    pending = "pending",
-    rejected = "rejected",
-    approved = "approved",
+    pending = "Pending",
+    rejected = "Rejected",
+    approved = "Approved",
 }
 
 export interface ICourse {

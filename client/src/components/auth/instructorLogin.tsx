@@ -51,14 +51,14 @@ const Signin: FC = () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error("Caught error:", error); // Log the entire error
-      if (error === "Not verified") {
-        console.log("User not verified, redirecting to OTP verification page."); // Log redirection
-        await instructorResendOtp(data.email); // Resend OTP
-        navigate("instructor/verifyOtp"); // Redirect to OTP verification page
-      } else {
+      // if (error === "Not verified") {
+      //   console.log("User not verified, redirecting to OTP verification page."); // Log redirection
+      //   await instructorResendOtp(data.email); // Resend OTP
+      //   navigate("instructor/verifyOtp"); // Redirect to OTP verification page
+      // } else {
         setErr(error); // Set specific error message
         console.log("Error set:", error); // Log the error message set
-      }
+      
     }
   };
 
@@ -109,6 +109,7 @@ const Signin: FC = () => {
                           Instructor Login
                         </h2>
                       </div>
+                      <div>{err && <p className="text-meta-1 text-base font-serif">{err}</p>}</div>
                       <form
                         onSubmit={handleSubmit(submitData)}
                         className="mt-6 space-y-6"
@@ -181,11 +182,11 @@ const Signin: FC = () => {
                             Sign In
                           </button>
                         </div>
-                        {err && (
+                        {/* {err && (
                           <p className="text-red text-opacity-20 text-sm">
                             {err}
                           </p>
-                        )}
+                        )} */}
                       </form>
                       {/* <div>
                                            

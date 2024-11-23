@@ -32,7 +32,6 @@ const userSlice = createSlice({
             state.userEmail= null;
             localStorage.removeItem("token");
             localStorage.removeItem("refreshToken");
-            localStorage.removeItem('completedChapters')
           },
           addCourse(state, action: PayloadAction<string | null>) {
             state.user?.courses?.push(action.payload!);

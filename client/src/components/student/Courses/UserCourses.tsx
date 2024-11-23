@@ -18,8 +18,14 @@ const UserCourses: React.FC = () => {
   const fetchCourses = async (page: number) => {
     try {
       const response: { courses: Course[]; totalCount: number } = await getAllCourses(page);
-      setCourses(response.courses);
-      setTotalCount(response.totalCount);
+      console.log("Course response:", response)
+      // Filter courses to show only those that are approved and listed
+      const filteredCourses = response.courses.filter(
+        (course) => course.approval === "Approved" && course.status === true
+      );
+      console.log("filtered Course response:", filteredCourses)
+      setCourses(filteredCourses);
+      setTotalCount(filteredCourses.length); // Update totalCount to match filtered courses
     } catch (error) {
       console.log("Error fetching courses:", error);
       setError("Failed to fetch courses.");
@@ -41,8 +47,9 @@ const UserCourses: React.FC = () => {
 
   useEffect(() => {
     const coursesFromLocation = location.state?.courses || [];
+    console.log("coursesFromLocation",coursesFromLocation)
     if (coursesFromLocation.length > 0) {
-      setCourses(coursesFromLocation);
+      setCourses(coursesFromLocation.filter(course => course.approval === "Approved" && course.status === true));
     } else {
       fetchCourses(currentPage);
     }

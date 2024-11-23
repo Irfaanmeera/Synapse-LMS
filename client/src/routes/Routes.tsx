@@ -31,6 +31,11 @@ import AdminLayout from "../pages/admin/AdminLayout.tsx";
 import AdminDashboard from "../pages/admin/AdminDashboard.tsx";
 import StudentList from "../components/admin/StudentManagement/StudentList.tsx";
 import InstructorList from "../components/admin/InstructorManagement/InstructorList.tsx";
+import AdminCourses from "../components/admin/CourseManagement/CourseList.tsx";
+import SingleCourseViewAdmin from "../components/admin/CourseManagement/SingleCourse.tsx";
+import WalletTransactions from "../components/instructor/Wallet/Transactions.tsx";
+import Enrollments from "../components/admin/EnrolledCourses/Enrollments.tsx";
+import AdminCategories from "../components/admin/CategoryManagement/category.tsx";
 
 const StudentHomeLazy = React.lazy(() => import("../pages/student/StudentHome"));
 const VerifyOtpLazy = React.lazy(() => import("../pages/student/VerifyOtp"));
@@ -74,6 +79,7 @@ const RoutePage = () => {
           <Route path="chat" element={<ProtectedRoute allowedRoles={[Roles.instructor]} element={<StudentManagement />} />} />
           <Route path="singleChat" element={<ProtectedRoute allowedRoles={[Roles.instructor]} element={<SingleChat />} />} />
           <Route path="studentDetails" element={<ProtectedRoute allowedRoles={[Roles.instructor]} element={<StudentManagement />} />} />
+          <Route path="transactions" element={<ProtectedRoute allowedRoles={[Roles.instructor]} element={< WalletTransactions/>} />} />
         </Route>
 
         {/* Admin Routes */}
@@ -82,6 +88,10 @@ const RoutePage = () => {
           <Route index element={<AdminDashboard />} />
           <Route path="studentDetails" element={<ProtectedRoute allowedRoles={[Roles.admin]} element={<StudentList />} />} />
           <Route path="instructors" element={<ProtectedRoute allowedRoles={[Roles.admin]} element={<InstructorList />} />} />
+          <Route path="categories" element={<ProtectedRoute allowedRoles={[Roles.admin]} element={<AdminCategories />} />} />
+          <Route path="courses" element={<ProtectedRoute allowedRoles={[Roles.admin]} element={<AdminCourses />} />} />
+          <Route path="course/:courseId" element={<ProtectedRoute allowedRoles={[Roles.admin]} element={<SingleCourseViewAdmin />} />} />
+          <Route path="enrollments" element={<ProtectedRoute allowedRoles={[Roles.admin]} element={<Enrollments />} />} />
         </Route>
 
         {/* Error Routes */}

@@ -1,5 +1,5 @@
 import mongoose, { Document, Model } from "mongoose";
-import { IAdmin } from "../interfaces/admin";
+import { IAdmin } from "../interfaces/Iadmin";
 import bcrypt from "bcryptjs";  // Import bcrypt for password hashing
 
 interface AdminModel extends Model<AdminDoc> {

@@ -195,6 +195,7 @@ export class CourseRepository implements ICourseRepository {
           .skip(skip)
           .populate("category")
           .populate("level")
+          .sort({ createdAt: -1 }); 
           
     
         const totalCount = await Course.find(condition).countDocuments();
@@ -204,5 +205,26 @@ export class CourseRepository implements ICourseRepository {
       async incrementEnrolledCount(courseId: string): Promise<void> {
         await Course.findByIdAndUpdate(courseId, { $inc: { enrolled: 1 } });
     }
-    
+
+    async getCourseByAdmin(): Promise<ICourse[]> {
+        return await Course.find()
+        .populate("instructor")
+        .populate("category")
+        .populate({
+            path: "modules.module",
+            model: "module",
+        });
+    }
+
+    async getSingleCourseForAdmin(courseId: string): Promise<ICourse | null> {
+        const course = await Course.findById(courseId)
+          .populate("instructor")
+          .populate("category")
+          .populate({
+            path: "modules.module",
+            model: "module",
+          });
+        return course;
+      }
+   
 }
