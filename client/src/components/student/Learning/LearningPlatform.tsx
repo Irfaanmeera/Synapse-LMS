@@ -1,16 +1,17 @@
 import { useEffect, useState } from 'react';
 import { Breadcrumbs } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import LearningCard from './LearningCard';
 import { getAllEnrolledCourse } from '../../../api/studentApi'; // Assuming this is your API method
 import { EnrolledCourse } from '../../../interfaces/enrolledCourse';
-
+import toast from 'react-hot-toast';
 
 
 const LearningPlatform = () => {
   const [enrolledCourses, setEnrolledCourses] = useState<EnrolledCourse[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
+  const navigate = useNavigate()
 
   const fetchCourses = async () => {
     try {
@@ -24,6 +25,32 @@ const LearningPlatform = () => {
       setLoading(false); // Set loading to false when data is fetched or error occurs
     }
   };
+  // const fetchCourses = async () => {
+  //   try {
+  //     const enrolledCourses = await getAllEnrolledCourse();
+  //     console.log(enrolledCourses);
+  //     setEnrolledCourses(enrolledCourses); // Update state with fetched courses
+  //   } catch (err) {
+  //     console.error('Error fetching enrolled courses:', err);
+  
+  //     // Check if the error response contains a message from the backend
+  //     if (err.response && err.response.data && err.response.data.message) {
+  //       if (err.response.data.message === "Invalid refresh token") {
+  //         // Handle refresh token error (maybe redirect to login page)
+  //         toast.error("Your session has expired. Please log in again.");
+  //         // Optionally, redirect to the login page:
+  //       navigate('/')
+  //       } else {
+  //         toast.error(err.response.data.message); // Show other errors
+  //       }
+  //     } else {
+  //       toast.error('Failed to load courses. Please try again later.');
+  //     }
+  //   } finally {
+  //     setLoading(false); // Set loading to false when data is fetched or error occurs
+  //   }
+  // };
+  
 
   useEffect(() => {
     fetchCourses(); // Fetch the courses when the component mounts

@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
+import UserRole from '../interfaces/entityInterface/IUserRoles';
 
-export const generateToken = (userId: string, role: string, secret: string, expiresIn: string) => {
+export const generateToken = (userId: string, role: UserRole, secret: string, expiresIn: string) => {
     try{
         return jwt.sign(
             { userId, role },

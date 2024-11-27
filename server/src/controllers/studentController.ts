@@ -8,6 +8,8 @@ import { IStudent,ISearch } from '../interfaces/entityInterface';
 import jwt from "jsonwebtoken";
 import { BadRequestError } from '../constants/errors/badrequestError';
 import { ForbiddenError } from '../constants/errors/forbiddenError';
+import { generateToken } from '../utils/generateJWT';
+import UserRole from '../interfaces/entityInterface/IUserRoles';
 
 const { BAD_REQUEST, OK, INTERNAL_SERVER_ERROR } = STATUS_CODES
 
@@ -62,23 +64,12 @@ export class StudentController {
       const existingOtp = await otpService.findOtp(email)
       if (otp === existingOtp?.otp) {
         const student: IStudent = await this.studentService.verifyStudent(email)
-        const token = jwt.sign(
-          {
-            studentId: student.id,
-            role: "student",
-          },
-          process.env.JWT_SECRET!,
-          { expiresIn: "15m" } // Access token expires in 15 minutes
-        );
+        if (!student || !student.id) {
+          throw new Error("Student or Student ID is missing.");
+        }
+        const token = generateToken(student.id, UserRole.Student, process.env.JWT_SECRET!, '15m');
+        const refreshToken = generateToken(student.id, UserRole.Student, process.env.JWT_REFRESH_SECRET!, '7d');
 
-        const refreshToken = jwt.sign(
-          {
-            studentId: student.id,
-            role: "student",
-          },
-          process.env.JWT_REFRESH_SECRET!, // Make sure you have a separate secret for refresh tokens
-          { expiresIn: "7d" } // Refresh token expires in 7 days
-        );
         const studentData = {
           _id: student.id,
           name: student.name,
@@ -87,7 +78,7 @@ export class StudentController {
           wallet: student.wallet,
           courses: student.courses,
           image: student.image,
-          role: "student",
+          role: UserRole.Student,
         };
 
         res.status(200).json({
@@ -123,18 +114,13 @@ export class StudentController {
       }
   
       
-      const token = jwt.sign(
-        { studentId: student.id, role: "student" },
-        process.env.JWT_SECRET!,
-        { expiresIn: "1m" }
-      );
-  
-      const refreshToken = jwt.sign(
-        { studentId: student.id, role: "student" },
-        process.env.JWT_REFRESH_SECRET!,
-        { expiresIn: "7d" }
-      );
-  
+      if (!student || !student.id) {
+        throw new Error("Student or Student ID is missing.");
+      }
+      const token = generateToken(student.id, UserRole.Student, process.env.JWT_SECRET!, '1m');
+      const refreshToken = generateToken(student.id, UserRole.Student, process.env.JWT_REFRESH_SECRET!, '7d');
+       console.log("Access Token in controller",token)
+      
       const studentData = {
         _id: student.id,
         name: student.name,
@@ -143,7 +129,7 @@ export class StudentController {
         wallet: student.wallet,
         courses: student.courses,
         image: student.image,
-        role: "student",
+        role: UserRole.Student,
       };
   
       return res.status(200).json({

@@ -10,6 +10,7 @@ import ErrorHandler from '../utils/ErrorHandler';
 import { BadRequestError } from '../constants/errors/badrequestError';
 import { ForbiddenError } from '../constants/errors/forbiddenError'
 import { generateToken } from '../utils/generateJWT';
+import UserRole from '../interfaces/entityInterface/IUserRoles';
 
 
 
@@ -66,23 +67,12 @@ export class InstructorController {
       const existingOtp = await otpService.findOtp(email)
       if (otp === existingOtp?.otp) {
         const instructor: IInstructor = await this.instructorService.verifyInstructor(email)
-        const token = jwt.sign(
-          {
-            instructorId: instructor.id,
-            role: "Instructor",
-          },
-          process.env.JWT_SECRET!,
-          { expiresIn: "15m" } // Access token expires in 15 minutes
-        );
-
-        const refreshToken = jwt.sign(
-          {
-            instructorId: instructor.id,
-            role: "Instructor",
-          },
-          process.env.JWT_REFRESH_SECRET!, // Make sure you have a separate secret for refresh tokens
-          { expiresIn: "7d" } // Refresh token expires in 7 days
-        );
+        if (!instructor || !instructor.id) {
+          throw new Error("Instructor or Instructor ID is missing.");
+        }
+  
+        const token = generateToken(instructor.id, UserRole.Instructor, process.env.JWT_SECRET!, '1m');
+          const refreshToken = generateToken(instructor.id, UserRole.Instructor, process.env.JWT_REFRESH_SECRET!, '7d');
         const instructorData = {
           _id: instructor.id,
           name: instructor.name,
@@ -93,7 +83,7 @@ export class InstructorController {
           qualification: instructor.qualification,
           description: instructor.description,
           courses: instructor.courses,
-          role: "instructor",
+          role: UserRole.Instructor,
         };
         console.log(instructorData)
 
@@ -119,12 +109,12 @@ export class InstructorController {
       if (!instructor || !instructor.id) {
         throw new Error("Instructor or Instructor ID is missing.");
       }
-      
+
       if(!instructor.isBlocked){
       if (validPassword) {
         if (instructor.isVerified) {
-          const token = generateToken(instructor.id, 'instructor', process.env.JWT_SECRET!, '1m');
-          const refreshToken = generateToken(instructor.id, 'instructor', process.env.JWT_REFRESH_SECRET!, '7d');
+          const token = generateToken(instructor.id,UserRole.Instructor, process.env.JWT_SECRET!, '1m');
+          const refreshToken = generateToken(instructor.id, UserRole.Instructor, process.env.JWT_REFRESH_SECRET!, '7d');
           const instructorData = {
             _id: instructor.id,
             name: instructor.name,
@@ -136,7 +126,7 @@ export class InstructorController {
             wallet: instructor.wallet,
             courses: instructor.courses,
             walletHistory: instructor.walletHistory,
-            role: "instructor",
+            role: UserRole.Instructor,
           };
 
           res.status(200).json({

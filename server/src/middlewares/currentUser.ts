@@ -1,137 +1,59 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import {Request,Response,NextFunction} from 'express'
-import jwt,{JwtPayload} from 'jsonwebtoken'
+import { Request, Response, NextFunction } from 'express';
+import jwt, { JwtPayload } from 'jsonwebtoken';
+import { generateToken } from '../utils/generateJWT';
 
-import { ForbiddenError } from '../constants/errors/forbiddenError'
+export const isUserAuth = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const authorizationHeader = req.headers.authorization;
+    const refreshTokenHeader = req.headers["x-refresh-token"];
 
-declare module 'express'{
-  interface Request {
-    currentUser?: string
-  }
-}
-
-export const isAdminAuth = (req:Request,res:Response,next:NextFunction)=>{
-    try{
-     const authorizationHeader = req.headers.authorization;
-     if(authorizationHeader){
-        const token = authorizationHeader.split(' ')[1]
-        const decoded = jwt.verify(token,process.env.JWT_SECRET!) as JwtPayload;
-        if(decoded.role==='admin'){
-          req.currentUser = decoded.adminId;
-          next()
-        }else{
-          throw new ForbiddenError('Invalid Token')
-        }
-     }else{
-      throw new ForbiddenError('Invalid Token')
+    console.log("Authorization Header", authorizationHeader);
+    if (!authorizationHeader) {
+      return res.status(403).json({ success: false, message: "Access token is missing" });
     }
 
-    }catch(error){
-        throw new ForbiddenError("Invalid token");
-        res.send({});
-    }
-  }
+    const token = authorizationHeader.split(" ")[1];
+    console.log("Token from frontend", token);
+    let decoded: JwtPayload | string;
 
-    export const isStudentAuth = (
-      req: Request,
-      res: Response,
-      next: NextFunction
-    ) => {
-      try {
-        const authorizationHeader = req.headers.authorization;
-        console.log(authorizationHeader)
-        if (authorizationHeader) {
-          const token = authorizationHeader.split(" ")[1];
-          console.log(token)
-          const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
-    
-          if (decoded.role === "student") {
-            req.currentUser = decoded.studentId;
-            next();
-          } else {
-            throw new ForbiddenError("Invalid token");
-          }
-        } else {
-          throw new ForbiddenError("Invalid token");
-        }
-      } catch (error) {
-        throw new ForbiddenError("Invalid token");
-        res.send({});
+    try {
+      // Verify the access token
+      decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload | string;
+      if (typeof decoded !== 'string' && decoded.role) {
+        req.currentUser = decoded.userId;  // Store user ID
+        return next();
+      } else {
+        return res.status(403).json({ success: false, message: "Invalid token" });
       }
-    }
-
-    export const isInstructorAuth = async (
-      req: Request,
-      res: Response,
-      next: NextFunction
-    ) => {
-      try {
-        const authorizationHeader = req.headers.authorization;
-        const refreshTokenHeader = req.headers["x-refresh-token"];
-        
-        // Ensure access token is present in the Authorization header
-        if (!authorizationHeader) {
-          throw new ForbiddenError("Access token is missing");
-        }
-    
-        const token = authorizationHeader.split(" ")[1];
-        console.log("Instructor token", token);
-        let decoded: JwtPayload;
-    
+    } catch (error) {
+      // Handle expired token scenario
+      if (error.name === "TokenExpiredError" && refreshTokenHeader) {
+        const refreshToken = refreshTokenHeader as string;
         try {
-          // Verify the access token
-          decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
-    
-          // Check if the token belongs to an instructor
-          if (decoded.role === "instructor") {
-            req.currentUser = decoded.instructorId;
+          // Verify the refresh token
+          const refreshDecoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET!) as JwtPayload | string;
+          if (typeof refreshDecoded !== 'string' && refreshDecoded.role) {
+            req.currentUser = refreshDecoded.userId;
+            // Generate a new access token using the refresh token
+            const newAccessToken = generateToken(refreshDecoded.userId, refreshDecoded.role, process.env.JWT_SECRET!, '1m');
+            console.log("Access Token generated", newAccessToken);
+            res.setHeader("x-access-token", newAccessToken);
             return next();
           } else {
-            throw new ForbiddenError("Invalid token");
+            console.log("Invalid or expired refresh token" )
+            return res.status(403).json({ success: false, message: "Invalid refresh token" });
           }
         } catch (error) {
-          // Access token might have expired, check for refresh token in headers
-          if (error.name === "TokenExpiredError" && refreshTokenHeader) {
-            const refreshToken = refreshTokenHeader as string;
-            console.log("Refresh token in current user", refreshToken);
-    
-            try {
-              // Verify the refresh token
-              const refreshDecoded = jwt.verify(
-                refreshToken,
-                process.env.JWT_REFRESH_SECRET! // Correct secret for refresh token
-              ) as JwtPayload;
-    
-              // Ensure the refresh token belongs to an instructor
-              if (refreshDecoded.role === "instructor") {
-                req.currentUser = refreshDecoded.instructorId;
-    
-                // Generate a new access token
-                const newAccessToken = jwt.sign(
-                  { instructorId: refreshDecoded.instructorId, role: "instructor" },
-                  process.env.JWT_SECRET!, // Correct secret for access token
-                  { expiresIn: "1m" } // Short expiry time for new access token
-                );
-    
-                console.log("New access token: ", newAccessToken);
-    
-                // Send the new access token in the response headers
-                res.setHeader("x-access-token", newAccessToken);
-    
-                return next();
-              } else {
-                throw new ForbiddenError("Invalid refresh token");
-              }
-            } catch (refreshError) {
-              throw new ForbiddenError("Invalid refresh token");
-            }
-          } else {
-            throw new ForbiddenError("Invalid access token");
-          }
+          // If refresh token is invalid or expired, force login
+          console.log("Invalid or expired refresh token" )
+          return res.status(403).json({ success: false, message: "Invalid or expired refresh token" });
         }
-      } catch (error) {
-        console.error(error);
-        res.status(403).json({ success: false, message: "Unauthorized access" });
+      } else {
+        return res.status(403).json({ success: false, message: "Invalid access token" });
       }
-    };
-    
+    }
+  } catch (error) {
+    return res.status(403).json({ success: false, message: "Unauthorized access" });
+  }
+};
+

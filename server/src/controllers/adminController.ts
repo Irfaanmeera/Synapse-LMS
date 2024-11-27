@@ -1,13 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 import { IAdmin } from '../interfaces/entityInterface/IAdmin';
 import { AdminService } from '../services/adminService';
-import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs'; // Import bcryptjs for password comparison
 import ErrorHandler from '../utils/ErrorHandler';
 import { STATUS_CODES } from '../constants/httpStatusCodes';
 
 import { BadRequestError } from '../constants/errors/badrequestError';
 import { generateToken } from '../utils/generateJWT';
+import UserRole from '../interfaces/entityInterface/IUserRoles';
 
 
 const { BAD_REQUEST } = STATUS_CODES;
@@ -29,11 +29,13 @@ export class AdminController {
 
       // Compare plain password with hashed password
       const isPasswordMatch = await bcrypt.compare(password, admin.password!);
-
+      if(!admin || !admin.id){
+        throw new Error('Admin or admin id not found')
+      }
       if (isPasswordMatch) {
         // Generate access token and refresh token if password matches
-        const token = generateToken(admin.id, 'admin', process.env.JWT_SECRET!, '1h');
-        const refreshToken = generateToken(admin.id, 'admin', process.env.JWT_REFRESH_SECRET!, '7d');
+        const token = generateToken(admin.id, UserRole.Admin, process.env.JWT_SECRET!, '1h');
+        const refreshToken = generateToken(admin.id, UserRole.Admin, process.env.JWT_REFRESH_SECRET!, '7d');
         
 
         // Admin details to send back in response
