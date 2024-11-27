@@ -36,6 +36,8 @@ import SingleCourseViewAdmin from "../components/admin/CourseManagement/SingleCo
 import WalletTransactions from "../components/instructor/Wallet/Transactions.tsx";
 import Enrollments from "../components/admin/EnrolledCourses/Enrollments.tsx";
 import AdminCategories from "../components/admin/CategoryManagement/category.tsx";
+import SearchCourses from "../pages/student/SearchCourse.tsx";
+
 
 const StudentHomeLazy = React.lazy(() => import("../pages/student/StudentHome"));
 const VerifyOtpLazy = React.lazy(() => import("../pages/student/VerifyOtp"));
@@ -61,6 +63,8 @@ const RoutePage = () => {
         <Route path="/myLearning" element={<ProtectedRoute allowedRoles={[Roles.student]} element={<MyLearning />} />} />
         <Route path="/singleEnrolledCourse/:courseId" element={<ProtectedRoute allowedRoles={[Roles.student]} element={<SingleEnrolledCoursePage />} />} />
         <Route path="/courses" element={<Course />} />
+        <Route path="/searchCourses" element={<SearchCourses/>} />
+
         <Route path="/courseDetails/:courseId" element={<StudentCourseDetails />} />
         <Route path="/profile" element={<ProtectedRoute allowedRoles={[Roles.student]} element={<Profile />} />} />
 
@@ -76,8 +80,6 @@ const RoutePage = () => {
           <Route path="createCourse" element={<ProtectedRoute allowedRoles={[Roles.instructor]} element={<CreateCourse />} />} />
           <Route path="courseDetails/:courseId" element={<ProtectedRoute allowedRoles={[Roles.instructor]} element={<CourseDetails />} />} />
           <Route path="updateCourse/:courseId" element={<ProtectedRoute allowedRoles={[Roles.instructor]} element={<UpdateCourse />} />} />
-          <Route path="chat" element={<ProtectedRoute allowedRoles={[Roles.instructor]} element={<StudentManagement />} />} />
-          <Route path="singleChat" element={<ProtectedRoute allowedRoles={[Roles.instructor]} element={<SingleChat />} />} />
           <Route path="studentDetails" element={<ProtectedRoute allowedRoles={[Roles.instructor]} element={<StudentManagement />} />} />
           <Route path="transactions" element={<ProtectedRoute allowedRoles={[Roles.instructor]} element={< WalletTransactions/>} />} />
         </Route>

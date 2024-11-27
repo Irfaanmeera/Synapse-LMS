@@ -1,7 +1,7 @@
 import mongoose, { Model, Document } from 'mongoose'
-import { ICourse } from '../interfaces/course'
-import { IModule } from '../interfaces/module';
-import { CourseApproval } from '../interfaces/course';
+import { ICourse } from '../interfaces/entityInterface/ICourse'
+import { IModule } from '../interfaces/entityInterface/IModule';
+import { CourseApproval } from '../interfaces/entityInterface/ICourse';
 
 interface CourseModel extends Model<ICourse> {
     build(attrs: ICourse): CourseDoc;

@@ -20,6 +20,8 @@ import { RootState } from "../../../../redux/store";
 import { Roles } from "../../../../interfaces/Roles";
 import {toast} from 'react-hot-toast'
 import { Avatar, Typography} from "@mui/material";
+import { getAllCategories, searchCourse } from "../../../../api/studentApi";
+import { Category } from "../../../../interfaces/Category";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -30,7 +32,13 @@ const Navbar = () => {
   const [isOpenDrop2, setIsOpenDrop2] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const dropdownRef2 = useRef<HTMLDivElement>(null);
-  
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  const [categories, setCategories] = useState<Category[]>([]);
+
+
+ 
+ 
 
   const handleLogout = () => {
     dispatch(userActions.userLogout());
@@ -41,6 +49,35 @@ const Navbar = () => {
       navigate("/");
     }
   };
+
+
+  // const handleSearch = async () => {
+  //   const searchTerm = searchInputRef.current?.value;
+  //   console.log("Search Term", searchTerm)
+  //   if (searchTerm) {
+  //     const response = await searchCourse(searchTerm);
+  //     if (response) {
+  //       // Dispatch action to store search results
+  //       dispatch(userActions.setSearchResults(response));
+  //     }
+  //   }
+  // };
+  const handleSearch = async () => {
+    const searchTerm = searchInputRef.current?.value;
+    console.log("Search Term", searchTerm);
+  
+    if (searchTerm) {
+      const response = await searchCourse(searchTerm);
+      if (response) {
+        // Dispatch action to store search results
+        dispatch(userActions.setSearchResults(response));
+  
+        // Navigate to the search results page with search term in state
+        navigate("/searchCourses", { state: { searchTerm } });
+      }
+    }
+  };
+
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -77,50 +114,43 @@ const Navbar = () => {
             </div>
 
             {/* EXPLORE BUTTON WITH DROPDOWN */}
-            <div ref={dropdownRef} className="relative z-50">
-              {/* Button to toggle dropdown */}
-              <button
-                className="flex py-2 px-4  items-center text-blue-500 justify-center text-sm focus:outline-none border bg-transparent rounded-xl border-Blueviolet"
-                onClick={() => setIsOpenDrop(!isOpenDrop)}
-              >
-                Explore{" "}
-                <ChevronDownIcon className="w-4 h-4 text-blue-500 ml-1" />
-              </button>
+            {/* <div ref={dropdownRef} className="relative z-50">
+      
+      <button
+        className="flex py-2 px-4 items-center text-blue-500 justify-center text-sm focus:outline-none border bg-transparent rounded-xl border-Blueviolet"
+        onClick={() => setIsOpenDrop(!isOpenDrop)}
+      >
+        Explore
+        <ChevronDownIcon className="w-4 h-4 text-blue-500 ml-1" />
+      </button>
 
-              {/* Dropdown content */}
-              {isOpenDrop && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg">
-                  <ul className="py-1 text-sm text-gray-700">
-                    <Link to="/category/science">
-                      <li className="block px-4 py-2 hover:bg-gray-100">
-                        Science
-                      </li>
-                    </Link>
-                    <Link to="/category/technology">
-                      <li className="block px-4 py-2 hover:bg-gray-100">
-                        Technology
-                      </li>
-                    </Link>
-                    <Link to="/category/mathematics">
-                      <li className="block px-4 py-2 hover:bg-gray-100">
-                        Mathematics
-                      </li>
-                    </Link>
-                    <Link to="/category/arts">
-                      <li className="block px-4 py-2 hover:bg-gray-100">
-                        Arts
-                      </li>
-                    </Link>
-                  </ul>
-                </div>
-              )}
-            </div>
+     
+      {isOpenDrop && (
+        <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg">
+          <ul className="py-1 text-sm font-serif text-gray-700">
+         
+            {categories.map((category) => (
+              <Link
+                key={category.id}
+                to="#"
+                onClick={() => handleCategoryClick(category!.id)} // Handle category click
+              >
+                <li className="block px-4 py-2 hover:bg-gray">
+                  {category.category} {/* Display category name */}
+                {/* </li>
+              </Link>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>  */}
 
             {/* SEARCH BAR */}
             <div className="relative mx-4 flex-1 hidden lg:block">
               <input
                 type="text"
                 placeholder="Search Courses..."
+                ref={searchInputRef}
                 className="w-full pl-4 pr-14 py-3 border border-lightgray rounded-3xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent"
               />
 
@@ -128,6 +158,7 @@ const Navbar = () => {
               <div className=" absolute inset-y-0 right-0 flex items-center pr-1 pt-5 lg:pt-0">
                 <button
                   type="submit"
+                  onClick={handleSearch}
                   className="p-2 lg:p-3 focus:outline-none focus:shadow-outline bg-Blueviolet hover:bg-midnightblue duration-150 ease-in-out rounded-full"
                 >
                     <span>
@@ -292,7 +323,33 @@ const Navbar = () => {
             ) : (
                 <div className="ml-20 flex items-center justify-between">
                 <div className="flex space-x-0"> {/* Add margin-right for spacing */}
+                <Link to={"/"}>
+                      <Typography
+                    
+                        variant="body2"
+                        color="gray"
+                        className="font-semibold"
+                      >
+                        <div className="flex text-base mt-2 mr-4 items-center text-slategray">
+                          Home
+                        </div>
+                      </Typography>
+                    </Link>
+                <Link to={"/courses"}>
+                      <Typography
+                    
+                        variant="body2"
+                        color="gray"
+                        className="font-semibold"
+                      >
+                        <div className="flex text-base mt-2 mr-4 items-center text-slategray">
+                          Courses
+                        </div>
+                      </Typography>
+                    </Link>
+                   
                     <Signdialog />
+                  
                     <InstructorSignIn/>
                     <Registerdialog />
                     

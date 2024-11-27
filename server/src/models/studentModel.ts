@@ -1,5 +1,5 @@
 import mongoose, { Document, Model } from "mongoose";
-import { IStudent } from "../interfaces/student";
+import { IStudent } from "../interfaces/entityInterface/IStudent";
 
 interface StudentModel extends Model<StudentDoc> {
   build(attrs: IStudent): StudentDoc;

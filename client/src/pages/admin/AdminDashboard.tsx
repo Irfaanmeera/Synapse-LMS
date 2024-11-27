@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import CardDataStats from '../../components/instructor/CardDataStats';
-import ChartOne from '../../components/instructor/Charts/ChartOne';
-import ChartThree from '../../components/admin/Charts/ChartThree';
-import ChartTwo from '../../components/instructor/Charts/ChartTwo';
-import ChatCard from '../../components/instructor/Chat/ChatCard';
+
+import ChartThree from '../../components/admin/Charts/CourseEnrollment';
 import TableOne from '../../components/admin/StudentManagement/StudentList';
 import { adminDashboard } from '../../api/adminApi';
 import { Person, Class } from '@mui/icons-material';

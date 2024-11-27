@@ -1,33 +1,22 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Request, Response, NextFunction } from 'express';
-import { StudentService } from '../services/implements/studentService';
-import { OtpService } from '../services/implements/otpService';
+import { StudentService } from '../services/studentService';
+import { OtpService } from '../services/otpService';
 import { STATUS_CODES } from '../constants/httpStatusCodes';
 import bcrypt from 'bcryptjs'
-import { IStudent } from '../interfaces/student';
+import { IStudent,ISearch } from '../interfaces/entityInterface';
 import jwt from "jsonwebtoken";
-import { StudentRepository } from '../repositories/implements/studentRepository';
 import { BadRequestError } from '../constants/errors/badrequestError';
-import { InstructorRepository } from '../repositories/implements/instructorRepository';
-import { CourseRepository } from '../repositories/implements/courseRepository';
-import { CategoryRepository } from '../repositories/implements/categoryRepository';
-import { EnrolledCourseRepository } from '../repositories/implements/enrolledCourseRepository';
-import { ModuleRepository } from '../repositories/implements/moduleRepository';
 import { ForbiddenError } from '../constants/errors/forbiddenError';
 
 const { BAD_REQUEST, OK, INTERNAL_SERVER_ERROR } = STATUS_CODES
 
-const studentRepository = new StudentRepository();
-const instructorRepository = new InstructorRepository();
-const courseRepository = new CourseRepository();
-const categoryRepository = new CategoryRepository();
-const enrolledCourseRepository = new EnrolledCourseRepository()
-const moduleRepository = new ModuleRepository()
-const studentService = new StudentService(studentRepository,instructorRepository,courseRepository,categoryRepository,moduleRepository, enrolledCourseRepository );
 const otpService = new OtpService();
 
 export class StudentController {
-
+  constructor(
+    private studentService: StudentService
+  ) { }
 
   async signup(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
@@ -39,7 +28,7 @@ export class StudentController {
         password: hashedPassword,
         mobile,
       };
-      await studentService.signup(studentDetails);
+      await this.studentService.signup(studentDetails);
       const otp = otpService.generateOtp();
       await otpService.createOtp({ email, otp });
       otpService.sendOtpMail(email, otp);
@@ -72,7 +61,7 @@ export class StudentController {
       const { email, otp } = req.body;
       const existingOtp = await otpService.findOtp(email)
       if (otp === existingOtp?.otp) {
-        const student: IStudent = await studentService.verifyStudent(email)
+        const student: IStudent = await this.studentService.verifyStudent(email)
         const token = jwt.sign(
           {
             studentId: student.id,
@@ -118,7 +107,7 @@ export class StudentController {
   async login(req: Request, res: Response, next: NextFunction) {
     try {
       const { email, password } = req.body;
-      const student: IStudent = await studentService.login(email);
+      const student: IStudent = await this.studentService.login(email);
       
       if (!student.isBlocked) {
       const validPassword = await bcrypt.compare(password, student.password!);
@@ -133,11 +122,11 @@ export class StudentController {
         return res.status(400).json({ message: "Not verified" });
       }
   
-      // If password is valid and student is verified
+      
       const token = jwt.sign(
         { studentId: student.id, role: "student" },
         process.env.JWT_SECRET!,
-        { expiresIn: "15m" }
+        { expiresIn: "1m" }
       );
   
       const refreshToken = jwt.sign(
@@ -180,7 +169,7 @@ export class StudentController {
         const refreshTokenMaxAge = 7 * 24 * 60 * 60 * 1000; 
 
         // Check if user already exists
-        const student = await studentService.getUserByEmail(email);
+        const student = await this.studentService.getUserByEmail(email);
         console.log(student)
 
         if (student) {
@@ -238,7 +227,7 @@ export class StudentController {
                 isVerified: true, // Assuming Google login skips the OTP verification
             };
 
-            const savedStudent = await studentService.signup(newStudent);
+            const savedStudent = await this.studentService.signup(newStudent);
             console.log('Googlesigned User:'+ savedStudent)
             // Check if savedStudent is null
             if (!savedStudent) {
@@ -296,7 +285,7 @@ export class StudentController {
   try{
     const id = req.currentUser;
     const {name,mobile} = req.body;
-    const student = await studentService.updateStudent({id,name,mobile});
+    const student = await this.studentService.updateStudent({id,name,mobile});
     res.status(200).json(student)
   }
 
@@ -318,7 +307,7 @@ export class StudentController {
       if (!file) {
         throw new BadRequestError("Image not found");
       }
-      const student = await studentService.updateImage(id!, file);
+      const student = await this.studentService.updateImage(id!, file);
       res.status(200).json(student);
     } catch (error) {
       if (error instanceof Error) {
@@ -333,7 +322,7 @@ export class StudentController {
       const pageNumber = Number(page);
   
       // Call the service function with the converted number
-      const courses = await studentService.getAllCourses(pageNumber);
+      const courses = await this.studentService.getAllCourses(pageNumber);
   
       res.status(200).json(courses);
     } catch (error) {
@@ -342,9 +331,100 @@ export class StudentController {
       }
     }
   }
+
+  async searchCourses(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { search, category} = req.query;
+      const inputs: ISearch = {};
+      console.log("REsponse in search", search)
+      if (search) {
+        inputs.$or = [
+          { name: { $regex: search as string, $options: "i" } },
+          { description: { $regex: search as string, $options: "i" } },
+        ];
+      }
+      if (category && category !== "undefined") {
+        inputs.category = category as string;
+      }
+      
+      const course = await this.studentService.searchCourse(inputs);
+
+      res.status(200).json(course);
+    } catch (error) {
+      if (error instanceof Error) {
+        return next(error);
+      }
+    }
+  }
+
+  // async getCourses(req: Request, res: Response, next: NextFunction) {
+  //   try {
+  //     let pageNo = 0;
+  //     const { page, category } = req.query;
+  //     if (page !== undefined && !isNaN(Number(page))) {
+  //       pageNo = Number(page);
+  //     }
+  //     const condition: { page: number; category?: string } = { page: pageNo };
+  //     if (category !== "undefined") {
+  //       condition.category = category as string;
+  //     }
+  //     const courses = await this.studentService.getCourses(condition);
+  //     res.status(200).json(courses);
+  //   } catch (error) {
+  //     if (error instanceof Error) {
+  //       return next(error);
+  //     }
+  //   }
+  // }
+
+  async getCoursesByCategoryId(req: Request, res: Response,next:NextFunction) {
+    try {
+        const { categoryId } = req.query;  // categoryId passed as query parameter
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 10;
+
+        // Check if categoryId is provided
+        if (!categoryId) {
+            return res.status(400).json({ error: "Category ID is required" });
+        }
+
+        // Call service layer to get the courses based on categoryId
+        const result = await this.studentService.getCoursesByCategoryId(categoryId as string, page, limit);
+
+        return res.status(200).json({
+            courses: result.courses,
+            total: result.total
+        });
+    } catch (error) {
+        console.error("Error fetching courses by category:", error);
+        return res.status(500).json({ error: "Failed to fetch courses" });
+    }
+}
+  // async getCoursesByCategory(req: Request, res: Response, next: NextFunction) {
+  //   try {
+  //     const { category, page = 1, itemsPerPage = 9 } = req.query;
+  // console.log(category,page)
+  //     const result = await this.studentService.fetchCoursesByCategory(
+  //       category as string,
+  //       parseInt(page as string, 10),
+  //       parseInt(itemsPerPage as string, 10)
+  //     );
+  // console.log("REsult in controller category",result)
+  //     if (!result) {
+  //       return res.status(404).json({ error: "No courses found." });
+  //     }
+  
+  //     const { courses, totalCount } = result; // Safe destructuring after null check
+  //     res.status(200).json({ courses, totalCount });
+  //   } catch (error) {
+  //     console.error("Error fetching courses:", error);
+  //     res.status(500).json({ error: "Failed to fetch courses." });
+  //   }
+  // }
+  
   async getAllCategories(req: Request, res: Response, next: NextFunction){
     try{
-      const categories = await studentService.getAllCategories()
+      const categories = await this.studentService.getAllCategories()
       res.status(200).json(categories)
     }catch(error){
       if (error instanceof Error) {
@@ -359,7 +439,7 @@ export class StudentController {
       if (!studentId) {
         throw new Error("Invalid token");
       }
-      const student: IStudent |null = await studentService.findStudentById(studentId);
+      const student: IStudent |null = await this.studentService.findStudentById(studentId);
 
       const isPasswordVerified = await bcrypt.compare(
         currentPassword,
@@ -379,7 +459,7 @@ export class StudentController {
           wallet,
           isBlocked,
           isVerified,
-        } = await studentService.updatePassword(studentId, hashedPassword);
+        } = await this.studentService.updatePassword(studentId, hashedPassword);
         const updatedData = {
           name,
           email,
@@ -402,7 +482,7 @@ export class StudentController {
   async getSingleCourse(req: Request, res: Response, next: NextFunction) {
     try {
       const { courseId } = req.params;
-      const course = await studentService.getSingleCourse(courseId);
+      const course = await this.studentService.getSingleCourse(courseId);
       res.status(200).json(course);
     } catch (error) {
       if (error instanceof Error) {
@@ -440,7 +520,7 @@ export class StudentController {
     try {
       const { email, password } = req.body;
       const hashedPassword = await bcrypt.hash(password, 10);
-      const student = await studentService.resetForgotPassword(
+      const student = await this.studentService.resetForgotPassword(
         email,
         hashedPassword
       );
@@ -455,7 +535,7 @@ export class StudentController {
   try{
     const id = req.currentUser
     const {courseId} = req.body;
-    const url = await studentService.stripePayment(courseId!,id!)
+    const url = await this.studentService.stripePayment(courseId!,id!)
     res.status(200).json({url})
 
   }catch(error){
@@ -468,7 +548,7 @@ export class StudentController {
   try {
     const id = req.currentUser;
     const { courseId } = req.body;
-    const enrolledCourse = await studentService.enrollCourse(courseId, id!);
+    const enrolledCourse = await this.studentService.enrollCourse(courseId, id!);
     res.status(201).json(enrolledCourse);
   } catch (error) {
     if (error instanceof Error) {
@@ -482,7 +562,7 @@ async getEnrolledCoursesByStudent(req: Request, res: Response, next: NextFunctio
     const studentId= req.currentUser;
  
 console.log("Student Id: ", studentId)
-    const enrolledCourses = await studentService.getAllEnrolledCourses(studentId!)
+    const enrolledCourses = await this.studentService.getAllEnrolledCourses(studentId!)
 
    
     res.status(200).json(enrolledCourses);
@@ -498,7 +578,7 @@ async getEnrolledCourseByStudent(req: Request, res: Response, next: NextFunction
   try{
     const studentId= req.currentUser;
     const {courseId} = req.params;
-    const enrolledCourse = await studentService.getEnrolledCourse(studentId!,courseId)
+    const enrolledCourse = await this.studentService.getEnrolledCourse(studentId!,courseId)
     res.status(200).json(enrolledCourse);
 
 
@@ -516,7 +596,7 @@ async addProgression(req: Request, res: Response, next: NextFunction) {
 
     console.log(req.query)
 
-    const progression = await studentService.addProgression(
+    const progression = await this.studentService.addProgression(
       enrollmentId as string,
       chapterTitle as string
     );
@@ -538,7 +618,7 @@ async getTotalChapterCountByCourseId(req: Request, res: Response,next:NextFuncti
   }
 
   try {
-    const totalChapterCount = await studentService.getTotalChapterCountByCourseId(courseId);
+    const totalChapterCount = await this.studentService.getTotalChapterCountByCourseId(courseId);
     console.log("Total chapter controller:", totalChapterCount)
     return res.status(200).json({ courseId, totalChapters: totalChapterCount });
   } catch (error) {

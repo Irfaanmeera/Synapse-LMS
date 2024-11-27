@@ -1,35 +1,30 @@
 import { Request, Response, NextFunction } from 'express';
-import { IAdmin } from '../interfaces/Iadmin';
-import { AdminService } from '../services/implements/adminService';
+import { IAdmin } from '../interfaces/entityInterface/IAdmin';
+import { AdminService } from '../services/adminService';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs'; // Import bcryptjs for password comparison
 import ErrorHandler from '../utils/ErrorHandler';
 import { STATUS_CODES } from '../constants/httpStatusCodes';
-import { AdminRepository } from '../repositories/implements/adminRepository';
-import { CategoryRepository } from '../repositories/implements/categoryRepository';
+
 import { BadRequestError } from '../constants/errors/badrequestError';
-import { StudentRepository } from '../repositories/implements/studentRepository';
-import { InstructorRepository } from '../repositories/implements/instructorRepository';
-import { CourseRepository } from '../repositories/implements/courseRepository';
-import { EnrolledCourseRepository } from '../repositories/implements/enrolledCourseRepository';
+import { generateToken } from '../utils/generateJWT';
+
 
 const { BAD_REQUEST } = STATUS_CODES;
-const adminRepository = new AdminRepository();
-const categoryRepository = new CategoryRepository()
-const studentRepository = new StudentRepository()
-const instructorRepository = new InstructorRepository()
-const courseRepository = new CourseRepository()
-const enrolledCourseRepository = new EnrolledCourseRepository()
-const adminService = new AdminService(adminRepository, categoryRepository, studentRepository,instructorRepository,courseRepository,enrolledCourseRepository);
+
 
 export class AdminController {
+  constructor(
+    private adminService: AdminService
+  ) { }
+
   async login(req: Request, res: Response, next: NextFunction) {
     try {
       const { email, password } = req.body;
       console.log(email, password);
 
       // Find admin by email
-      const admin: IAdmin = await adminService.login(email);
+      const admin: IAdmin = await this.adminService.login(email);
       console.log(admin);
 
       // Compare plain password with hashed password
@@ -37,23 +32,9 @@ export class AdminController {
 
       if (isPasswordMatch) {
         // Generate access token and refresh token if password matches
-        const token = jwt.sign(
-          {
-            adminId: admin.id,
-            role: "admin",
-          },
-          process.env.JWT_SECRET!,
-          { expiresIn: "15m" } // Access token expires in 15 minutes
-        );
-
-        const refreshToken = jwt.sign(
-          {
-            adminId: admin.id,
-            role: "admin",
-          },
-          process.env.JWT_REFRESH_SECRET!, // Separate secret for refresh tokens
-          { expiresIn: "7d" } // Refresh token expires in 7 days
-        );
+        const token = generateToken(admin.id, 'admin', process.env.JWT_SECRET!, '1h');
+        const refreshToken = generateToken(admin.id, 'admin', process.env.JWT_REFRESH_SECRET!, '7d');
+        
 
         // Admin details to send back in response
         const adminDetails = {
@@ -87,7 +68,7 @@ export class AdminController {
   }
   async getAllCategories(req: Request, res: Response, next: NextFunction) {
     try {
-      const categories = await adminService.getAllCategories();
+      const categories = await this.adminService.getAllCategories();
       res.status(200).json({ categories });
     } catch (error) {
       if (error instanceof Error) {
@@ -100,7 +81,7 @@ export class AdminController {
     try {
       const { category } = req.body;
       const upperCaseCategory = category.toUpperCase();
-      const newCategory = await adminService.addCategory(upperCaseCategory);
+      const newCategory = await this.adminService.addCategory(upperCaseCategory);
       res.status(201).json({ category: newCategory });
     } catch (error) {
       if (error instanceof Error) {
@@ -113,7 +94,7 @@ export class AdminController {
     try {
       const { categoryId, data } = req.body;
       const upperCaseData = data.toUpperCase();
-      const updatedCaetgory = await adminService.editCategory(
+      const updatedCaetgory = await this.adminService.editCategory(
         categoryId,
         upperCaseData
       );
@@ -128,7 +109,7 @@ export class AdminController {
   async listCategory(req: Request, res: Response, next: NextFunction) {
     try {
       const { categoryId } = req.body;
-      const listedCategory = await adminService.listCategory(categoryId);
+      const listedCategory = await this.adminService.listCategory(categoryId);
       res.status(200).json({ category: listedCategory, success: true });
     } catch (error) {
       if (error instanceof Error) {
@@ -140,7 +121,7 @@ export class AdminController {
   async unlistCategory(req: Request, res: Response, next: NextFunction) {
     try {
       const { categoryId } = req.body;
-      const unlistedCategory = await adminService.unlistCategory(categoryId);
+      const unlistedCategory = await this.adminService.unlistCategory(categoryId);
       res.status(200).json({ category: unlistedCategory, success: true });
     } catch (error) {
       if (error instanceof Error) {
@@ -152,7 +133,7 @@ export class AdminController {
 
   async getAllStudents(req: Request, res: Response, next: NextFunction) {
     try {
-      const students = await adminService.getAllStudents();
+      const students = await this.adminService.getAllStudents();
       res.status(200).json({ students });
     } catch (error) {
       if (error instanceof Error) {
@@ -163,7 +144,7 @@ export class AdminController {
 
   async getAllInstructors(req: Request, res: Response, next: NextFunction) {
     try {
-      const instructors = await adminService.getAllInstructors();
+      const instructors = await this.adminService.getAllInstructors();
       res.status(200).json({ instructors });
     } catch (error) {
       if (error instanceof Error) {
@@ -178,7 +159,7 @@ export class AdminController {
       if (!instructorId) {
         throw new BadRequestError("Invalid Id");
       }
-      await adminService.blockInstructor(instructorId);
+      await this.adminService.blockInstructor(instructorId);
       res.status(200).json({ success: true });
     } catch (error) {
       if (error instanceof Error) {
@@ -193,7 +174,7 @@ export class AdminController {
       if (!instructorId) {
         throw new BadRequestError("Invalid Id");
       }
-      await adminService.unblockInstructor(instructorId);
+      await this.adminService.unblockInstructor(instructorId);
       res.status(200).json({ success: true });
     } catch (error) {
       if (error instanceof Error) {
@@ -208,7 +189,7 @@ export class AdminController {
       if (!studentId) {
         throw new BadRequestError("Invalid Id");
       }
-      await adminService.blockStudent(studentId);
+      await this.adminService.blockStudent(studentId);
       res.status(200).json({ success: true });
     } catch (error) {
       if (error instanceof Error) {
@@ -223,7 +204,7 @@ export class AdminController {
       if (!studentId) {
         throw new BadRequestError("Invalid Id");
       }
-      await adminService.unblockStudent(studentId);
+      await this.adminService.unblockStudent(studentId);
       res.status(200).json({ success: true });
     } catch (error) {
       if (error instanceof Error) {
@@ -233,7 +214,7 @@ export class AdminController {
   }
   async getCoursesByAdmin(req: Request, res: Response,next:NextFunction): Promise<void> {
     try {
-        const courses = await adminService.getAllCourses();
+        const courses = await this.adminService.getAllCourses();
         res.status(200).json({ success: true, data: courses });
     } catch (error) {
       if (error instanceof Error) {
@@ -245,7 +226,7 @@ export class AdminController {
 async approveCourse(req: Request, res: Response, next: NextFunction){
   try {
     const { courseId, approval } = req.body;
-    const updatedCourse = await adminService.courseApproval(courseId, approval);
+    const updatedCourse = await this.adminService.courseApproval(courseId, approval);
     res.status(200).json(updatedCourse);
   } catch (error) {
     next(error);
@@ -254,7 +235,7 @@ async approveCourse(req: Request, res: Response, next: NextFunction){
 async getSingleCourse(req: Request, res: Response, next: NextFunction) {
   try {
     const { courseId } = req.params;
-    const course = await adminService.getSingleCourse(courseId);
+    const course = await this.adminService.getSingleCourse(courseId);
     res.status(200).json(course);
   } catch (error) {
     if (error instanceof Error) {
@@ -264,7 +245,7 @@ async getSingleCourse(req: Request, res: Response, next: NextFunction) {
 }
 async adminDashBoard(req: Request, res: Response, next: NextFunction) {
   try {
-    const data = await adminService.adminDashboardData();
+    const data = await this.adminService.adminDashboardData();
     res.status(200).json(data);
   } catch (error) {
     if (error instanceof Error) {
@@ -274,7 +255,7 @@ async adminDashBoard(req: Request, res: Response, next: NextFunction) {
 }
 async getEnrolledCoursesByAdmin(req: Request, res: Response,next:NextFunction){
   try{
- const enrolledCourses = await adminService.getEnrolledCoursesByAdmin()
+ const enrolledCourses = await this.adminService.getEnrolledCoursesByAdmin()
  res.status(201).json(enrolledCourses);
   } catch(error){
     if (error instanceof Error) {
@@ -291,7 +272,7 @@ async getRevenueChartData(req: Request, res: Response,next:NextFunction) {
       return res.status(400).json({ message: "Filter is required" });
     }
 
-    const revenueData = await adminService.fetchSalesData(filter as "weekly" | "monthly" | "yearly");
+    const revenueData = await this.adminService.fetchSalesData(filter as "weekly" | "monthly" | "yearly");
     console.log("Sales data in admin controller", revenueData.data)
     res.status(200).json(revenueData);
   } catch (error) {

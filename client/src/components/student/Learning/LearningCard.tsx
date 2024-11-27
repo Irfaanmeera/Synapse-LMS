@@ -50,12 +50,13 @@ const LearningCard: React.FC<Props> = ({ enrolledCourse }) => {
   }, [courseId, enrolledCourse.progression.length]);
 
   return (
-    <div className="w-75 h-full backdrop-blur border-2 border-opacity-20 border-Blueviolet rounded-lg p-3 transition-transform transform hover:scale-105 duration-300 shadow-sm hover:shadow-lg">
+    <div className="w-90 h-full backdrop-blur border-2 border-opacity-20 border-Blueviolet rounded-lg p-3 transition-transform transform hover:scale-105 duration-300 shadow-sm hover:shadow-lg">
       <div className="relative h-[30vh] overflow-hidden rounded-t-lg">
         <img
           src={enrolledCourse.courseId.image}
           className="absolute inset-0 w-full h-full object-cover rounded-t-lg"
           alt="Course Thumbnail"
+          onClick={goToCourse}
         />
       </div>
       <div className="p-3 flex flex-col justify-between h-[calc(15vh - 3rem)]">

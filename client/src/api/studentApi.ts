@@ -47,6 +47,42 @@ try{
 }
     
 }
+const getCourses = async (page: number, categoryId: string): Promise<any> => {
+  try {
+    // Send GET request with params using Axios
+    const response = await authorizedAxios.get("/coursesByCategory", {
+      params: { page, categoryId }, // Use categoryId instead of category
+    });
+  console.log("response category response",response.data)
+    // Validate response structure
+    if (response && response.data) {
+      console.log("Category Response:", response.data);
+      return response.data; // Return the response data
+    } else {
+      throw new Error("Unexpected response structure"); // Handle unexpected responses
+    }
+  } catch (error) {
+    // Log and handle errors using a custom error handler or fallback
+    console.error("Error fetching courses by category:", error);
+    return handleAxiosError(error); // Handle and return the error
+  }
+};
+
+
+const searchCourse = async (searchKey: string) => {
+  try {
+    const response = await axiosInstance.get(
+      `/searchCourse?search=${searchKey}`
+    );
+
+    console.log("REsponse data for search", response.data)
+    return Promise.resolve(response.data);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+
 
 const getAllCourses = async(page:number)=>{
   try{
@@ -153,4 +189,4 @@ const getTotalChapterCountByCourseId = async (courseId:string)=>{
 
 
 
-export {updateUser,updateImage,getAllCourses,getAllCategories,getSingleCourse,courseEnroll,enrollment,getEnrolledCourse,getAllEnrolledCourse,addProgression,getTotalChapterCountByCourseId}
+export {updateUser,updateImage,getCourses,searchCourse, getAllCourses,getAllCategories,getSingleCourse,courseEnroll,enrollment,getEnrolledCourse,getAllEnrolledCourse,addProgression,getTotalChapterCountByCourseId}

@@ -4,11 +4,13 @@ import { User } from "../interfaces/User";
 interface userState{
     userEmail:string | null;
     user: User | null;
+    searchResults: [],
 }
 
 const initialState :userState = {
     userEmail:null,
     user:null,
+    searchResults: [],
 }
 
 const userSlice = createSlice({
@@ -35,6 +37,9 @@ const userSlice = createSlice({
           },
           addCourse(state, action: PayloadAction<string | null>) {
             state.user?.courses?.push(action.payload!);
+          },
+          setSearchResults(state, action) {
+            state.searchResults = action.payload;
           },
     }
 })

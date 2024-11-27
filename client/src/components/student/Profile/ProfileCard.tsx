@@ -177,7 +177,7 @@ export default function ProfileCard() {
           <Box sx={{ textAlign: "end" }}>
             <Typography style={styles.value}>{user?.email}</Typography>
             <Typography style={styles.value}>{user?.mobile}</Typography>
-            {/* <Typography style={styles.value}>{props.dt3}</Typography> */}
+            <Typography style={styles.value}>{user?.courses?.length}</Typography>
           </Box>
         </Box>
 

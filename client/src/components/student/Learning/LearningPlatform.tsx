@@ -50,7 +50,7 @@ const LearningPlatform = () => {
         {error && <div className="text-red-500">{error}</div>}
 
         {/* Display courses if data is available */}
-        <div className="ml-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10 mt-10">
+        <div className="ml-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-10 mt-10">
           {enrolledCourses.map((enrolledCourse) => (
             <div key={enrolledCourse.id}>
               <LearningCard enrolledCourse={enrolledCourse} /> {/* Pass course data to LearningCard */}

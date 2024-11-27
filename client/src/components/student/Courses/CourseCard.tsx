@@ -41,17 +41,6 @@ const CourseCard: React.FC<Props> = ({ course }) => {
         </div>
         <hr style={{ color: "#C4C4C4" }} />
 
-        {/* <div className="flex w-full items-center justify-between pt-2 ml-1">
-          <div className="flex items-center">
-            <h3 className="text-charcoal text-base font-semibold">
-              Students {course.enrolled}
-            </h3>
-          </div>
-          <div className="flex items-center text-gray-600">
-            <AiOutlineUnorderedList size={20} />
-            <h5 className="pl-2">{course.modules?.length || 0} Chapters</h5>
-          </div>
-        </div> */}
         
         <div className="flex justify-between pt-6">
                                             <div className="flex gap-4">

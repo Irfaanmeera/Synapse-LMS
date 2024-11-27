@@ -1,5 +1,5 @@
 import mongoose, { Model, Document } from 'mongoose';
-import { IOtp } from '../interfaces/otp';
+import { IOtp } from '../interfaces/entityInterface/IOtp';
 
 const OTP_EXPIRE = 5 * 60;
 
@@ -28,6 +28,7 @@ const otpSchema = new mongoose.Schema({
     }
 },
     {
+       
         toJSON: {
             transform(doc, ret) {
                 ret.id = ret._id;

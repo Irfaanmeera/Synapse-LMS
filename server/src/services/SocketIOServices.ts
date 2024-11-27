@@ -1,7 +1,7 @@
 import { Server, Socket } from "socket.io";
 import { createServer } from "http";
-import { IMessage } from "../interfaces/chat";
-import { ChatRepository } from "../repositories/implements/chatRepository";
+import { IMessage } from "../interfaces/entityInterface/IChat";
+import { ChatRepository } from "../repositories/chatRepository";
 // import {ChatREpository} from "../repositories/implements/"
 const chatRepository = new ChatRepository();
 

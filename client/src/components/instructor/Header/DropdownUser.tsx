@@ -31,10 +31,10 @@ const DropdownUser = () => {
         to="#"
       >
         <span className="hidden text-right lg:block">
-          <span className="block text-sm font-medium text-black dark:text-white">
+          <span className="block text-sm font-semibold font-serif text-black dark:text-white">
             {user?.name}
           </span>
-          <span className="block text-xs">Instructor</span>
+          <span className="block text-xs font-serif">Instructor</span>
         </span>
 
         <span className="h-9 w-9 rounded-full">

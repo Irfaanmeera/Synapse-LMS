@@ -1,5 +1,5 @@
 import mongoose, { Model, Document } from "mongoose";
-import { IChat, IMessage } from "../interfaces/chat";
+import { IChat, IMessage } from "../interfaces/entityInterface/IChat";
 
 interface ChatModel extends Model<IChat> {
   build(attrs: IChat): ChatDoc;
@@ -42,6 +42,7 @@ const chatSchema = new mongoose.Schema(
     ],
   },
   {
+    timestamps: true,
     toJSON: {
       transform(doc, ret) {
         ret.id = ret._id;

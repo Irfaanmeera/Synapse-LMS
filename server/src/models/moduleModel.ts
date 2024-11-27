@@ -1,6 +1,6 @@
 import mongoose, { Model, Document } from 'mongoose';
-import { IModule } from '../interfaces/module';
-import { IChapter } from '../interfaces/module';
+import { IModule } from '../interfaces/entityInterface/IModule';
+import { IChapter } from '../interfaces/entityInterface/IModule';
 
 interface ModuleModel extends Model<IModule> {
     build(attrs: IModule): ModuleDoc;
@@ -75,6 +75,7 @@ const moduleSchema = new mongoose.Schema(
         ]
     },
     {
+        timestamps: true,
         toJSON: {
             transform(doc, ret) {
                 ret.id = ret._id;

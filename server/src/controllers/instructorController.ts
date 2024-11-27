@@ -1,36 +1,28 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Request, Response, NextFunction } from 'express';
-import { InstructorService } from '../services/implements/instructorService';
-import { OtpService } from '../services/implements/otpService';
+import { InstructorService } from '../services/instructorService';
+import { OtpService } from '../services/otpService';
 import { STATUS_CODES } from '../constants/httpStatusCodes';
 import bcrypt from 'bcryptjs'
-import { IInstructor } from '../interfaces/IInstructor';
+import { IInstructor } from '../interfaces/entityInterface/IInstructor';
 import jwt from "jsonwebtoken";
 import ErrorHandler from '../utils/ErrorHandler';
-import { InstructorRepository } from '../repositories/implements/instructorRepository';
 import { BadRequestError } from '../constants/errors/badrequestError';
 import { ForbiddenError } from '../constants/errors/forbiddenError'
-import { CourseRepository } from '../repositories/implements/courseRepository';
-import { CategoryRepository } from '../repositories/implements/categoryRepository';
-import { EnrolledCourseRepository } from '../repositories/implements/enrolledCourseRepository';
-import { ModuleRepository } from '../repositories/implements/moduleRepository';
-import { ICourse } from '../interfaces/course';
-import { IModule } from '../interfaces/module';
+import { generateToken } from '../utils/generateJWT';
+
 
 
 const { BAD_REQUEST, OK, INTERNAL_SERVER_ERROR } = STATUS_CODES
 
-const instructorRepository = new InstructorRepository();
-const courseRepository = new CourseRepository();
-const categoryRepository = new CategoryRepository()
-const moduleRepository = new ModuleRepository()
-const enrolledCourseRepository = new EnrolledCourseRepository()
-const instructorService = new InstructorService(instructorRepository, courseRepository, categoryRepository, moduleRepository, enrolledCourseRepository);
 
 const otpService = new OtpService();
 
 export class InstructorController {
 
+  constructor(
+    private instructorService: InstructorService
+  ) { }
   async signup(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { name, email, mobile, password } = req.body;
@@ -45,7 +37,7 @@ export class InstructorController {
         mobile,
         password: hashedPassword,
       }
-      await instructorService.signup(instructorData)
+      await this.instructorService.signup(instructorData)
       const otp = otpService.generateOtp()
       await otpService.createOtp({ email, otp })
       otpService.sendOtpMail(email, otp)
@@ -73,7 +65,7 @@ export class InstructorController {
       const { email, otp } = req.body;
       const existingOtp = await otpService.findOtp(email)
       if (otp === existingOtp?.otp) {
-        const instructor: IInstructor = await instructorService.verifyInstructor(email)
+        const instructor: IInstructor = await this.instructorService.verifyInstructor(email)
         const token = jwt.sign(
           {
             instructorId: instructor.id,
@@ -122,28 +114,17 @@ export class InstructorController {
   async login(req: Request, res: Response, next: NextFunction) {
     try {
       const { email, password } = req.body
-      const instructor: IInstructor = await instructorService.login(email)
+      const instructor: IInstructor = await this.instructorService.login(email)
       const validPassword = await bcrypt.compare(password, instructor.password!)
+      if (!instructor || !instructor.id) {
+        throw new Error("Instructor or Instructor ID is missing.");
+      }
+      
       if(!instructor.isBlocked){
       if (validPassword) {
         if (instructor.isVerified) {
-          const token = jwt.sign(
-            {
-              instructorId: instructor.id,
-              role: "instructor",
-            },
-            process.env.JWT_SECRET!,
-            { expiresIn: "15m" } // Access token expires in 15 minutes
-          );
-
-          const refreshToken = jwt.sign(
-            {
-              instructorId: instructor.id,
-              role: "instructor",
-            },
-            process.env.JWT_REFRESH_SECRET!, // Make sure you have a separate secret for refresh tokens
-            { expiresIn: "7d" } // Refresh token expires in 7 days
-          );
+          const token = generateToken(instructor.id, 'instructor', process.env.JWT_SECRET!, '1m');
+          const refreshToken = generateToken(instructor.id, 'instructor', process.env.JWT_REFRESH_SECRET!, '7d');
           const instructorData = {
             _id: instructor.id,
             name: instructor.name,
@@ -186,7 +167,7 @@ export class InstructorController {
     try {
       const id = req.currentUser;
       const { name, mobile, qualification, description } = req.body;
-      const instructor = await instructorService.updateInstructor({ id, name, mobile, qualification, description });
+      const instructor = await this.instructorService.updateInstructor({ id, name, mobile, qualification, description });
       res.status(200).json(instructor)
     }
 
@@ -208,7 +189,7 @@ export class InstructorController {
       if (!file) {
         throw new BadRequestError("Image not found");
       }
-      const student = await instructorService.updateInstructorImage(id!, file);
+      const student = await this.instructorService.updateInstructorImage(id!, file);
       res.status(200).json(student);
     } catch (error) {
       if (error instanceof Error) {
@@ -244,7 +225,7 @@ export class InstructorController {
     try {
       const { email, password } = req.body;
       const hashedPassword = await bcrypt.hash(password, 10);
-      const instructor = await instructorService.resetForgotPassword(
+      const instructor = await this.instructorService.resetForgotPassword(
         email,
         hashedPassword
       );
@@ -267,7 +248,7 @@ export class InstructorController {
       if (!instructorId) {
         throw new ForbiddenError("Invalid token");
       }
-      const courses = await instructorService.getMyCourses(
+      const courses = await this.instructorService.getMyCourses(
         instructorId,
         pageNo
       );
@@ -300,7 +281,7 @@ export class InstructorController {
         return res.status(400).json({ error: 'Image file is required.' }); // Handle missing file
       }
 
-      const createdCourse = await instructorService.createCourse(courseDetails, file); // Call the service method
+      const createdCourse = await this.instructorService.createCourse(courseDetails, file); // Call the service method
       return res.status(201).json(createdCourse); // Return the created course with a 201 status
     } catch (error) {
       console.error(error);
@@ -314,7 +295,7 @@ export class InstructorController {
       if (!courseId) {
         throw new BadRequestError("Course id not found");
       }
-      const course = await instructorService.getSingleCourse(courseId);
+      const course = await this.instructorService.getSingleCourse(courseId);
       console.log(course)
       res.status(200).json(course);
     } catch (error) {
@@ -342,7 +323,7 @@ export class InstructorController {
       const file = req.file ? req.file : undefined;
 
       // Call the service function to update the course details
-      const updatedCourse = await instructorService.updateCourse(courseId, courseDetails, file);
+      const updatedCourse = await this.instructorService.updateCourse(courseId, courseDetails, file);
 
       // Respond with the updated course data
       res.status(200).json(updatedCourse);
@@ -360,7 +341,7 @@ export class InstructorController {
       if (!courseId) {
         throw new BadRequestError("Course id not found");
       }
-      const course = await instructorService.deleteCourse(courseId);
+      const course = await this.instructorService.deleteCourse(courseId);
       res.status(200).json(course);
     } catch (error) {
       if (error instanceof Error) {
@@ -376,7 +357,7 @@ export class InstructorController {
       if (!courseId) {
         throw new BadRequestError("Course id not found");
       }
-      const course = await instructorService.listCourse(courseId);
+      const course = await this.instructorService.listCourse(courseId);
       res.status(200).json(course);
     } catch (error) {
       if (error instanceof Error) {
@@ -388,7 +369,7 @@ export class InstructorController {
 
   async getCategories(req: Request, res: Response, next: NextFunction) {
     try {
-      const categories = await instructorService.getAllCategories()
+      const categories = await this.instructorService.getAllCategories()
       res.status(200).json(categories);
     } catch (error) {
       if (error instanceof Error) {
@@ -399,11 +380,11 @@ export class InstructorController {
   async createModule(req: Request, res: Response, next: NextFunction) {
     try {
       const moduleData = req.body;
-      const existingModule = await instructorService.getSingleCourse(moduleData.courseId);
+      const existingModule = await this.instructorService.getSingleCourse(moduleData.courseId);
 
       console.log("existing module:", existingModule)
       const order = (existingModule?.modules?.length || 0) + 1;
-      const module = await instructorService.createModule(moduleData, order);
+      const module = await this.instructorService.createModule(moduleData, order);
       res.status(201).json(module);
     } catch (error) {
       if (error instanceof Error) {
@@ -415,7 +396,7 @@ export class InstructorController {
     try {
       const { moduleId } = req.params;
       const updateData = req.body;
-      const updatedModule = await instructorService.updateModule(moduleId, updateData);
+      const updatedModule = await this.instructorService.updateModule(moduleId, updateData);
       res.status(200).json(updatedModule);
     } catch (error) {
       if (error instanceof Error) {
@@ -427,7 +408,7 @@ export class InstructorController {
   async deleteModule(req: Request, res: Response, next: NextFunction) {
     try {
       const { moduleId } = req.params;
-      await instructorService.deleteModule(moduleId);
+      await this.instructorService.deleteModule(moduleId);
       res.status(200).json({ message: 'Module deleted successfully' });
     } catch (error) {
       if (error instanceof Error) {
@@ -442,7 +423,7 @@ export class InstructorController {
       const file = req.file;
 
       console.log("Add Chapter backend Response :", moduleId, chapterData, file)
-      const module = await instructorService.addChapter(moduleId, chapterData, file!);
+      const module = await this.instructorService.addChapter(moduleId, chapterData, file!);
       console.log("add chapter response:", module)
       res.status(201).json(module);
     } catch (error) {
@@ -460,7 +441,7 @@ export class InstructorController {
       if (!instructorId) {
         throw new ForbiddenError("Invalid token");
       }
-   const enrolledCourses = await instructorService.getEnrolledCoursesByInstructor(instructorId!)
+   const enrolledCourses = await this.instructorService.getEnrolledCoursesByInstructor(instructorId!)
    res.status(201).json(enrolledCourses);
     } catch(error){
       if (error instanceof Error) {

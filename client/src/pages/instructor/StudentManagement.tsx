@@ -1,6 +1,6 @@
 
 import React from 'react'
-import TableOne from '../../components/instructor/Tables/TableOne.tsx'
+import TableOne from '../../components/instructor/Tables/StudentList.tsx'
 import Breadcrumb from '../../components/instructor/Breadcrumbs/Breadcrumb'
 
 

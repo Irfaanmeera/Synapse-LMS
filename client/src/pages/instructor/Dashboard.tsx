@@ -2,8 +2,8 @@
 import React, {useEffect, useState} from 'react';
 import CardDataStats from '../../components/instructor/CardDataStats';
 import ChartOne from '../../components/instructor/Charts/ChartOne';
-import ChartThree from '../../components/instructor/Charts/ChartThree';
-import ChartTwo from '../../components/instructor/Charts/ChartTwo';
+import ChartThree from '../../components/instructor/Charts/CourseChart';
+import ChartTwo from '../../components/instructor/Charts/RevenueChart';
 import ChatCard from '../../components/instructor/Chat/ChatCard';
 import MapOne from '../../components/instructor/Maps/MapOne';
 import { authorizedAxios } from '../../api/config';
@@ -11,7 +11,7 @@ import { Link } from 'react-router-dom';
 import { fetchEnrolledStudents, fetchInstructorCourses } from '../../api/instructorApi';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store';
-import TableOne from '../../components/instructor/Tables/TableOne';
+import TableOne from '../../components/instructor/Tables/StudentList';
 
 const Dashboard: React.FC = () => {
   const user = useSelector((store: RootState) => store.user.user);

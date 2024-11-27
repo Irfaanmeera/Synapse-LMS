@@ -1,5 +1,5 @@
 import mongoose, { Model, Document } from 'mongoose'
-import { ICategory } from '../interfaces/category'
+import { ICategory } from '../interfaces/entityInterface/ICategory'
 
 interface CategoryModel extends Model<ICategory> {
     build(attrs: ICategory): CategoryDoc;
@@ -23,6 +23,7 @@ const categorySchema = new mongoose.Schema(
         },
     },
     {
+        timestamps: true,
         toJSON: {
             transform(doc, ret) {
                 ret.id = ret._id;
