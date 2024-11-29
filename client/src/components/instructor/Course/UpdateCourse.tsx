@@ -17,7 +17,7 @@ import {
 import { Editor } from '@tinymce/tinymce-react';
 import { Upload } from 'lucide-react';
 import { authorizedAxios } from '../../../api/config';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Course } from '../../../interfaces/course';
 
 interface Category {
@@ -44,7 +44,7 @@ const UpdateCourse: React.FC = () => {
     message: '',
     severity: 'success' as 'success' | 'error',
   });
-
+const navigate = useNavigate()
   useEffect(() => {
     const fetchCategoriesAndCourseData = async () => {
       try {
@@ -66,6 +66,7 @@ const UpdateCourse: React.FC = () => {
         });
 
         setThumbnailPreview(courseData.image);
+        
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -147,6 +148,7 @@ const UpdateCourse: React.FC = () => {
         message: 'Course updated successfully!',
         severity: 'success',
       });
+      navigate('/instructor/courses')
     } catch (error: any) {
       setSnackbar({
         open: true,

@@ -26,15 +26,13 @@ export const isUserAuth = async (req: Request, res: Response, next: NextFunction
         return res.status(403).json({ success: false, message: "Invalid token" });
       }
     } catch (error) {
-      // Handle expired token scenario
+
       if (error.name === "TokenExpiredError" && refreshTokenHeader) {
         const refreshToken = refreshTokenHeader as string;
         try {
-          // Verify the refresh token
           const refreshDecoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET!) as JwtPayload | string;
           if (typeof refreshDecoded !== 'string' && refreshDecoded.role) {
             req.currentUser = refreshDecoded.userId;
-            // Generate a new access token using the refresh token
             const newAccessToken = generateToken(refreshDecoded.userId, refreshDecoded.role, process.env.JWT_SECRET!, '1m');
             console.log("Access Token generated", newAccessToken);
             res.setHeader("x-access-token", newAccessToken);
@@ -44,7 +42,6 @@ export const isUserAuth = async (req: Request, res: Response, next: NextFunction
             return res.status(403).json({ success: false, message: "Invalid refresh token" });
           }
         } catch (error) {
-          // If refresh token is invalid or expired, force login
           console.log("Invalid or expired refresh token" )
           return res.status(403).json({ success: false, message: "Invalid or expired refresh token" });
         }

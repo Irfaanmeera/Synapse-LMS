@@ -3,9 +3,11 @@ import { Pagination, Table, TableBody, TableCell, TableContainer, TableHead, Tab
 import { fetchCategories, toggleCategoryStatus, addCategory, editCategory, listCategory, unlistCategory } from '../../../api/adminApi';  // Replace with actual API imports
 import { Category } from '../../../interfaces/category';  // Define Category interface for type safety
 import toast from "react-hot-toast";
+import { EditIcon } from 'lucide-react';
 
 const AdminCategories = () => {
   const [categories, setCategories] = useState<Category[]>([]);
+  const [originalCategories, setOriginalCategories] = useState([]); 
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage] = useState<number>(5);
@@ -19,6 +21,7 @@ const AdminCategories = () => {
       try {
         const data = await fetchCategories();
         setCategories(data);
+        setOriginalCategories(data);
       } catch (error) {
         console.error("Failed to fetch categories:", error);
       }
@@ -35,7 +38,7 @@ const AdminCategories = () => {
       );
       setCategories(filtered);
     } else {
-      setCategories(categories);
+      setCategories(originalCategories);
     }
   };
 
@@ -55,12 +58,19 @@ const AdminCategories = () => {
   const handleEditCategory = async () => {
     if (editingCategoryId) {
       try {
-        await editCategory(editingCategoryId, { category: editingCategoryName });
+        // Make sure you're sending just the category name (a string) in the API request
+        await editCategory(editingCategoryId, editingCategoryName);
+        
+        // Update the local categories list with the new category name
         setCategories(prevCategories =>
           prevCategories.map(category =>
-            category.id === editingCategoryId ? { ...category, category: editingCategoryName } : category
+            category.id === editingCategoryId 
+              ? { ...category, category: editingCategoryName } // Update the 'category' field in the object
+              : category
           )
         );
+    
+        // Reset the editing state after successful update
         setEditingCategoryId(null);
         setEditingCategoryName('');
       } catch (error) {
@@ -68,6 +78,8 @@ const AdminCategories = () => {
       }
     }
   };
+  
+
   // Handle listing a category
 const handleListCategory = async (id: string, e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -104,29 +116,16 @@ const handleListCategory = async (id: string, e: React.MouseEvent<HTMLButtonElem
   };
   
 
-//   const handleToggleCategoryStatus = async (categoryId: string) => {
-//     try {
-//       await toggleCategoryStatus(categoryId);
-//       setCategories(prevCategories =>
-//         prevCategories.map(category =>
-//           category.id === categoryId ? { ...category, status: !category.status } : category
-//         )
-//       );
-//     } catch (error) {
-//       console.error("Failed to toggle category status:", error);
-//     }
-//   };
-
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentCategories = categories.slice(indexOfFirstItem, indexOfLastItem);
 
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default sm:px-7.5 xl:pb-1">
-     <h4 className="mb-6 text-xl font-semibold text-black">Categories</h4>
+     <h4 className="mb-4 text-xl font-semibold text-black">Categories</h4>
 
       {/* Search Bar */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '56px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '47px' }}>
   {/* Search Field */}
   <TextField
     label="Search Categories"
@@ -146,42 +145,59 @@ const handleListCategory = async (id: string, e: React.MouseEvent<HTMLButtonElem
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
-            <TableRow>
-              <TableCell align="center">S.No</TableCell>
-              <TableCell align="center">Category Name</TableCell>
-              <TableCell align="center">Status</TableCell>
-              <TableCell align="center">Actions</TableCell>
+            <TableRow className='bg-bodydark2'>
+              <TableCell align="left" sx={{ fontWeight: "bold", color:"white" }}>S.No</TableCell>
+              <TableCell align="left" sx={{ fontWeight: "bold", color:"white" }}>Category Name</TableCell>
+              <TableCell align="left" sx={{ fontWeight: "bold", color:"white" }}>Status</TableCell>
+              <TableCell align="right" sx={{ fontWeight: "bold", color:"white" }}>Actions</TableCell>
+              <TableCell align="left"></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {currentCategories.map((category, index) => (
-              <TableRow key={category.id}>
-                <TableCell align="center">{index + 1 + indexOfFirstItem}</TableCell>
-                <TableCell align="center">{category.category}</TableCell>
-                <TableCell align="center">
+              <TableRow key={category.id} sx={{
+        
+                "&:hover": { bgcolor: "grey.200", cursor: "pointer" }, // Add hover effect
+              }}>
+                <TableCell align="left">{index + 1 + indexOfFirstItem}</TableCell>
+                <TableCell align="left">{category.category}</TableCell>
+                <TableCell align="left">
                   {category.status ? "Listed" : "Unlisted"}
                 </TableCell>
-                <TableCell align="center">
-                  <Button onClick={() => setEditingCategoryId(category.id)}>Edit</Button>
-                
-                </TableCell>
+                <TableCell align="left">
+  <Button onClick={() => setEditingCategoryId(category.id)}>
+    <EditIcon />
+  </Button>
+</TableCell>
                 <TableCell>
     {category.status ? (
-      <Button
-        variant="contained"
-        color="warning"
-        onClick={(e) => handleUnlistCategory(category.id, e)}
-      >
-        Unlist
-      </Button>
-    ) : (
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={(e) => handleListCategory(category.id, e)}
-      >
-        List
-      </Button>
+      <button
+      onClick={(e) => handleUnlistCategory(category.id, e)}
+      style={{
+        backgroundColor: "#1C2434",  // Unblock button style
+        color: "white",
+        border: "none",
+        padding: "5px 10px",
+        cursor: "pointer",
+        borderRadius: "4px",
+      }}
+    >
+      Unlist
+    </button>
+  ) : (
+    <button
+      onClick={(e) => handleListCategory(category.id, e)}
+      style={{
+        backgroundColor: "#8A99AF",  // Block button style
+        color: "white",
+        border: "none",
+        padding: "5px 10px",
+        cursor: "pointer",
+        borderRadius: "4px",
+      }}
+    >
+      List
+    </button>
     )}
   </TableCell>
               </TableRow>

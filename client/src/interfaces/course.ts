@@ -23,5 +23,6 @@ export interface Course {
   approval?: string;
   instructor?: string | User;
   status?: boolean;
+  enrolled?:number;
   modules?: { module: string | Module; order: number }[];
 }

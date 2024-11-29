@@ -66,10 +66,10 @@ const StudentSignupForm: React.FC = () => {
 
   return (
     <>
-      <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:pr-0">
+        <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:pr-0">
         <div className="hidden lg:block">
           <button
-            className="text-Blueviolet text-base font-medium ml-9 py-2 px-12 transition duration-150 ease-in-out rounded-full bg-semiblueviolet hover:text-white hover:bg-Blueviolet"
+            className="text-Blueviolet text-base font-medium ml-9 py-2 px-8 transition duration-150 ease-in-out rounded-full bg-semiblueviolet hover:text-white hover:bg-Blueviolet"
             onClick={openModal}
           >
             Sign up

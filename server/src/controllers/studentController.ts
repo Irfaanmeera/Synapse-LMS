@@ -117,7 +117,7 @@ export class StudentController {
       if (!student || !student.id) {
         throw new Error("Student or Student ID is missing.");
       }
-      const token = generateToken(student.id, UserRole.Student, process.env.JWT_SECRET!, '1m');
+      const token = generateToken(student.id, UserRole.Student, process.env.JWT_SECRET!, '15m');
       const refreshToken = generateToken(student.id, UserRole.Student, process.env.JWT_REFRESH_SECRET!, '7d');
        console.log("Access Token in controller",token)
       

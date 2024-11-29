@@ -26,7 +26,6 @@ import StripeStatus from "../pages/student/StripeStatus";
 import MyLearning from "../pages/student/MyLearning";
 import SingleEnrolledCoursePage from "../pages/student/SingleEnrolledCourse";
 import StudentManagement from "../pages/instructor/StudentManagement";
-import SingleChat from "../components/instructor/Chat/SingleChat";
 import AdminLayout from "../pages/admin/AdminLayout.tsx";
 import AdminDashboard from "../pages/admin/AdminDashboard.tsx";
 import StudentList from "../components/admin/StudentManagement/StudentList.tsx";

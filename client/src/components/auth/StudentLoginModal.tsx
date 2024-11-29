@@ -19,66 +19,47 @@ interface StudentData {
 }
 
 
-const Signin: FC = () => {
-  const [err, setErr] = useState<string | null>(null);
+interface SigninProps {
+  isOpen: boolean;
+  closeModal: () => void;
+}
+
+const Signin: FC<SigninProps> = ({ isOpen, closeModal }) => {
+    const [err, setErr] = useState<string | null>(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [isOpen, setIsOpen] = useState(false);
-
-  const closeModal = () => {
-    setIsOpen(false);
-  };
-
-  const openModal = () => {
-    setIsOpen(true);
-  };
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<StudentData>({
-    resolver: zodResolver(loginSchema),
-  });
-
-  const submitData = async (data: StudentData) => {
-    try {
-      dispatch(userActions.setEmail(data.email));
-      const response = await studentLogin(data);
-      console.log("Login response:", response); // Log response
-  
-      dispatch(userActions.saveUser(response)); // Save user data
-      socket.on('connect', () => {
-        console.log('Socket connected:', socket.id);
-        socket.connect();
-        navigate("/"); // Redirect to home after successful socket connection
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+      } = useForm<StudentData>({
+        resolver: zodResolver(loginSchema),
       });
-  
-      // Try connecting the socket here too
-      socket.connect();
-    } catch (error: any) {
-      console.error("Caught error:", error);
-  
-      // Display the error message received from handleAxiosError
-      setErr(error); // `error` will be the message returned from `handleAxiosError`
-    }
-  };
-  
+    
+      const submitData = async (data: StudentData) => {
+        try {
+          dispatch(userActions.setEmail(data.email));
+          const response = await studentLogin(data);
+          console.log("Login response:", response); // Log response
+      
+          dispatch(userActions.saveUser(response)); // Save user data
+          socket.on('connect', () => {
+            console.log('Socket connected:', socket.id);
+            socket.connect();
+            navigate("/"); // Redirect to home after successful socket connection
+          });
+      
+          // Try connecting the socket here too
+          socket.connect();
+        } catch (error: any) {
+          console.error("Caught error:", error);
+      
+          // Display the error message received from handleAxiosError
+          setErr(error); // `error` will be the message returned from `handleAxiosError`
+        }
+      };
   return (
-    <>
-       <div className="absolute inset-y-0 right-0 flex items-center sm:static sm:inset-auto sm:pr-3">
-        <div className="hidden lg:block mr-2">
-          <button
-            type="button"
-            className="text-base text-slategray bg-transparent "
-            onClick={openModal}
-          >
-            Log In
-          </button>
-        </div>
-      </div>
-
-      <Transition appear show={isOpen} as={Fragment}>
+    <Transition appear show={isOpen} as={Fragment}>
         <Dialog as="div" className="relative z-10" onClose={closeModal}>
           <Transition.Child
             as={Fragment}
@@ -231,7 +212,6 @@ const Signin: FC = () => {
           </div>
         </Dialog>
       </Transition>
-    </>
   );
 };
 

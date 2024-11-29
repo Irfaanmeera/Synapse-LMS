@@ -66,11 +66,11 @@ export class AdminService implements IAdminService {
     }
   }
 
-  async editCategory(categoryId: string, data: string): Promise<ICategory> {
+  async editCategory(categoryId: string, data: { category: string }): Promise<ICategory> {
     try {
-      if (await this.categoryRepository.findCategoryByName(data)) {
-        throw new BadRequestError("Category already exists");
-      }
+    
+  
+      // Proceed with updating the category using the category repository
       return await this.categoryRepository.updateCategory(categoryId, data);
     } catch (error) {
       console.error(error);

@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 
 import React, { useState, useEffect } from "react";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
@@ -30,11 +31,11 @@ const SalesChart: React.FC = () => {
           switch (filter) {
             case "weekly":
               const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-              return weekdays[(data._id-1) % 7]; // Assuming _id represents the day index (0-6)
+              return data._id; // Assuming _id represents the day index (0-6)
               
             case "monthly":
               const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-              return months[(data._id+1) % 12]; // Assuming _id represents the month index (0-11)
+              return months[(data._id-1) % 12]; // Assuming _id represents the month index (0-11)
               
             case "yearly":
               return `Year ${data._id}`; // For yearly, you can just use the year or the _id value directly
@@ -43,9 +44,11 @@ const SalesChart: React.FC = () => {
               return data._id; // If no filter, return the raw value of _id
           }
         });
-        
-
+       
         const dataPoints = salesData.map((data: any) => data.totalRevenue);
+
+
+    
 
         // Set the chart data
         setChartData({

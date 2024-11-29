@@ -91,8 +91,9 @@ const UserCourses: React.FC = () => {
     style={{
       cursor: "pointer",
       borderColor: selectedCategoryId === "" ? "#1976d2" : "#ccc", // Apply a custom border color when selected
-      backgroundColor: selectedCategoryId === "" ? "#222C44" : "transparent", // Apply background when selected
+      backgroundColor: selectedCategoryId === "" ? "#222C44" : "#ccc", // Apply background when selected
       fontWeight: selectedCategoryId === "" ? "bold" : "normal", // Bold font when selected
+      fontSize: "1rem",
     }}
   />
 
@@ -106,9 +107,11 @@ const UserCourses: React.FC = () => {
       color={selectedCategoryId === cat.id ? "primary" : "default"} // Highlight selected category
       style={{
         cursor: "pointer",
-        borderColor: selectedCategoryId === cat.id ? "#1976d2" : "#ccc", // Apply custom border color when selected
-        backgroundColor: selectedCategoryId === cat.id ? "#222C44" : "transparent", // Apply background when selected
-        fontWeight: selectedCategoryId === cat.id ? "bold" : "normal", // Bold font when selected
+    borderColor: selectedCategoryId === cat.id ? "#1976d2" : "#ccc", // Apply custom border color when selected
+    backgroundColor: selectedCategoryId === cat.id ? "#222C44" : "#DBDCD4", // Apply background when selected
+    fontWeight: selectedCategoryId === cat.id ? "bold" : "normal", // Bold font when selected
+    fontSize: "1rem", // Increase font size
+    transition: "all 0.1s ease", // Smooth transition for hover effects
       }}
     />
   ))}

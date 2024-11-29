@@ -144,7 +144,7 @@ export class EnrolledCourseRepository implements IEnrolledCourseRepository {
         const result = await EnrolledCourse.aggregate([
           {
             $match: {
-              status: true, // Assuming you want to consider only enrolled courses with status true
+              status: true,
             },
           },
           {
@@ -171,17 +171,19 @@ export class EnrolledCourseRepository implements IEnrolledCourseRepository {
         // Determine the date range and grouping logic based on the filter
         switch (filter) {
           case "weekly":
-            startDate = new Date(date.setDate(date.getDate() - 7));
-            groupFormat = { $dayOfWeek: "$createdAt" }; // Group by day of the week
-            break;
+  startDate = new Date(date.setDate(date.getDate() - 7)); // Last 7 days
+  groupFormat = { 
+    $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } 
+  }; // Group by date (e.g., "2024-11-21")
+  break;
           case "monthly":
-            startDate = new Date(date.setMonth(date.getMonth() - 1));
-            groupFormat = { $dayOfMonth: "$createdAt" }; // Group by day of the month
-            break;
+            startDate = new Date(date.setMonth(date.getMonth() - 12)); // Get data for the last 12 months
+      groupFormat = { $month: "$createdAt" }; // Group by month
+      break;
           case "yearly":
-            startDate = new Date(date.setFullYear(date.getFullYear() - 1));
-            groupFormat = { $month: "$createdAt" }; // Group by month
-            break;
+             startDate = new Date(date.setFullYear(date.getFullYear() - 5)); // Last 5 years
+      groupFormat = { $year: "$createdAt" }; // Group by year
+      break;
           default:
             throw new Error("Invalid filter type");
         }
@@ -214,6 +216,58 @@ export class EnrolledCourseRepository implements IEnrolledCourseRepository {
         console.log("Revenue Data:", revenueData); // Debugging output
         return revenueData;
       }
+
+      // async getRevenueData(filter: "weekly" | "monthly" | "yearly") {
+      //   const date = new Date();
+      //   let startDate: Date;
+      //   let groupFormat: string;
+      
+      //   // Determine the date range and grouping logic based on the filter
+      //   switch (filter) {
+      //     case "weekly":
+      //       startDate = new Date(date.setDate(date.getDate() - 7));
+      //       groupFormat = "%A"; // Day of the week, e.g., "Sunday"
+      //       break;
+      //     case "monthly":
+      //       startDate = new Date(date.setMonth(date.getMonth() - 1));
+      //       groupFormat = "%d"; // Day of the month, e.g., "01", "15"
+      //       break;
+      //     case "yearly":
+      //       startDate = new Date(date.setFullYear(date.getFullYear() - 1));
+      //       groupFormat = "%B"; // Month name, e.g., "January", "February"
+      //       break;
+      //     default:
+      //       throw new Error("Invalid filter type");
+      //   }
+      
+      //   // Aggregate query to compute revenue data
+      //   const revenueData = await EnrolledCourse.aggregate([
+      //     {
+      //       $match: {
+      //         status: true, // Only consider enrolled courses with status true
+      //         createdAt: { $gte: startDate }, // Filter by date range
+      //       },
+      //     },
+      //     {
+      //       $group: {
+      //         _id: { $dateToString: { format: groupFormat, date: "$createdAt" } }, // Format labels
+      //         totalRevenue: { $sum: "$price" }, // Calculate total revenue
+      //       },
+      //     },
+      //     {
+      //       $sort: { _id: 1 }, // Sort the grouped data by the grouping field (_id)
+      //     },
+      //     {
+      //       $project: {
+      //         _id: 1, // Formatted label
+      //         totalRevenue: 1,
+      //       },
+      //     },
+      //   ]);
+      
+      //   console.log("Revenue Data:", revenueData); // Debugging output
+      //   return revenueData;
+      // }
       
       
     

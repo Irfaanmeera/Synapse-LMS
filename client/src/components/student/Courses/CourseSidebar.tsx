@@ -36,6 +36,7 @@ export const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
     }
   };
 
+  
   const handleOpen = () => {
     setOpen(true);
   };

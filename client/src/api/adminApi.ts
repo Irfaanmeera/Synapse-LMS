@@ -146,6 +146,7 @@ const editCategory = async (categoryId: string, data: string) => {
       data,
     });
     const { category } = response.data;
+    console.log("Category in frontend", category)
     return Promise.resolve(category);
   } catch (error) {
     return handleAxiosError(error);

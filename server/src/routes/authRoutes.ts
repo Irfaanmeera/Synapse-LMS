@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import express from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { generateToken } from '../utils/generateJWT';

@@ -51,17 +51,7 @@ const Navbar = () => {
   };
 
 
-  // const handleSearch = async () => {
-  //   const searchTerm = searchInputRef.current?.value;
-  //   console.log("Search Term", searchTerm)
-  //   if (searchTerm) {
-  //     const response = await searchCourse(searchTerm);
-  //     if (response) {
-  //       // Dispatch action to store search results
-  //       dispatch(userActions.setSearchResults(response));
-  //     }
-  //   }
-  // };
+
   const handleSearch = async () => {
     const searchTerm = searchInputRef.current?.value;
     console.log("Search Term", searchTerm);
@@ -146,32 +136,31 @@ const Navbar = () => {
     </div>  */}
 
             {/* SEARCH BAR */}
-            <div className="relative mx-4 flex-1 hidden lg:block">
-              <input
-                type="text"
-                placeholder="Search Courses..."
-                ref={searchInputRef}
-                className="w-full pl-4 pr-14 py-3 border border-lightgray rounded-3xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent"
-              />
+            <div className="relative mx-4 flex hidden lg:block">
+  <div className="flex items-center border border-lightgray rounded-3xl shadow-sm focus-within:ring-1 focus-within:ring-gray-blue">
+    <input
+      type="text"
+      placeholder="Search Courses..."
+      ref={searchInputRef}
+      className="w-100 pl-4 py-3 focus:outline-none border-none  rounded-l-3xl"
+    />
+    <button
+      type="submit"
+      onClick={handleSearch}
+      className="p-3 bg-Blueviolet hover:bg-midnightblue duration-150 ease-in-out rounded-full flex items-center justify-center mr-1"
+    >
+      <img
+        src="/assets/banner/search.svg"
+        alt="input-icon"
+        width={15}
+        height={15}
+      />
+    </button>
+  </div>
+</div>
 
-              {/* Search Icon on the right */}
-              <div className=" absolute inset-y-0 right-0 flex items-center pr-1 pt-5 lg:pt-0">
-                <button
-                  type="submit"
-                  onClick={handleSearch}
-                  className="p-2 lg:p-3 focus:outline-none focus:shadow-outline bg-Blueviolet hover:bg-midnightblue duration-150 ease-in-out rounded-full"
-                >
-                    <span>
-                  <img
-                    src="/assets/banner/search.svg"
-                    alt="input-icon"
-                    width={15}
-                    height={15}
-                  />
-                  </span>
-                </button>
-              </div>
-            </div>
+
+
 
 {/* Search button for mobile */}
 <div className="flex lg:hidden justify-center">
@@ -195,11 +184,11 @@ const Navbar = () => {
                     <Link to={"/"}>
                       <Typography
                         as="li"
-                        variant="body2"
+                        variant="inherit"
                         color="gray"
                         className="p-1 font-semibold"
                       >
-                        <div className="flex items-center text-slategray">
+                        <div className="flex items-center text-slategray font-serif">
                           Home
                         </div>
                       </Typography>
@@ -208,11 +197,11 @@ const Navbar = () => {
                     <Link to={"/courses"}>
                       <Typography
                         as="li"
-                        variant="body2"
+                        variant="inherit"
                         color="gray"
                         className="p-1 font-semibold"
                       >
-                        <div className="flex items-center text-slategray">
+                        <div className="flex items-center text-slategray font-serif">
                           Courses
                         </div>
                       </Typography>
@@ -230,7 +219,7 @@ const Navbar = () => {
                                                         <div className="flex items-center  text-slategray">My Learnings</div>
                                                     </Typography>
                                                 </Link> */}
-                        <Link to={"/profile"}>
+                        {/* <Link to={"/profile"}>
                           <Typography
                             as="li"
                             variant="body2"
@@ -238,10 +227,10 @@ const Navbar = () => {
                             className="p-1 font-semibold"
                           >
                             <div className="flex items-center text-slategray">
-                              My Mentors
+                              My Profile
                             </div>
                           </Typography>
-                        </Link>
+                        </Link> */}
                       </>
                     )}
                   </ul>
@@ -253,7 +242,7 @@ const Navbar = () => {
             {user ? (
               <div className="relative hidden lg:flex items-center space-x-3">
                 {/* Notification Bell */}
-                <BellIcon className="w-6 h-6 text-slategray cursor-pointer" />
+                {/* <BellIcon className="w-6 h-6 text-slategray cursor-pointer" /> */}
 
                 {/* User name */}
                 <Typography
@@ -262,7 +251,7 @@ const Navbar = () => {
                   color="blue-gray"
                   className="p-1 font-semibold cursor-pointer"
                 >
-                  <div className="flex items-center text-ultramarine">
+                  <div className="flex items-center text-slategray font-serif">
                     {user?.name}
                   </div>
                 </Typography>
@@ -278,7 +267,7 @@ const Navbar = () => {
                 <div ref={dropdownRef2}  className="relative z-50">
                   {/* Button to toggle dropdown */}
                   <button
-                    className="flex items-center text-blue-500 justify-center text-sm focus:outline-none bg-transparent rounded-xl border-Blueviolet"
+                    className="flex items-center text-blue justify-center text-sm focus:outline-none bg-transparent rounded-xl border-Blueviolet"
                     onClick={() => setIsOpenDrop2(!isOpenDrop2)}
                   >
                     <ChevronDownIcon className="w-4 h-4 text-blue-500 ml-1" />
@@ -286,30 +275,22 @@ const Navbar = () => {
 
                   {/* Dropdown content */}
                   {isOpenDrop2 && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg">
-                  <ul className="py-1 text-sm text-slategray">
+                  <div className="absolute right-0 mt-2 w-54 bg-white border border-bodydark2 border-opacity-50 rounded-md shadow-lg">
+                  <ul className="py-1 text-base text-slategray">
                     <Link to="/profile">
-                      <li className="block px-4 py-2 hover:bg-gray-100 hover:text-blue-600 transition duration-150">
+                      <li className="block px-4 py-2 hover:bg-gray hover:text-primary transition duration-150">
                         My Profile
                       </li>
                     </Link>
                     <Link to="/myLearning">
-                      <li className="block px-4 py-2 hover:bg-gray-100 hover:text-blue-600 transition duration-150">
+                      <li className="block px-4 py-2 hover:bg-gray hover:text-blue transition duration-150">
                         My Learnings
                       </li>
                     </Link>
-                    <Link to="/category/technology">
-                      <li className="block px-4 py-2 hover:bg-gray-100 hover:text-blue-600 transition duration-150">
-                        Mentors
-                      </li>
-                    </Link>
-                    <Link to="/category/mathematics">
-                      <li className="block px-4 py-2 hover:bg-gray-100 hover:text-blue-600 transition duration-150">
-                        My Purchases
-                      </li>
-                    </Link>
+                   
+                   
                     <li
-                      className="block px-4 py-2 hover:bg-gray-100 hover:text-blue-600 cursor-pointer transition duration-150"
+                      className="block px-4 py-2 hover:bg-gray hover:text-blue cursor-pointer transition duration-150"
                       onClick={handleLogout} // Attach the handleLogout function
                     >
                       Log Out
@@ -321,7 +302,7 @@ const Navbar = () => {
                 </div>
               </div>
             ) : (
-                <div className="ml-20 flex items-center justify-between">
+                <div className="ml-10 flex items-center justify-between">
                 <div className="flex space-x-0"> {/* Add margin-right for spacing */}
                 <Link to={"/"}>
                       <Typography

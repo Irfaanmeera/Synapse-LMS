@@ -72,48 +72,59 @@ const AdminCourses = () => {
 
       <TableContainer component={Paper} sx={{ boxShadow: 3, borderRadius: 2, overflow: "hidden", mb: 3 }}>
         <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell align="center" sx={{ fontWeight: "bold" }}>S.No</TableCell>
-              <TableCell align="center" sx={{ fontWeight: "bold" }}>Course</TableCell>
-              <TableCell align="center" sx={{ fontWeight: "bold" }}>Instructor</TableCell>
-              <TableCell align="center" sx={{ fontWeight: "bold" }}>Price</TableCell>
-              <TableCell align="center" sx={{ fontWeight: "bold" }}>Level</TableCell>
-              <TableCell align="center" sx={{ fontWeight: "bold" }}>Approval Status</TableCell>
+          <TableHead className="bg-bodydark2" >
+            <TableRow >
+              <TableCell align="left" sx={{ fontWeight: "bold", color:"white" }}>S.No</TableCell>
+              <TableCell align="left" sx={{ fontWeight: "bold" , color:"white"}}>Course</TableCell>
+              <TableCell align="left" sx={{ fontWeight: "bold", color:"white" }}>Instructor</TableCell>
+              <TableCell align="left" sx={{ fontWeight: "bold" , color:"white"}}>Price</TableCell>
+              <TableCell align="left" sx={{ fontWeight: "bold" , color:"white"}}>Level</TableCell>
+              <TableCell align="left"sx={{ fontWeight: "bold" , color:"white"}}>Approval Status</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {currentCourses.map((course, index) => (
-                 
-              <TableRow key={course.id} sx={{ "&:nth-of-type(even)": { bgcolor: "grey.100" } }} >
-                {/* <Link to={`/admin/course/${course.id}`} key={course.id}> */}
-                <TableCell align="center">{index + 1 + indexOfFirstItem}</TableCell>
-                <TableCell onClick={() => navigate(`/admin/course/${course.id}`)} align="center">{course.name}</TableCell>
-                <TableCell align="center">{course.instructor?.name || 'N/A'}</TableCell>
-                <TableCell align="center">{course.price}</TableCell>
-                <TableCell align="center">{course.level}</TableCell>
-                <TableCell align="center">
-                  <Select
-                    value={course.approval}
-                    onChange={(e) => handleApprovalChange(course.id, e.target.value)}
-                    sx={{
-                      color:
-                        course.approval === "Approved" ? "green" :
-                        course.approval === "Rejected" ? "red" : "orange",
-                      height: 25,
-                      minWidth: 90,
-                    }}
-                  >
-                    <MenuItem value="Pending">Pending</MenuItem>
-                    <MenuItem value="Approved">Approved</MenuItem>
-                    <MenuItem value="Rejected">Rejected</MenuItem>
-                  </Select>
-                </TableCell>
-               
-              </TableRow>
-             
-            ))}
-          </TableBody>
+  {currentCourses.map((course, index) => (
+    <TableRow
+      key={course.id}
+      sx={{
+        
+        "&:hover": { bgcolor: "grey.200", cursor: "pointer" }, // Add hover effect
+      }}
+    >
+      <TableCell align="left">{index + 1 + indexOfFirstItem}</TableCell>
+      <TableCell
+        onClick={() => navigate(`/admin/course/${course.id}`)}
+        align="left"
+      >
+        {course.name}
+      </TableCell>
+      <TableCell align="left">{course.instructor?.name || "N/A"}</TableCell>
+      <TableCell align="left">{course.price}</TableCell>
+      <TableCell align="left">{course.level}</TableCell>
+      <TableCell align="left">
+        <Select
+          value={course.approval}
+          onChange={(e) => handleApprovalChange(course.id, e.target.value)}
+          sx={{
+            color:
+              course.approval === "Approved"
+                ? "green"
+                : course.approval === "Rejected"
+                ? "red"
+                : "orange",
+            height: 25,
+            minWidth: 90,
+          }}
+        >
+          <MenuItem value="Pending">Pending</MenuItem>
+          <MenuItem value="Approved">Approved</MenuItem>
+          <MenuItem value="Rejected">Rejected</MenuItem>
+        </Select>
+      </TableCell>
+    </TableRow>
+  ))}
+</TableBody>
+
         </Table>
       </TableContainer>
 

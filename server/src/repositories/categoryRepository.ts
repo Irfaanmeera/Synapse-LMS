@@ -18,6 +18,7 @@ export class CategoryRepository implements ICategoryRepository {
         category!.set({
             category: data,
         });
+        console.log("Category Edit Repo:", category)
         return await category!.save()
     }
     async listCategory(categoryId: string): Promise<ICategory> {

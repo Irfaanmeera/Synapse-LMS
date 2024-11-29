@@ -1,16 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import { IAdmin } from '../interfaces/entityInterface/IAdmin';
 import { AdminService } from '../services/adminService';
-import bcrypt from 'bcryptjs'; // Import bcryptjs for password comparison
-import ErrorHandler from '../utils/ErrorHandler';
-import { STATUS_CODES } from '../constants/httpStatusCodes';
-
+import bcrypt from 'bcryptjs'; 
 import { BadRequestError } from '../constants/errors/badrequestError';
 import { generateToken } from '../utils/generateJWT';
 import UserRole from '../interfaces/entityInterface/IUserRoles';
 
-
-const { BAD_REQUEST } = STATUS_CODES;
 
 
 export class AdminController {
@@ -23,22 +18,18 @@ export class AdminController {
       const { email, password } = req.body;
       console.log(email, password);
 
-      // Find admin by email
       const admin: IAdmin = await this.adminService.login(email);
       console.log(admin);
 
-      // Compare plain password with hashed password
       const isPasswordMatch = await bcrypt.compare(password, admin.password!);
       if(!admin || !admin.id){
         throw new Error('Admin or admin id not found')
       }
       if (isPasswordMatch) {
-        // Generate access token and refresh token if password matches
+      
         const token = generateToken(admin.id, UserRole.Admin, process.env.JWT_SECRET!, '1h');
         const refreshToken = generateToken(admin.id, UserRole.Admin, process.env.JWT_REFRESH_SECRET!, '7d');
         
-
-        // Admin details to send back in response
         const adminDetails = {
           _id: admin.id,
           email: admin.email,
@@ -55,9 +46,8 @@ export class AdminController {
           success: true,
         });
       } else {
-        // If password is incorrect
         res.status(400).json({ message: "Incorrect Password" });
-        throw new ErrorHandler("Incorrect password", BAD_REQUEST);
+        throw new BadRequestError("Incorrect password");
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -82,8 +72,8 @@ export class AdminController {
   async addCategory(req: Request, res: Response, next: NextFunction) {
     try {
       const { category } = req.body;
-      const upperCaseCategory = category.toUpperCase();
-      const newCategory = await this.adminService.addCategory(upperCaseCategory);
+     
+      const newCategory = await this.adminService.addCategory(category);
       res.status(201).json({ category: newCategory });
     } catch (error) {
       if (error instanceof Error) {
@@ -95,10 +85,9 @@ export class AdminController {
   async editCategory(req: Request, res: Response, next: NextFunction) {
     try {
       const { categoryId, data } = req.body;
-      const upperCaseData = data.toUpperCase();
       const updatedCaetgory = await this.adminService.editCategory(
         categoryId,
-        upperCaseData
+        data
       );
       res.status(200).json({ category: updatedCaetgory });
     } catch (error) {
@@ -269,7 +258,7 @@ async getEnrolledCoursesByAdmin(req: Request, res: Response,next:NextFunction){
 }
 async getRevenueChartData(req: Request, res: Response,next:NextFunction) {
   try {
-    const { filter } = req.query; // weekly, monthly, yearly
+    const { filter } = req.query;
     if (!filter) {
       return res.status(400).json({ message: "Filter is required" });
     }

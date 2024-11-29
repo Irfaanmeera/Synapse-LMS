@@ -6,6 +6,7 @@ import Companies from '../../components/student/Home/Companies/Companies'
 import Mentor from '../../components/student/Home/Mentor'
 import Testimonials from '../../components/student/Home/Testimonials/index'
 import Footer from '../../components/student/Common/Footer/Footer'
+import UserCourses from '../../components/student/Courses/UserCourses'
 
 
 const StudentHome: React.FC= () => {
@@ -16,6 +17,7 @@ const StudentHome: React.FC= () => {
       {/* <ResponsiveAppBar/> */}
       <Banner/>
       <Companies/>
+      {/* <UserCourses/> */}
       <Courses/>
       <Mentor/>
       <Testimonials/>
