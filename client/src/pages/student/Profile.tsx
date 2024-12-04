@@ -1,17 +1,12 @@
 // IMPORTS
 import React, { useState } from "react";
-import Grid from "@mui/material/Grid";
+import { Grid2 } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import ProfileCard from "../../components/student/Profile/ProfileCard";
 import SettingsCard from "../../components/student/Profile/SettingsCard";
 import Navbarin from "../../components/student/Common/Navbar";
 
-// FONTS
-// import "@fontsource/roboto/300.css";
-// import "@fontsource/roboto/400.css";
-// import "@fontsource/roboto/500.css";
-// import "@fontsource/roboto/700.css";
 
 // STYLE & THEME
 const theme = createTheme();
@@ -29,8 +24,8 @@ export default function Profile() {
       <CssBaseline>
         {/* BACKGROUND */}
         
-        <Grid container direction="column" sx={{ overflowX: "hidden" }}>
-          <Grid item xs={12} md={8}>
+        <Grid2 container direction="column" sx={{ overflowX: "hidden" }}>
+          <Grid2 item xs={12} md={8}>
             <img
               alt="avatar"
               style={{
@@ -43,10 +38,10 @@ export default function Profile() {
               }}
               src="https://img.freepik.com/premium-vector/abstract-modern-blue-black-background-vector-illustration-design-presentation-banner-cover-web-flyer-card-poster-wallpaper-texture-slide-magazine-powerpoint_249611-4122.jpg"
             />
-          </Grid>
+          </Grid2>
 
           {/* COMPONENTS */}
-          <Grid
+          <Grid2
             container
             direction={{ xs: "column", md: "row" }}
             spacing={3}
@@ -58,16 +53,16 @@ export default function Profile() {
             }}
           >
             {/* PROFILE CARD */}
-            <Grid item md={4}>
+            <Grid2 item md={4}>
               <ProfileCard/>
-            </Grid>
+            </Grid2>
 
             {/* SETTINGS CARD */}
-            <Grid item md={7}>
+            <Grid2 item md={7}>
               <SettingsCard/>
-            </Grid>
-          </Grid>
-        </Grid>
+            </Grid2>
+          </Grid2>
+        </Grid2>
       </CssBaseline>
     </ThemeProvider>
   );

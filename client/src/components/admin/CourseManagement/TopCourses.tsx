@@ -18,9 +18,8 @@ const TopCourses = () => {
     const getTopCourses = async () => {
       try {
         const data = await fetchCoursesByAdmin();
-        // Sort courses by the number of enrolled students (descending) and pick the top 5
         const sortedCourses = data
-          .sort((a: Course, b: Course) => b.enrolled - a.enrolled)
+          .sort((a: Course, b: Course) => b?.enrolled - a?.enrolled)
           .slice(0, 5);
 
         setTopCourses(sortedCourses);
@@ -40,15 +39,15 @@ const TopCourses = () => {
         sx={{ boxShadow: 3, borderRadius: 2, overflow: "hidden", mb: 3 }}
       >
         <Table>
-          <TableHead>
+          <TableHead className="bg-bodydark2">
             <TableRow>
-              <TableCell align="center" sx={{ fontWeight: "bold" }}>
+              <TableCell align="center" sx={{ fontWeight: "bold", color:"white" }}>
                 S.No
               </TableCell>
-              <TableCell align="center" sx={{ fontWeight: "bold" }}>
+              <TableCell align="center" sx={{ fontWeight: "bold", color:"white" }}>
                 Course Name
               </TableCell>
-              <TableCell align="center" sx={{ fontWeight: "bold" }}>
+              <TableCell align="center" sx={{ fontWeight: "bold", color:"white" }}>
                 Enrolled
               </TableCell>
             </TableRow>
@@ -57,7 +56,10 @@ const TopCourses = () => {
             {topCourses.map((course, index) => (
               <TableRow
                 key={course.id}
-                sx={{ "&:nth-of-type(even)": { bgcolor: "grey.100" } }}
+                sx={{
+        
+                  "&:hover": { bgcolor: "grey.200", cursor: "pointer" }, // Add hover effect
+                }}
               >
                 <TableCell align="center">{index + 1}</TableCell>
                 <TableCell align="center">{course.name}</TableCell>

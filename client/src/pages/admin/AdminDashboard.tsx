@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import CardDataStats from '../../components/instructor/CardDataStats';
+import React, { useEffect, useState } from "react";
+import CardDataStats from "../../components/instructor/CardDataStats";
 
-import ChartThree from '../../components/admin/Charts/CourseEnrollment';
-import TableOne from '../../components/admin/StudentManagement/StudentList';
-import { adminDashboard } from '../../api/adminApi';
-import { Person, Class } from '@mui/icons-material';
-import SalesChart from '../../components/admin/Charts/SalesChart';
-import TopCourses from '../../components/admin/CourseManagement/TopCourses';
+import ChartThree from "../../components/admin/Charts/CourseEnrollment";
+import TableOne from "../../components/admin/StudentManagement/StudentList";
+import { adminDashboard } from "../../api/adminApi";
+import { Person, Class } from "@mui/icons-material";
+import SalesChart from "../../components/admin/Charts/SalesChart";
+import TopCourses from "../../components/admin/CourseManagement/TopCourses";
 
 interface adminDashboardData {
   totalRevenue: number;
@@ -24,29 +24,29 @@ const AdminDashboard: React.FC = () => {
 
   useEffect(() => {
     getDashboardData();
-  },[]);
+  }, []);
   return (
     <>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
-      <CardDataStats title="Total Courses" total={data?.courseCount}>
-  <svg
-    className="fill-primary dark:fill-white"
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-  >
-    <path
-      d="M3 4C3 2.89543 3.89543 2 5 2H19C20.1046 2 21 2.89543 21 4V20C21 21.1046 20.1046 22 19 22H5C3.89543 22 3 21.1046 3 20V4ZM19 4H5V20H19V4Z"
-      className="fill-primary"
-    />
-    <path
-      d="M7 6H17V8H7V6ZM7 10H17V12H7V10ZM7 14H13V16H7V14Z"
-      className="fill-primary"
-    />
-  </svg>
-</CardDataStats>
+        <CardDataStats title="Total Courses" total={data?.courseCount}>
+          <svg
+            className="fill-primary dark:fill-white"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+          >
+            <path
+              d="M3 4C3 2.89543 3.89543 2 5 2H19C20.1046 2 21 2.89543 21 4V20C21 21.1046 20.1046 22 19 22H5C3.89543 22 3 21.1046 3 20V4ZM19 4H5V20H19V4Z"
+              className="fill-primary"
+            />
+            <path
+              d="M7 6H17V8H7V6ZM7 10H17V12H7V10ZM7 14H13V16H7V14Z"
+              className="fill-primary"
+            />
+          </svg>
+        </CardDataStats>
 
         <CardDataStats title="Total Revenue" total={`₹ ${data?.totalRevenue}`}>
           <svg
@@ -71,17 +71,17 @@ const AdminDashboard: React.FC = () => {
             />
           </svg>
         </CardDataStats>
-    
 
-<CardDataStats title="Total Instructors" total={data?.instructorCount}>
-  <div style={{ display: 'flex', alignItems: 'center' }}>
-    {/* Person Icon */}
-  
-    {/* Class Icon */}
-    <Class style={{ fontSize: 30, color:"cornflowerblue", marginLeft: 8 }} />
-  </div>
-</CardDataStats>
+        <CardDataStats title="Total Instructors" total={data?.instructorCount}>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            {/* Person Icon */}
 
+            {/* Class Icon */}
+            <Class
+              style={{ fontSize: 30, color: "cornflowerblue", marginLeft: 8 }}
+            />
+          </div>
+        </CardDataStats>
 
         <CardDataStats title="Total Users" total={data?.studentCount}>
           <svg
@@ -109,23 +109,20 @@ const AdminDashboard: React.FC = () => {
       </div>
 
       <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
-  {/* Place SalesChart and ChartThree side-by-side */}
-  <div className="col-span-12 xl:col-span-8">
-    <SalesChart />
-  </div>
-  <div className="col-span-12 xl:col-span-4">
-    <ChartThree />
-  </div>
+        <div className="col-span-12 xl:col-span-8">
+          <SalesChart />
+        </div>
+        <div className="col-span-12 xl:col-span-4">
+          <ChartThree />
+        </div>
 
-  {/* TableOne spans the full width */}
-  <div className="col-span-12 xl:col-span-12">
-    <TopCourses />
-  </div>
-  <div className="col-span-12 xl:col-span-12">
-    <TableOne />
-  </div>
-</div>
-
+        <div className="col-span-12 xl:col-span-12">
+          <TopCourses />
+        </div>
+        <div className="col-span-12 xl:col-span-12">
+          <TableOne />
+        </div>
+      </div>
     </>
   );
 };

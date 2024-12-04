@@ -8,7 +8,7 @@ import { Course } from "../../../interfaces/course";
 import CourseContent from "./CourseContent";
 import { Module } from "../../../interfaces/module";
 
-const CourseDetails1: React.FC = () => {
+const CourseDetails: React.FC = () => {
   const [course, setCourse] = useState<Course>();
   const { courseId } = useParams();
   
@@ -102,4 +102,4 @@ const CourseDetails1: React.FC = () => {
   );
 };
 
-export default CourseDetails1;
+export default CourseDetails;

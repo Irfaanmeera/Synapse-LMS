@@ -14,7 +14,6 @@ import { RootState } from "../../../redux/store";
 import { updateUser } from "../../../api/studentApi";
 import { toast } from "react-hot-toast";
 
-// Manual validation rules
 const validateName = (name: string) => {
   if (!name.trim()) {
     return "Name should not be empty";
@@ -31,25 +30,11 @@ const validateName = (name: string) => {
   return "";
 };
 
-
 const validateMobile = (mobile: string) => {
-  // Check if the number starts with a "+"
-  // if (!mobile.startsWith("+")) {
-  //   return "Mobile number should start with a '+' followed by the country code";
-  // }
-
-  // Check if the mobile number (excluding the '+') contains only digits
-  // const digitsOnly = mobile.slice(1); // Remove the '+' for digit check
   if (!/^\d+$/.test(mobile)) {
     return "Mobile number should contain only numbers after the '+'";
   }
-
-  // Check if the length of the mobile number (including the country code) is correct
-  if (mobile.length !== 12) {
-    return "Mobile number must be exactly 12 digits including the country code (e.g., +91XXXXXXXXXX)";
-  }
-
-  return ""; // Return empty string if validation passes
+  return "";
 };
 
 // APP
@@ -69,17 +54,14 @@ export default function SettingsCard() {
     isEdit: true,
   });
 
-  // Handle input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-  
-    // Update form data
+
     setFormData((prevState) => ({
       ...prevState,
       [name]: value,
     }));
-  
-    // Clear the error dynamically
+
     if (name === "name") {
       const nameError = validateName(value);
       setErrors((prevErrors) => ({
@@ -87,7 +69,7 @@ export default function SettingsCard() {
         name: nameError || undefined,
       }));
     }
-  
+
     if (name === "mobile") {
       const mobileError = validateMobile(value);
       setErrors((prevErrors) => ({
@@ -97,7 +79,6 @@ export default function SettingsCard() {
     }
   };
 
-  // Handle submit with validation
   const handleSubmit = async () => {
     const nameError = validateName(formData.name);
     const mobileError = validateMobile(formData.mobile);
@@ -120,7 +101,7 @@ export default function SettingsCard() {
   };
 
   return (
-    <Card variant="outlined" sx={{ height: "100%", width: "100%" }}>
+    <Card variant="outlined" sx={{ height: "100%", width: "100%", marginTop:8, marginLeft:3}}>
       <Divider />
 
       {/* MAIN CONTENT CONTAINER */}
@@ -133,17 +114,22 @@ export default function SettingsCard() {
           }}
         >
           <FormControl fullWidth>
-            <Box display="flex" flexDirection={{ xs: "column", md: "row" }} gap={3} mb={3}>
+            <Box
+              display="flex"
+              flexDirection={{ xs: "column", md: "row" }}
+              gap={3}
+              mb={3}
+            >
               {/* Name Field */}
               <Box component="form" flex={1}>
                 <CustomInput
                   id="name"
                   name="name"
-                  value={formData.name} // Controlled value
-                  onChange={handleChange} // Handle change
+                  value={formData.name}
+                  onChange={handleChange}
                   title="Name"
-                  error={!!errors.name} // Error prop to highlight the input
-                  helperText={errors.name} // Error message
+                  error={!!errors.name}
+                  helperText={errors.name}
                 />
               </Box>
 
@@ -152,13 +138,15 @@ export default function SettingsCard() {
                 <CustomInput
                   id="phone"
                   name="mobile"
-                  value={formData.mobile} // Controlled value
-                  onChange={handleChange} // Handle change
+                  value={formData.mobile}
+                  onChange={handleChange}
                   title="Phone Number"
-                  error={!!errors.mobile} // Error prop to highlight the input
-                  helperText={errors.mobile} // Error message
+                  error={!!errors.mobile}
+                  helperText={errors.mobile}
                   InputProps={{
-                    startAdornment: <InputAdornment position="start">+</InputAdornment>,
+                    startAdornment: (
+                      <InputAdornment position="start">+</InputAdornment>
+                    ),
                   }}
                 />
               </Box>
@@ -171,7 +159,7 @@ export default function SettingsCard() {
                   type="email"
                   id="email"
                   name="email"
-                  value={user?.email} // Controlled value
+                  value={user?.email}
                   title="Email Address"
                   dis={edit.disabled}
                 />
@@ -179,7 +167,10 @@ export default function SettingsCard() {
             </Box>
 
             {/* Submit Button */}
-            <Box display="flex" justifyContent={{ xs: "center", md: "flex-end" }}>
+            <Box
+              display="flex"
+              justifyContent={{ xs: "center", md: "flex-end" }}
+            >
               <Button
                 sx={{
                   p: "0.8rem 2rem",

@@ -5,9 +5,6 @@ import { TooltipCustomStyles } from "../../utils/Tooltip";
 import { toTitleCase } from "alter-case";
 
 
-// import { TooltipCustomStyles } from "../common/utils/Tooltip";
-// import { FaSmile } from "react-icons/fa";
-
 interface SingleCourseProps {
   course?: Course | undefined;
   learning?: boolean;

@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import ReactApexChart from 'react-apexcharts';
-import { ApexOptions } from 'apexcharts';
-import { fetchCoursesByAdmin } from '../../../api/adminApi';
-
+import React, { useEffect, useState } from "react";
+import ReactApexChart from "react-apexcharts";
+import { ApexOptions } from "apexcharts";
+import { fetchCoursesByAdmin } from "../../../api/adminApi";
+import { Course } from "../../../interfaces/course";
 
 const ChartThree: React.FC = () => {
   const [chartData, setChartData] = useState({ series: [], labels: [] });
@@ -10,39 +10,34 @@ const ChartThree: React.FC = () => {
   const fetchChartData = async () => {
     try {
       const courses = await fetchCoursesByAdmin();
-      
-      console.log(courses, "courses from chart")
-
-      // Map course names to labels and enrollment counts to series
-      const labels = courses.map((course: any) => course.name);
-      const series = courses.map((course: any) => course.enrolled);
-
+      const labels = courses.map((course: Course) => course.name);
+      const series = courses.map((course: Course) => course.enrolled);
       setChartData({ labels, series });
     } catch (error) {
-      console.error('Error fetching chart data:', error);
+      console.error("Error fetching chart data:", error);
     }
   };
 
   useEffect(() => {
     fetchChartData();
-  },[]);
+  }, []);
 
   const options: ApexOptions = {
     chart: {
-      fontFamily: 'Satoshi, sans-serif',
-      type: 'donut',
+      fontFamily: "Satoshi, sans-serif",
+      type: "donut",
     },
-    colors: ['#3C50E0', '#6577F3', '#8FD0EF', '#0FADCF', '#F29C4E'],
+    colors: ["#3C50E0", "#6577F3", "#8FD0EF", "#0FADCF", "#F29C4E"],
     labels: chartData.labels,
     legend: {
       show: false,
-      position: 'bottom',
+      position: "bottom",
     },
     plotOptions: {
       pie: {
         donut: {
-          size: '65%',
-          background: 'transparent',
+          size: "65%",
+          background: "transparent",
         },
       },
     },

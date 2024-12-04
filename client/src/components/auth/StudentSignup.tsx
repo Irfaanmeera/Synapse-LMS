@@ -8,8 +8,6 @@ import { userActions } from "../../redux/userSlice";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signupSchema } from "../../validations/signupSchema";
-// import Signdialog from "../auth/StudentLogin";
-// import Registerdialog from "../auth/StudentSignup";
 import InstructorSignup from "../auth/instructorSignup";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
@@ -49,15 +47,14 @@ const StudentSignupForm: React.FC = () => {
       console.log("response sent");
       const response = await studentSignup(data);
 
-      // Only navigate if signup is successful
       if (response?.success) {
         dispatch(userActions.setEmail(data.email));
-        navigate("/verifyOtp"); // Navigate only if there's no error
+        navigate("/verifyOtp");
       }
     } catch (error) {
       console.log("Error:", error);
       if (typeof error === "string") {
-        setErr(error); // Show error to user
+        setErr(error);
       } else {
         setErr("An unexpected error occurred.");
       }
@@ -66,7 +63,7 @@ const StudentSignupForm: React.FC = () => {
 
   return (
     <>
-        <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:pr-0">
+      <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:pr-0">
         <div className="hidden lg:block">
           <button
             className="text-Blueviolet text-base font-medium ml-9 py-2 px-8 transition duration-150 ease-in-out rounded-full bg-semiblueviolet hover:text-white hover:bg-Blueviolet"
@@ -110,7 +107,9 @@ const StudentSignupForm: React.FC = () => {
                           Sign Up
                         </h2>
                       </div>
-                      <div className="text-center">{err && <p className="text-danger text-sm">{err}</p>}</div>
+                      <div className="text-center">
+                        {err && <p className="text-danger text-sm">{err}</p>}
+                      </div>
                       <form
                         onSubmit={handleSubmit(submitData)}
                         className="mt-8 space-y-6"
@@ -152,33 +151,14 @@ const StudentSignupForm: React.FC = () => {
                               </span>
                             )}
                           </div>
-                          {/* <div>
-                            <label htmlFor="mobile" className="sr-only">
-                              Phone No
-                            </label>
-                            <input
-                              id="mobile"
-                              {...register("mobile", { valueAsNumber: true })}
-                              type="number"
-                              required
-                              className="relative block w-full appearance-none rounded-none rounded-b-md border border-grey500 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                              placeholder="Mobile No"
-                            />
-                            {errors.mobile && (
-                              <span className="text-red text-sm italic">
-                                *{errors.mobile.message}
-                              </span>
-                            )}
-                          </div> */}
 
                           <div>
                             <label htmlFor="mobile" className="sr-only">
                               Phone No
                             </label>
 
-                            {/* React Phone Input */}
                             <PhoneInput
-                              country={"us"} // default country, you can change it
+                              country={"us"}
                               inputProps={{
                                 name: "mobile",
                                 id: "mobile",
@@ -190,7 +170,7 @@ const StudentSignupForm: React.FC = () => {
                                 setValue("mobile", value, {
                                   shouldValidate: true,
                                 })
-                              } // This is the key for react-hook-form
+                              }
                             />
 
                             {errors.mobile && (
@@ -233,15 +213,11 @@ const StudentSignupForm: React.FC = () => {
                             Send OTP
                           </button>
                         </div>
-                      
                       </form>
                     </div>
                   </div>
                   <div className="flex ">
                     {" "}
-                    {/* Add margin-right for spacing */}
-                    {/* <Signdialog />
-                    <Registerdialog /> */}
                     <p className="text-sm flex ml-16">
                       Become an Instructor!{" "}
                       <span>

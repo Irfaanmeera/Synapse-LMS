@@ -32,10 +32,10 @@ export default function ProfileCard() {
 
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  // Function to handle file input click
+  
   const handleIconClick = () => {
     if (fileInputRef.current) {
-      fileInputRef.current.click(); // Trigger the file input click
+      fileInputRef.current.click(); 
     }
   };
 
@@ -50,7 +50,7 @@ export default function ProfileCard() {
           const response = await updateImage(file, (progressEvent) => {
             if (progressEvent.total) {
               const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-              setProgress(percentCompleted); // Update progress
+              setProgress(percentCompleted);
             }
           });
 
@@ -72,14 +72,14 @@ export default function ProfileCard() {
     }, [dispatch]);
     
   return (
-    <Card variant="outlined">
-      <Box display="flex" flexDirection="column" alignItems="center">
-        {/* CARD HEADER START */}
+    <Card variant="outlined" sx={{marginTop:8, marginLeft:3}}>
+      <Box display="flex" flexDirection="column" alignItems="center" >
+      
         <Box sx={{ p: '1rem 1rem', textAlign: 'center', position: 'relative' }}>
-  {/* PROFILE PHOTO */}
+  
   {loading ? (
     <Box sx={{ position: 'relative', width: 100, height: 100 }}>
-      {/* Circular progress bar over the image */}
+    
       <Avatar
         sx={{
           width: 100,
@@ -145,7 +145,7 @@ export default function ProfileCard() {
             color: 'white',
             cursor: 'pointer',
           }}
-          onClick={handleIconClick} // Trigger file input when clicked
+          onClick={handleIconClick} 
         />
       }
     >
@@ -156,9 +156,9 @@ export default function ProfileCard() {
   <input
     type="file"
     ref={fileInputRef}
-    style={{ display: 'none' }} // Hide the input
-    onChange={handleFileChange} // Handle file selection
-    accept="image/*" // Optionally, restrict to images
+    style={{ display: 'none' }} 
+    onChange={handleFileChange} 
+    accept="image/*" 
   />
 
   {/* DESCRIPTION */}
@@ -188,7 +188,7 @@ export default function ProfileCard() {
             
             sx={{ width: "99%", p: 1, my: 2,
                 backgroundColor: "white",
-                color:"white" // Set background color
+                color:"white" 
           }}
           >
             View Public Profile

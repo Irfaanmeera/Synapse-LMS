@@ -8,10 +8,6 @@ import { loginSchema } from "../../validations/loginSchema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LockClosedIcon } from "@heroicons/react/20/solid";
-// import Signdialog from "../auth/StudentLogin";
-// import Registerdialog from "../auth/StudentSignup";
-// import InstructorSignIn from "../auth/instructorLogin";
-// import {socket} from '../socket/Socket'
 
 interface InstructorData {
   email: string;
@@ -56,9 +52,8 @@ const Signin: FC = () => {
       //   await instructorResendOtp(data.email); // Resend OTP
       //   navigate("instructor/verifyOtp"); // Redirect to OTP verification page
       // } else {
-        setErr(error); // Set specific error message
-        console.log("Error set:", error); // Log the error message set
-      
+      setErr(error); // Set specific error message
+      console.log("Error set:", error); // Log the error message set
     }
   };
 
@@ -105,11 +100,17 @@ const Signin: FC = () => {
                   <div className="flex min-h-full items-center justify-center py-2 px-4 sm:px-6 lg:px-8">
                     <div className="w-full max-w-md space-y-8">
                       <div>
-                      <h2 className="mt-4 text-center text-xl font-semibold tracking-tight text-slategray">
+                        <h2 className="mt-4 text-center text-xl font-semibold tracking-tight text-slategray">
                           Instructor Login
                         </h2>
                       </div>
-                      <div>{err && <p className="text-meta-1 text-base font-serif">{err}</p>}</div>
+                      <div>
+                        {err && (
+                          <p className="text-meta-1 text-base font-serif">
+                            {err}
+                          </p>
+                        )}
+                      </div>
                       <form
                         onSubmit={handleSubmit(submitData)}
                         className="mt-6 space-y-6"
@@ -182,34 +183,19 @@ const Signin: FC = () => {
                             Sign In
                           </button>
                         </div>
-                        {/* {err && (
-                          <p className="text-red text-opacity-20 text-sm">
-                            {err}
-                          </p>
-                        )} */}
                       </form>
-                      {/* <div>
-                                           
-         
-          <Link to={"/instructor/login"}>
-            <p className="text-center text-sm text-sky-600 cursor-pointer underline">
-              Login as Student
-            </p>
-          </Link>
-          
-                                            </div> */}
                     </div>
                   </div>
 
-                  {/* <div className="mt-4 flex justify-end">
-                                        <button
-                                            type="button"
-                                            className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                                            onClick={closeModal}
-                                        >
-                                            Got it, thanks!
-                                        </button>
-                                    </div> */}
+                  <div className="mt-4 flex justify-end">
+                    <button
+                      type="button"
+                      className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                      onClick={closeModal}
+                    >
+                      Got it, thanks!
+                    </button>
+                  </div>
                 </Dialog.Panel>
               </Transition.Child>
             </div>

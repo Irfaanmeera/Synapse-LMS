@@ -6,17 +6,16 @@ import ProgressBar from "./ProgressBar";
 import { getTotalChapterCountByCourseId } from "../../../api/studentApi";
 
 type Props = {
-  enrolledCourse: any; // Expecting a course object as a prop
+  enrolledCourse: any;
 };
 
 const LearningCard: React.FC<Props> = ({ enrolledCourse }) => {
-  const [progress, setProgress] = useState(0); // Progress as a percentage
-  const [chapterCount, setChapterCount] = useState(0); // Total chapter count
+  const [progress, setProgress] = useState(0);
+  const [chapterCount, setChapterCount] = useState(0);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<string>("");
   const navigate = useNavigate();
 
-  // Extract courseId for the current course
   const courseId = enrolledCourse.courseId.id;
 
   const goToCourse = () => {
@@ -26,19 +25,19 @@ const LearningCard: React.FC<Props> = ({ enrolledCourse }) => {
   useEffect(() => {
     const fetchChapterCount = async () => {
       setLoading(true);
-      setError('');
+      setError("");
       try {
-        // Fetch total chapter count for the course
         const result = await getTotalChapterCountByCourseId(courseId);
         const totalChapters = result.totalChapters;
 
-        // Update chapter count and calculate progress
         setChapterCount(totalChapters);
-        const calculatedProgress = (Math.floor((enrolledCourse.progression.length / totalChapters) * 100)) || 0;
+        const calculatedProgress =
+          Math.floor(
+            (enrolledCourse.progression.length / totalChapters) * 100
+          ) || 0;
         setProgress(calculatedProgress);
-
       } catch (err) {
-        setError('Failed to load chapter count');
+        setError("Failed to load chapter count");
       } finally {
         setLoading(false);
       }

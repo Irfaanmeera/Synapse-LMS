@@ -1,17 +1,13 @@
-
-import React from 'react'
-import TableOne from '../../components/instructor/Tables/StudentList.tsx'
-import Breadcrumb from '../../components/instructor/Breadcrumbs/Breadcrumb'
-
+import TableOne from "../../components/instructor/Tables/StudentList.tsx";
+import Breadcrumb from "../../components/instructor/Breadcrumbs/Breadcrumb";
 
 const StudentManagement = () => {
-
   return (
     <div>
-        <Breadcrumb pageName="StudentDetails" />
-      <TableOne/>
+      <Breadcrumb pageName="StudentDetails" />
+      <TableOne />
     </div>
-  )
-}
+  );
+};
 
-export default StudentManagement
+export default StudentManagement;

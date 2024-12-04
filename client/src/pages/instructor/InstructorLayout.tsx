@@ -11,20 +11,20 @@ const InstructorLayout: React.FC  = ()=>{
   
 
   useEffect(() => {
-    // Push a new entry to the history stack to disable going back
+  
     window.history.pushState(null, '', window.location.href);
 
     
     const handlePopState = () => {
-      // Prevent the default action (going back)
+     
       window.history.pushState(null, '', window.location.href);
     };
 
-    // Listen for popstate event (triggered by back button)
+    
     window.addEventListener('popstate', handlePopState);
 
     return () => {
-      // Cleanup event listener when the component unmounts
+    
       window.removeEventListener('popstate', handlePopState);
     };
   }, []);

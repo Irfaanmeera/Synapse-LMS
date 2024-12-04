@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import { verifyOtp } from "../../api/authentication";
-import {instructorVerifyOtp} from '../../api/authentication'
+import { instructorVerifyOtp } from "../../api/authentication";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../redux/store";
 import { userActions } from "../../redux/userSlice";
 import { useNavigate } from "react-router-dom";
-import { toast } from 'react-hot-toast';
+import { toast } from "react-hot-toast";
 
 const OtpVerificationForm: React.FC<{ isInstructor: boolean }> = (props) => {
   const dispatch = useDispatch();
@@ -25,24 +25,24 @@ const OtpVerificationForm: React.FC<{ isInstructor: boolean }> = (props) => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("Email:", email, "OTP:", otp);
-    
+
     try {
       if (!props.isInstructor) {
         const response = await verifyOtp(otp, email!);
         console.log("OTP Verification Response:", response);
         if (response) {
           dispatch(userActions.saveUser(response));
-          toast.success("OTP verification successful!"); 
+          toast.success("OTP verification successful!");
           navigate("/");
         }
-      }else {
+      } else {
         const response = await instructorVerifyOtp(otp, email!);
         if (response) {
           dispatch(userActions.saveUser(response));
           navigate("/instructor");
         }
       }
-    } catch(error) {
+    } catch (error) {
       setErr("OTP verification failed");
     }
   };
@@ -64,7 +64,7 @@ const OtpVerificationForm: React.FC<{ isInstructor: boolean }> = (props) => {
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
     const seconds = time % 60;
-    return `${minutes}:${("0" + seconds).slice(-2)}`; // Pad seconds with leading zero if needed
+    return `${minutes}:${("0" + seconds).slice(-2)}`;
   };
 
   return (
@@ -99,10 +99,7 @@ const OtpVerificationForm: React.FC<{ isInstructor: boolean }> = (props) => {
           </button>
 
           {showButton ? (
-            <p
-              className="text-center text-indigo-600 text-sm cursor-pointer underline mt-4"
-              // onClick={handleResend} // Uncomment and use resend logic
-            >
+            <p className="text-center text-indigo-600 text-sm cursor-pointer underline mt-4">
               Resend OTP
             </p>
           ) : (

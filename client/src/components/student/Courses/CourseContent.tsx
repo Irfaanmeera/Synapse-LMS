@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { Accordion, AccordionDetails, AccordionSummary, Typography } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import ReactPlayer from 'react-player';
-import { Course } from '../../../interfaces/course';
+
 
 // interface CourseContentProps {
 //     course: Course | undefined;
@@ -12,15 +11,6 @@ const CourseContent: React.FC = ({ course }) => {
 
     console.log("Course content student", course?.modules?.map(item => item?.module?.chapters));
 
-    // const extractedModules = course?.modules?.map((item) => ({
-    //     moduleId: item.module.id, // Module ID
-    //     name: item.module.name, // Module Name
-    //     order: item.order, // Order
-    //     status: item.module.status, // Status v
-    //     createdAt: item.module.createdAt, // Created At
-    //     chapters: item.module.chapters || [], // Chapters (default to empty array if none)
-    //   }));
-    //   setModules(extractedModules)
     return (
         <div className="mt-8 ml-4">
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: "25px" }}>
@@ -36,8 +26,8 @@ const CourseContent: React.FC = ({ course }) => {
         id={`module-${moduleData.module.id}-header`}
         sx={{
             backgroundColor: "#F7F9FA",
-            border: '1px solid #D3D3D3',  // Light gray border
-            borderRadius: '4px',         // Optional: rounded corners
+            border: '1px solid #D3D3D3',  
+            borderRadius: '4px',         
             boxShadow: 'none',
           }}
       >
@@ -55,24 +45,7 @@ const CourseContent: React.FC = ({ course }) => {
                   <Typography className="text-midnightblue">{chapter.title}</Typography>
                 </AccordionSummary>
                 <AccordionDetails className="text-body">
-                  {/* Chapter Content */}
-                  {/* <Typography>
-                    {chapter.videoUrl ? (
-                      <div>
-                        <Typography>
-                          Video:
-                        </Typography>
-                        <ReactPlayer url={chapter.videoUrl} controls width="100%" />
-                      </div>
-                    ) : (
-                      <Typography>
-                        Video: N/A
-                      </Typography>
-                    )}
-                  </Typography> */}
-                {/* <Typography>
-                    Section: {chapter.videoSection || "N/A"}
-                  </Typography> */}
+                 
                   <Typography className="mb-4">
                    {chapter.description || "No description"}
                   </Typography> 

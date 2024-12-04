@@ -73,7 +73,7 @@ const StudentList = () => {
   const currentItems = filteredList.slice(indexOfFirstItem, indexOfLastItem);
 
   return (
-    <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+    <div className="rounded-sm  dark:bg-midnightblue dark:text-white border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
       <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">Students</h4>
 
       {/* Search Bar */}
@@ -83,13 +83,13 @@ const StudentList = () => {
         size="small"
         value={searchQuery}
         onChange={handleSearch}
-        sx={{ mb: 3 }}
+        sx={{ mb: 3}}
       />
 
       <TableContainer component={Paper} sx={{ boxShadow: 3, borderRadius: 2, overflow: "hidden", mb: 3 }}>
         <Table>
           <TableHead>
-            <TableRow className="bg-bodydark2">
+            <TableRow className="bg-bodydark2 ">
               <TableCell align="center" sx={{ fontWeight: "bold", color: "white" }}>S.No</TableCell>
               <TableCell align="center" sx={{ fontWeight: "bold", color: "white" }}>Student</TableCell>
               <TableCell align="center" sx={{ fontWeight: "bold", color: "white" }}>Email</TableCell>

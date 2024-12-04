@@ -14,10 +14,8 @@ const StudentHome: React.FC= () => {
   return (
     <>
       <Navbarin/>
-      {/* <ResponsiveAppBar/> */}
       <Banner/>
       <Companies/>
-      {/* <UserCourses/> */}
       <Courses/>
       <Mentor/>
       <Testimonials/>

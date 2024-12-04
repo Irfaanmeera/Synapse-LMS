@@ -102,7 +102,10 @@ const InstructorList = () => {
           </TableHead>
           <TableBody>
             {currentItems.map((instructor, index) => (
-              <TableRow key={instructor?.id || index} sx={{ "&:nth-of-type(even)": { bgcolor: "grey.100" } }}>
+              <TableRow key={instructor?.id || index} sx={{
+        
+                "&:hover": { bgcolor: "grey.200", cursor: "pointer" }, // Add hover effect
+              }}>
                 <TableCell align="center" sx={{ color: "text.secondary" }}>
                   {index + 1}
                 </TableCell>

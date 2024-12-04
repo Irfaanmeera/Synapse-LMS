@@ -9,7 +9,6 @@ const MyLearning: React.FC= () => {
   return (
     <>
       <Navbarin/>
-      {/* <ResponsiveAppBar/> */}
       <LearningPlatform/>
       <Footer/>
     </>

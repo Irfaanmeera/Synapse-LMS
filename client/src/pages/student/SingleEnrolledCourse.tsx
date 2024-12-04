@@ -1,20 +1,16 @@
-import React from 'react'
-import Navbarin from '../../components/student/Common/Navbar'
-import Footer from '../../components/student/Common/Footer/Footer'
-import SingleEnrolledCourse from '../../components/student/Learning/SingleEnrolledCourse'
+import React from "react";
+import Navbarin from "../../components/student/Common/Navbar";
+import Footer from "../../components/student/Common/Footer/Footer";
+import SingleEnrolledCourse from "../../components/student/Learning/SingleEnrolledCourse";
 
-
-
-const SingleEnrolledCoursePage: React.FC= () => {
-
+const SingleEnrolledCoursePage: React.FC = () => {
   return (
     <>
-      <Navbarin/>
-      {/* <ResponsiveAppBar/> */}
-      <SingleEnrolledCourse/>
-      <Footer/>
+      <Navbarin />
+      <SingleEnrolledCourse />
+      <Footer />
     </>
-  )
-}
+  );
+};
 
 export default SingleEnrolledCoursePage;

@@ -17,7 +17,7 @@ const ForgotPasswordOtpVerificationForm: React.FC<{ isInstructor: boolean }> = (
   const navigate = useNavigate();
   const [otp, setOtp] = useState("");
   const [err, setErr] = useState("");
-  const [resendTimer, setResendTimer] = useState(300); // Same timer as in OtpVerificationForm
+  const [resendTimer, setResendTimer] = useState(300);
   const [showButton, setShowButton] = useState(false);
   const email = useSelector((store: RootState) => store.user.userEmail);
 
@@ -30,13 +30,14 @@ const ForgotPasswordOtpVerificationForm: React.FC<{ isInstructor: boolean }> = (
     setErr("");
     e.preventDefault();
     try {
-      const response =
-        !props.isInstructor
-          ? await studentOtpVerfication(email!, otp)
-          : await InstructorOtpVerfication(email!, otp);
+      const response = !props.isInstructor
+        ? await studentOtpVerfication(email!, otp)
+        : await InstructorOtpVerfication(email!, otp);
       if (response?.success) {
         navigate(
-          props.isInstructor ? "/instructor/update-forgot-password" : "/update-forgot-password"
+          props.isInstructor
+            ? "/instructor/update-forgot-password"
+            : "/update-forgot-password"
         );
       }
     } catch (error) {
@@ -47,11 +48,14 @@ const ForgotPasswordOtpVerificationForm: React.FC<{ isInstructor: boolean }> = (
   const handleResend = () => {
     props.isInstructor ? instructorResendOtp(email!) : resendOtp(email!);
     setShowButton(false);
-    setResendTimer(300); // Resetting timer to 5 minutes
+    setResendTimer(300);
   };
 
   useEffect(() => {
-    const resendTimeout = setTimeout(() => setShowButton(true), resendTimer * 1000);
+    const resendTimeout = setTimeout(
+      () => setShowButton(true),
+      resendTimer * 1000
+    );
     const countdownInterval = setInterval(() => {
       setResendTimer((prev) => (prev > 0 ? prev - 1 : 0));
     }, 1000);

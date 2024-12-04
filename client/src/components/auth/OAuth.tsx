@@ -33,14 +33,14 @@ const Oauth: React.FC<Props> = ({ setError }) => {
         const image = resultsFromGoogle.user.photoURL;
 
         const response = await googleLogin(name, email, image);
-        console.log(response); // Debugging log
+        console.log(response);
 
         if (response?.data.success) {
-          const userDetails = response.data.student; // Access student instead of user
-          console.log(userDetails); // Debugging log
+          const userDetails = response.data.student;
+          console.log(userDetails);
 
           dispatch(userActions.saveUser(userDetails));
-          
+
           localStorage.setItem("user", JSON.stringify(userDetails));
           localStorage.setItem("accessToken", response.data.token);
 

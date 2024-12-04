@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Pagination, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField, Select, MenuItem } from '@mui/material';
 import { fetchCoursesByAdmin, updateCourseApproval } from '../../../api/adminApi';
 import { Course } from '../../../interfaces/course';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const AdminCourses = () => {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -28,16 +28,20 @@ const AdminCourses = () => {
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value.toLowerCase();
     setSearchQuery(query);
+  
     if (query) {
-      const filtered = courses.filter(course =>
-        course.name.toLowerCase().includes(query) ||
-        course.instructor?.name.toLowerCase().includes(query)
-      );
+      const filtered = courses.filter(course => {
+        // Ensure `course.name` and `course.instructor?.name` are safely accessed
+        const courseName = course.name?.toLowerCase() || "";
+        const instructorName = course.instructor?.name?.toLowerCase() || "";
+        return courseName.includes(query) || instructorName.includes(query);
+      });
       setFilteredCourses(filtered);
     } else {
       setFilteredCourses(courses);
     }
   };
+  
 
   const handleApprovalChange = async (courseId: string, newStatus: string) => {
     try {
@@ -100,7 +104,7 @@ const AdminCourses = () => {
       </TableCell>
       <TableCell align="left">{course.instructor?.name || "N/A"}</TableCell>
       <TableCell align="left">{course.price}</TableCell>
-      <TableCell align="left">{course.level}</TableCell>
+      <TableCell align="left">{course?.level}</TableCell>
       <TableCell align="left">
         <Select
           value={course.approval}

@@ -1,29 +1,28 @@
-
 import { Box, LinearProgress, Typography } from "@mui/material";
 
 type ProgressBarProps = {
-  progress: number; // Expecting progress value as a percentage (0 to 100)
+  progress: number;
 };
 
 const ProgressBar: React.FC<ProgressBarProps> = ({ progress }) => {
-
-  console.log("Progress percent:",progress)
+  console.log("Progress percent:", progress);
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-      {/* Progress Bar */}
+    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
       <LinearProgress
         variant="determinate"
         value={progress}
         sx={{
-          width: "100%", // Full width of the container
-          height: 10, // Height of the progress bar
-          borderRadius: 5, // Rounded corners
-          marginLeft:1,
-          marginBottom:3,
+          width: "100%",
+          height: 10,
+          borderRadius: 5,
+          marginLeft: 1,
+          marginBottom: 3,
         }}
       />
-      {/* Progress Percentage */}
-      <Typography variant="body2" color="textSecondary">{progress}%</Typography>
+
+      <Typography variant="body2" color="textSecondary">
+        {progress}%
+      </Typography>
     </Box>
   );
 };

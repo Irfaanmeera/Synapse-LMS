@@ -66,15 +66,15 @@ const CreateCourse: React.FC = () => {
   };
 
   const handleEditorChange = (content, editor) => {
-    // Optionally remove <p> tags or other formatting tags
-    const cleanedContent = content.replace(/<\/?p>/g, ''); // Removes <p> tags
-    setFormData({ ...formData, description: cleanedContent }); // Update your state
+   
+    const cleanedContent = content.replace(/<\/?p>/g, ''); 
+    setFormData({ ...formData, description: cleanedContent }); 
   };
 
   const handleThumbnailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+      if (file.size > 5 * 1024 * 1024) { 
         setSnackbar({
           open: true,
           message: 'File size too large. Please choose a smaller image.',
@@ -83,7 +83,7 @@ const CreateCourse: React.FC = () => {
         return;
       }
   
-      // Generate local preview
+     
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64String = reader.result as string;
@@ -91,10 +91,10 @@ const CreateCourse: React.FC = () => {
       };
       reader.readAsDataURL(file);
   
-      // Store the actual file object for uploading
+     
       setFormData(prev => ({
         ...prev,
-        image: file, // Store the actual file object
+        image: file, 
       }));
     }
   };
@@ -152,14 +152,14 @@ const CreateCourse: React.FC = () => {
       formDataToSubmit.append('category', formData.category);
       formDataToSubmit.append('price', String(formData.price));
   
-      // Append the image file if it exists
+     
       if (formData.image) {
-        formDataToSubmit.append('image', formData.image); // Append the actual file object
+        formDataToSubmit.append('image', formData.image); 
       }
   
       console.log('Sending course data:', formDataToSubmit);
   
-      // Submit the form data including the image
+     
       const response = await authorizedAxios.post('/instructor/addCourse', formDataToSubmit, {
         headers: {
           'Content-Type': 'multipart/form-data',

@@ -64,7 +64,6 @@ const CheckoutForm: React.FC<Props> = ({ setOpen, course, socket}) => {
   useEffect(() => {
     if (orderData) {
       setOpen(false);
-      // redirect(`/course-access/${course._id}`)
       navigate(`/course-access/${course._id}`);
     }
   }, [orderData]);
@@ -97,8 +96,6 @@ const CheckoutForm: React.FC<Props> = ({ setOpen, course, socket}) => {
           Cancel
         </button>
       </div>
-      {/* Show any error or success messages */}
-      {/* {message && <div id="payment-message">{message}</div>} */}
     </form>
   );
 };

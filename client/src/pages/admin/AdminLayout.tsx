@@ -1,31 +1,23 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useState,useEffect,ReactNode} from 'react';
-import Header from '../../components/admin/Header/index';
-import Sidebar from '../../components/admin/Sidebar/index';
-import { Outlet } from 'react-router-dom';
+import React, { useState, useEffect, ReactNode } from "react";
+import Header from "../../components/admin/Header/index";
+import Sidebar from "../../components/admin/Sidebar/index";
+import { Outlet } from "react-router-dom";
 
-
-
-const AdminLayout: React.FC  = ()=>{
+const AdminLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  
 
   useEffect(() => {
-    // Push a new entry to the history stack to disable going back
-    window.history.pushState(null, '', window.location.href);
+    window.history.pushState(null, "", window.location.href);
 
-    
     const handlePopState = () => {
-      // Prevent the default action (going back)
-      window.history.pushState(null, '', window.location.href);
+      window.history.pushState(null, "", window.location.href);
     };
 
-    // Listen for popstate event (triggered by back button)
-    window.addEventListener('popstate', handlePopState);
+    window.addEventListener("popstate", handlePopState);
 
     return () => {
-      // Cleanup event listener when the component unmounts
-      window.removeEventListener('popstate', handlePopState);
+      window.removeEventListener("popstate", handlePopState);
     };
   }, []);
 
@@ -46,8 +38,8 @@ const AdminLayout: React.FC  = ()=>{
           {/* <!-- ===== Main Content Start ===== --> */}
           <main>
             <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
-            <Outlet />
-                          </div>
+              <Outlet />
+            </div>
           </main>
           {/* <!-- ===== Main Content End ===== --> */}
         </div>

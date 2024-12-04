@@ -1,17 +1,13 @@
-import { Request, Response, NextFunction } from 'express';
-import { IAdmin } from '../interfaces/entityInterface/IAdmin';
-import { AdminService } from '../services/adminService';
-import bcrypt from 'bcryptjs'; 
-import { BadRequestError } from '../constants/errors/badrequestError';
-import { generateToken } from '../utils/generateJWT';
-import UserRole from '../interfaces/entityInterface/IUserRoles';
-
-
+import { Request, Response, NextFunction } from "express";
+import { IAdmin } from "../interfaces/entityInterface/IAdmin";
+import { AdminService } from "../services/adminService";
+import bcrypt from "bcryptjs";
+import { BadRequestError } from "../constants/errors/badrequestError";
+import { generateToken } from "../utils/generateJWT";
+import UserRole from "../interfaces/entityInterface/IUserRoles";
 
 export class AdminController {
-  constructor(
-    private adminService: AdminService
-  ) { }
+  constructor(private adminService: AdminService) {}
 
   async login(req: Request, res: Response, next: NextFunction) {
     try {
@@ -22,21 +18,30 @@ export class AdminController {
       console.log(admin);
 
       const isPasswordMatch = await bcrypt.compare(password, admin.password!);
-      if(!admin || !admin.id){
-        throw new Error('Admin or admin id not found')
+      if (!admin || !admin.id) {
+        throw new Error("Admin or admin id not found");
       }
       if (isPasswordMatch) {
-      
-        const token = generateToken(admin.id, UserRole.Admin, process.env.JWT_SECRET!, '1h');
-        const refreshToken = generateToken(admin.id, UserRole.Admin, process.env.JWT_REFRESH_SECRET!, '7d');
-        
+        const token = generateToken(
+          admin.id,
+          UserRole.Admin,
+          process.env.JWT_SECRET!,
+          "1h"
+        );
+        const refreshToken = generateToken(
+          admin.id,
+          UserRole.Admin,
+          process.env.JWT_REFRESH_SECRET!,
+          "7d"
+        );
+
         const adminDetails = {
           _id: admin.id,
           email: admin.email,
           role: "admin",
         };
 
-        console.log(adminDetails)
+        console.log(adminDetails);
 
         res.status(200).json({
           admin: adminDetails,
@@ -72,7 +77,7 @@ export class AdminController {
   async addCategory(req: Request, res: Response, next: NextFunction) {
     try {
       const { category } = req.body;
-     
+
       const newCategory = await this.adminService.addCategory(category);
       res.status(201).json({ category: newCategory });
     } catch (error) {
@@ -112,7 +117,9 @@ export class AdminController {
   async unlistCategory(req: Request, res: Response, next: NextFunction) {
     try {
       const { categoryId } = req.body;
-      const unlistedCategory = await this.adminService.unlistCategory(categoryId);
+      const unlistedCategory = await this.adminService.unlistCategory(
+        categoryId
+      );
       res.status(200).json({ category: unlistedCategory, success: true });
     } catch (error) {
       if (error instanceof Error) {
@@ -120,7 +127,6 @@ export class AdminController {
       }
     }
   }
-
 
   async getAllStudents(req: Request, res: Response, next: NextFunction) {
     try {
@@ -203,75 +209,86 @@ export class AdminController {
       }
     }
   }
-  async getCoursesByAdmin(req: Request, res: Response,next:NextFunction): Promise<void> {
+  async getCoursesByAdmin(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
-        const courses = await this.adminService.getAllCourses();
-        res.status(200).json({ success: true, data: courses });
+      const courses = await this.adminService.getAllCourses();
+      res.status(200).json({ success: true, data: courses });
     } catch (error) {
       if (error instanceof Error) {
         next(error);
       }
     }
-}
-
-async approveCourse(req: Request, res: Response, next: NextFunction){
-  try {
-    const { courseId, approval } = req.body;
-    const updatedCourse = await this.adminService.courseApproval(courseId, approval);
-    res.status(200).json(updatedCourse);
-  } catch (error) {
-    next(error);
   }
-};
-async getSingleCourse(req: Request, res: Response, next: NextFunction) {
-  try {
-    const { courseId } = req.params;
-    const course = await this.adminService.getSingleCourse(courseId);
-    res.status(200).json(course);
-  } catch (error) {
-    if (error instanceof Error) {
+
+  async approveCourse(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { courseId, approval } = req.body;
+      const updatedCourse = await this.adminService.courseApproval(
+        courseId,
+        approval
+      );
+      res.status(200).json(updatedCourse);
+    } catch (error) {
       next(error);
     }
   }
-}
-async adminDashBoard(req: Request, res: Response, next: NextFunction) {
-  try {
-    const data = await this.adminService.adminDashboardData();
-    res.status(200).json(data);
-  } catch (error) {
-    if (error instanceof Error) {
-      next(error);
+  async getSingleCourse(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { courseId } = req.params;
+      const course = await this.adminService.getSingleCourse(courseId);
+      res.status(200).json(course);
+    } catch (error) {
+      if (error instanceof Error) {
+        next(error);
+      }
+    }
+  }
+  async adminDashBoard(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = await this.adminService.adminDashboardData();
+      res.status(200).json(data);
+    } catch (error) {
+      if (error instanceof Error) {
+        next(error);
+      }
+    }
+  }
+  async getEnrolledCoursesByAdmin(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const enrolledCourses =
+        await this.adminService.getEnrolledCoursesByAdmin();
+      res.status(201).json(enrolledCourses);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.log(error.message);
+        next(error);
+      }
+    }
+  }
+  async getRevenueChartData(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { filter } = req.query;
+      if (!filter) {
+        return res.status(400).json({ message: "Filter is required" });
+      }
+
+      const revenueData = await this.adminService.fetchSalesData(
+        filter as "weekly" | "monthly" | "yearly"
+      );
+      console.log("Sales data in admin controller", revenueData.data);
+      res.status(200).json(revenueData);
+    } catch (error) {
+      if (error instanceof Error) {
+        next(error);
+      }
     }
   }
 }
-async getEnrolledCoursesByAdmin(req: Request, res: Response,next:NextFunction){
-  try{
- const enrolledCourses = await this.adminService.getEnrolledCoursesByAdmin()
- res.status(201).json(enrolledCourses);
-  } catch(error){
-    if (error instanceof Error) {
-      console.log(error.message)
-      next(error);
-    }
-  }
-
-}
-async getRevenueChartData(req: Request, res: Response,next:NextFunction) {
-  try {
-    const { filter } = req.query;
-    if (!filter) {
-      return res.status(400).json({ message: "Filter is required" });
-    }
-
-    const revenueData = await this.adminService.fetchSalesData(filter as "weekly" | "monthly" | "yearly");
-    console.log("Sales data in admin controller", revenueData.data)
-    res.status(200).json(revenueData);
-  } catch (error) {
-    if (error instanceof Error) {
-      next(error);
-    }
-  }
-}
-
-}
-

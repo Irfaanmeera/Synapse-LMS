@@ -45,16 +45,14 @@ const InstructorSignupForm: React.FC = () => {
     try {
       console.log("response sent");
       const response = await instructorSignup(data);
-
-      // Only navigate if signup is successful
       if (response?.success) {
         dispatch(userActions.setEmail(data.email));
-        navigate("/instructor/verifyOtp"); // Navigate only if there's no error
+        navigate("/instructor/verifyOtp");
       }
     } catch (error) {
       console.log("Error:", error);
       if (typeof error === "string") {
-        setErr(error); // Show error to user
+        setErr(error);
       } else {
         setErr("An unexpected error occurred.");
       }
@@ -153,9 +151,8 @@ const InstructorSignupForm: React.FC = () => {
                               Phone No
                             </label>
 
-                            {/* React Phone Input */}
                             <PhoneInput
-                              country={"in"} // default country, you can change it
+                              country={"in"}
                               inputProps={{
                                 name: "mobile",
                                 id: "mobile",
@@ -167,7 +164,7 @@ const InstructorSignupForm: React.FC = () => {
                                 setValue("mobile", value, {
                                   shouldValidate: true,
                                 })
-                              } // This is the key for react-hook-form
+                              }
                             />
 
                             {errors.mobile && (

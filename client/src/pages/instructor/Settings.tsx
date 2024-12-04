@@ -1,15 +1,15 @@
-import Breadcrumb from '../../components/instructor/Breadcrumbs/Breadcrumb';
+import Breadcrumb from "../../components/instructor/Breadcrumbs/Breadcrumb";
 import { useDispatch, useSelector } from "react-redux";
 import { userActions } from "../../redux/userSlice";
 import { RootState } from "../../redux/store";
 import { useState } from "react";
-import { updateInstructor } from '../../api/instructorApi';
+import { updateInstructor } from "../../api/instructorApi";
 import { toast } from "react-hot-toast";
 
-// Manual validation rules for name and mobile
 const validateName = (name: string) => {
   if (!name.trim()) return "Name should not be empty";
-  if (!/^[A-Za-z ]+$/.test(name)) return "Name should only contain alphabets and spaces";
+  if (!/^[A-Za-z ]+$/.test(name))
+    return "Name should only contain alphabets and spaces";
   if (name.length < 2) return "Name must be at least 2 characters long";
   if (name.length > 50) return "Name must be less than 50 characters";
   return "";
@@ -17,7 +17,8 @@ const validateName = (name: string) => {
 
 const validateMobile = (mobile: string) => {
   if (!/^\d+$/.test(mobile)) return "Mobile number should contain only numbers";
-  if (mobile.length !== 12) return "Mobile number must be exactly 12 digits including the country code";
+  if (mobile.length !== 12)
+    return "Mobile number must be exactly 12 digits including the country code";
   return "";
 };
 
@@ -25,30 +26,35 @@ const Settings = () => {
   const dispatch = useDispatch();
   const user = useSelector((store: RootState) => store.user.user);
 
-  console.log("Instructor Check: ",user)
+  console.log("Instructor Check: ", user);
   const [formData, setFormData] = useState({
     name: user?.name || "",
     mobile: user?.mobile || "",
     qualification: user?.qualification || "",
     description: user?.description || "",
   });
-  
-  const [errors, setErrors] = useState<{ name?: string; mobile?: string; qualification?: string; description?: string }>({});
+
+  const [errors, setErrors] = useState<{
+    name?: string;
+    mobile?: string;
+    qualification?: string;
+    description?: string;
+  }>({});
   const [edit, update] = useState({
     required: true,
     disabled: true,
     isEdit: true,
   });
 
-  // Handle input changes
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({
       ...prevState,
       [name]: value,
     }));
 
-    // Clear the error dynamically
     if (name === "name") {
       const nameError = validateName(value);
       setErrors((prevErrors) => ({
@@ -66,7 +72,6 @@ const Settings = () => {
     }
   };
 
-  // Handle submit with validation
   const handleSubmit = async () => {
     const nameError = validateName(formData.name);
     const mobileError = validateMobile(formData.mobile);
@@ -105,7 +110,10 @@ const Settings = () => {
                 <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
                   {/* Full Name */}
                   <div className="w-full sm:w-1/2">
-                    <label className="mb-3 block text-sm font-medium text-black dark:text-white" htmlFor="fullName">
+                    <label
+                      className="mb-3 block text-sm font-medium text-black dark:text-white"
+                      htmlFor="fullName"
+                    >
                       Full Name
                     </label>
                     <input
@@ -120,7 +128,10 @@ const Settings = () => {
 
                   {/* Mobile */}
                   <div className="w-full sm:w-1/2">
-                    <label className="mb-3 block text-sm font-medium text-black dark:text-white" htmlFor="mobile">
+                    <label
+                      className="mb-3 block text-sm font-medium text-black dark:text-white"
+                      htmlFor="mobile"
+                    >
                       Phone Number
                     </label>
                     <input
@@ -136,7 +147,10 @@ const Settings = () => {
 
                 {/* Qualification */}
                 <div className="mb-5.5">
-                  <label className="mb-3 block text-sm font-medium text-black dark:text-white" htmlFor="qualification">
+                  <label
+                    className="mb-3 block text-sm font-medium text-black dark:text-white"
+                    htmlFor="qualification"
+                  >
                     Qualification
                   </label>
                   <input
@@ -151,7 +165,10 @@ const Settings = () => {
 
                 {/* Description */}
                 <div className="mb-5.5">
-                  <label className="mb-3 block text-sm font-medium text-black dark:text-white" htmlFor="description">
+                  <label
+                    className="mb-3 block text-sm font-medium text-black dark:text-white"
+                    htmlFor="description"
+                  >
                     Description
                   </label>
                   <textarea

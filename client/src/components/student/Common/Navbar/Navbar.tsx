@@ -1,26 +1,20 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useEffect, useRef } from "react";
 import { Disclosure } from "@headlessui/react";
-import {
-  Bars3Icon,
-  ChevronDownIcon,
-  BellIcon,
-} from "@heroicons/react/24/outline"; // Added MagnifyingGlassIcon for search
+import { Bars3Icon, ChevronDownIcon } from "@heroicons/react/24/outline";
 import Drawer from "./Drawer";
 import Drawerdata from "./Drawerdata";
 import Signdialog from "../../../auth/StudentLogin";
 import Registerdialog from "../../../auth/StudentSignup";
 import InstructorSignIn from "../../../auth/instructorLogin";
-
 import { Link, useNavigate } from "react-router-dom";
-
-import { useSelector, useDispatch} from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { userActions } from "../../../../redux/userSlice";
 import { RootState } from "../../../../redux/store";
 import { Roles } from "../../../../interfaces/Roles";
-import {toast} from 'react-hot-toast'
-import { Avatar, Typography} from "@mui/material";
-import { getAllCategories, searchCourse } from "../../../../api/studentApi";
+import { toast } from "react-hot-toast";
+import { Avatar, Typography } from "@mui/material";
+import { searchCourse } from "../../../../api/studentApi";
 import { Category } from "../../../../interfaces/Category";
 
 const Navbar = () => {
@@ -36,38 +30,31 @@ const Navbar = () => {
 
   const [categories, setCategories] = useState<Category[]>([]);
 
-
- 
- 
-
   const handleLogout = () => {
     dispatch(userActions.userLogout());
     if (user?.role === Roles.student) {
       navigate("/");
-      toast.success("Logged Out Successfully"); 
+      toast.success("Logged Out Successfully");
     } else {
       navigate("/");
     }
   };
 
-
-
   const handleSearch = async () => {
     const searchTerm = searchInputRef.current?.value;
     console.log("Search Term", searchTerm);
-  
+
     if (searchTerm) {
       const response = await searchCourse(searchTerm);
       if (response) {
         // Dispatch action to store search results
         dispatch(userActions.setSearchResults(response));
-  
+
         // Navigate to the search results page with search term in state
         navigate("/searchCourses", { state: { searchTerm } });
       }
     }
   };
-
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -103,83 +90,33 @@ const Navbar = () => {
               </div>
             </div>
 
-            {/* EXPLORE BUTTON WITH DROPDOWN */}
-            {/* <div ref={dropdownRef} className="relative z-50">
-      
-      <button
-        className="flex py-2 px-4 items-center text-blue-500 justify-center text-sm focus:outline-none border bg-transparent rounded-xl border-Blueviolet"
-        onClick={() => setIsOpenDrop(!isOpenDrop)}
-      >
-        Explore
-        <ChevronDownIcon className="w-4 h-4 text-blue-500 ml-1" />
-      </button>
-
-     
-      {isOpenDrop && (
-        <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg">
-          <ul className="py-1 text-sm font-serif text-gray-700">
-         
-            {categories.map((category) => (
-              <Link
-                key={category.id}
-                to="#"
-                onClick={() => handleCategoryClick(category!.id)} // Handle category click
-              >
-                <li className="block px-4 py-2 hover:bg-gray">
-                  {category.category} {/* Display category name */}
-                {/* </li>
-              </Link>
-            ))}
-          </ul>
-        </div>
-      )}
-    </div>  */}
-
             {/* SEARCH BAR */}
-            <div className="relative mx-4 flex hidden lg:block">
-  <div className="flex items-center border border-lightgray rounded-3xl shadow-sm focus-within:ring-1 focus-within:ring-gray-blue">
-    <input
-      type="text"
-      placeholder="Search Courses..."
-      ref={searchInputRef}
-      className="w-100 pl-4 py-3 focus:outline-none border-none  rounded-l-3xl"
-    />
-    <button
-      type="submit"
-      onClick={handleSearch}
-      className="p-3 bg-Blueviolet hover:bg-midnightblue duration-150 ease-in-out rounded-full flex items-center justify-center mr-1"
-    >
-      <img
-        src="/assets/banner/search.svg"
-        alt="input-icon"
-        width={15}
-        height={15}
-      />
-    </button>
-  </div>
-</div>
 
-
-
-
-{/* Search button for mobile */}
-<div className="flex lg:hidden justify-center">
-  <button className="p-2 bg-Blueviolet hover:bg-midnightblue rounded-full">
-    <img
-      src="/assets/banner/search.svg"
-      alt="input-icon"
-      width={20}
-      height={20}
-    />
-  </button>
-</div> 
-
+            <div className="relative mx-4 flex items-center border border-lightgray rounded-3xl shadow-sm focus-within:ring-1 focus-within:ring-gray-blue">
+              <input
+                type="text"
+                placeholder="Search Courses..."
+                ref={searchInputRef}
+                className="w-50 sm:w-40 md:w-60 lg:w-100 pl-4 py-3 focus:outline-none border-none rounded-l-3xl"
+              />
+              <button
+                type="submit"
+                onClick={handleSearch}
+                className="p-3 bg-Blueviolet hover:bg-midnightblue duration-150 ease-in-out rounded-full flex items-center justify-center mr-1"
+              >
+                <img
+                  src="/assets/banner/search.svg"
+                  alt="input-icon"
+                  width={15}
+                  height={15}
+                />
+              </button>
+            </div>
 
             {/* Links */}
             <div className="hidden lg:block m-auto">
-           
-              <div className="flex space-x-4">
-                {(user?.role === Roles.student) && (
+              <div className="flex space-x-4 ">
+                {user?.role === Roles.student && (
                   <ul className="mt-2 mb-4 px-4 font-semibold flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6">
                     <Link to={"/"}>
                       <Typography
@@ -193,7 +130,7 @@ const Navbar = () => {
                         </div>
                       </Typography>
                     </Link>
-                
+
                     <Link to={"/courses"}>
                       <Typography
                         as="li"
@@ -206,33 +143,6 @@ const Navbar = () => {
                         </div>
                       </Typography>
                     </Link>
-
-                    {user?.role === Roles.student && (
-                      <>
-                        {/* <Link to={"/my-learnings"}>
-                                                    <Typography
-                                                        as="li"
-                                                        variant="small"
-                                                        color="blue-gray"
-                                                        className="p-1 font-semibold"
-                                                    >
-                                                        <div className="flex items-center  text-slategray">My Learnings</div>
-                                                    </Typography>
-                                                </Link> */}
-                        {/* <Link to={"/profile"}>
-                          <Typography
-                            as="li"
-                            variant="body2"
-                            color="gray"
-                            className="p-1 font-semibold"
-                          >
-                            <div className="flex items-center text-slategray">
-                              My Profile
-                            </div>
-                          </Typography>
-                        </Link> */}
-                      </>
-                    )}
                   </ul>
                 )}
               </div>
@@ -241,9 +151,6 @@ const Navbar = () => {
             {/* USER SECTION */}
             {user ? (
               <div className="relative hidden lg:flex items-center space-x-3">
-                {/* Notification Bell */}
-                {/* <BellIcon className="w-6 h-6 text-slategray cursor-pointer" /> */}
-
                 {/* User name */}
                 <Typography
                   as="div"
@@ -257,14 +164,14 @@ const Navbar = () => {
                 </Typography>
                 <Avatar
                   alt={user?.name}
-                  src={user?.image|| ""}
+                  src={user?.image || ""}
                   className="w-8 h-8"
                 >
                   {user?.name?.charAt(0)}
                 </Avatar>
 
                 {/* Dropdown Menu */}
-                <div ref={dropdownRef2}  className="relative z-50">
+                <div ref={dropdownRef2} className="relative z-50">
                   {/* Button to toggle dropdown */}
                   <button
                     className="flex items-center text-blue justify-center text-sm focus:outline-none bg-transparent rounded-xl border-Blueviolet"
@@ -275,67 +182,61 @@ const Navbar = () => {
 
                   {/* Dropdown content */}
                   {isOpenDrop2 && (
-                  <div className="absolute right-0 mt-2 w-54 bg-white border border-bodydark2 border-opacity-50 rounded-md shadow-lg">
-                  <ul className="py-1 text-base text-slategray">
-                    <Link to="/profile">
-                      <li className="block px-4 py-2 hover:bg-gray hover:text-primary transition duration-150">
-                        My Profile
-                      </li>
-                    </Link>
-                    <Link to="/myLearning">
-                      <li className="block px-4 py-2 hover:bg-gray hover:text-blue transition duration-150">
-                        My Learnings
-                      </li>
-                    </Link>
-                   
-                   
-                    <li
-                      className="block px-4 py-2 hover:bg-gray hover:text-blue cursor-pointer transition duration-150"
-                      onClick={handleLogout} // Attach the handleLogout function
-                    >
-                      Log Out
-                    </li>
-                  </ul>
-                </div>
-                
+                    <div className="absolute right-0 mt-2 w-54 bg-white border border-bodydark2 border-opacity-50 rounded-md shadow-lg">
+                      <ul className="py-1 text-base text-slategray">
+                        <Link to="/profile">
+                          <li className="block px-4 py-2 hover:bg-gray hover:text-primary transition duration-150">
+                            My Profile
+                          </li>
+                        </Link>
+                        <Link to="/myLearning">
+                          <li className="block px-4 py-2 hover:bg-gray hover:text-blue transition duration-150">
+                            My Learnings
+                          </li>
+                        </Link>
+
+                        <li
+                          className="block px-4 py-2 hover:bg-gray hover:text-blue cursor-pointer transition duration-150"
+                          onClick={handleLogout}
+                        >
+                          Log Out
+                        </li>
+                      </ul>
+                    </div>
                   )}
                 </div>
               </div>
             ) : (
-                <div className="ml-10 flex items-center justify-between">
-                <div className="flex space-x-0"> {/* Add margin-right for spacing */}
-                <Link to={"/"}>
-                      <Typography
-                    
-                        variant="body2"
-                        color="gray"
-                        className="font-semibold"
-                      >
-                        <div className="flex text-base mt-2 mr-4 items-center text-slategray">
-                          Home
-                        </div>
-                      </Typography>
-                    </Link>
-                <Link to={"/courses"}>
-                      <Typography
-                    
-                        variant="body2"
-                        color="gray"
-                        className="font-semibold"
-                      >
-                        <div className="flex text-base mt-2 mr-4 items-center text-slategray">
-                          Courses
-                        </div>
-                      </Typography>
-                    </Link>
-                   
-                    <Signdialog />
-                  
-                    <InstructorSignIn/>
-                    <Registerdialog />
-                    
+              <div className="ml-10 flex hidden lg:block items-center justify-between">
+                <div className="flex space-x-0">
+                  {" "}
+                  <Link to={"/"}>
+                    <Typography
+                      variant="body2"
+                      color="gray"
+                      className="font-semibold"
+                    >
+                      <div className="flex text-base mt-2 mr-4 items-center text-slategray">
+                        Home
+                      </div>
+                    </Typography>
+                  </Link>
+                  <Link to={"/courses"}>
+                    <Typography
+                      variant="body2"
+                      color="gray"
+                      className="font-semibold"
+                    >
+                      <div className="flex text-base mt-2 mr-4 items-center text-slategray">
+                        Courses
+                      </div>
+                    </Typography>
+                  </Link>
+                  <Signdialog />
+                  <InstructorSignIn />
+                  <Registerdialog />
                 </div>
-                </div>
+              </div>
             )}
 
             {/* DRAWER FOR MOBILE VIEW */}

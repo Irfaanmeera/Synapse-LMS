@@ -76,24 +76,6 @@ const navigate = useNavigate()
   }, [courseId]);
 
 
-
-//   useEffect(() => {
-//     const fetchCourseDetails = async () => {
-//       try {
-//         const { data } = await authorizedAxios.get(
-//           `/instructor/course/${courseId}`
-//         );
-//         console.log("fetch course detials", data.modules);
-
-      
-//       } catch (error) {
-//         console.error("Error fetching course details:", error);
-//       }
-//     };
-
-//     fetchCourseDetails();
-//   }, [courseId]);
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>) => {
     const { name, value } = e.target;
     setFormData(prev => ({

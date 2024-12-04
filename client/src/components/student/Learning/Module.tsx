@@ -9,7 +9,7 @@ interface Chapter {
   title: string;
   description: string;
   videoUrl: string;
-  completed?: boolean; // Add completed property for checkbox
+  completed?: boolean; 
 }
 
 interface ModuleProps {
@@ -23,16 +23,17 @@ interface ModuleProps {
 const ModuleContent: React.FC<ModuleProps> = ({ module,onVideoSelect,onVideoComplete,}) => {
   const completedChapters = useSelector((state: RootState) => state.enrolledCourse.completedChapters);
  
+  console.log("completed chapters", completedChapters)
   console.log("Module Component/:" ,module.module)
   const [expanded, setExpanded] = useState(false);
   const toggleExpand = () => setExpanded(!expanded);
 
   const handleCheckboxChange = (chapterTitle: string) => {
-    // When checkbox is clicked, trigger completion logic
+    
     onVideoComplete(chapterTitle);
   };
   useEffect(() => {
-    // Any side effect to handle completion status could go here
+
   }, [completedChapters]);
 
 
@@ -70,11 +71,12 @@ const ModuleContent: React.FC<ModuleProps> = ({ module,onVideoSelect,onVideoComp
             >
              <Checkbox
       checked={completedChapters.includes(chapter.title)}
-      onChange={() => handleCheckboxChange(chapter.title)}
+      disabled
+      // onChange={() => handleCheckboxChange(chapter.title)}
       sx={{
-        color: 'gray', // Color of the checkbox
+        color: 'gray', 
         '&.Mui-checked': {
-          color: 'gray', // Color of the checkmark (when checked)
+          color: 'gray', 
         },
      
       }}

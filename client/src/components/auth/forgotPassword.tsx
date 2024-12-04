@@ -78,54 +78,6 @@ const ForgotPassword: React.FC<{ isInstructor: boolean }> = ({
     }
   };
 
-//   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-//     e.preventDefault();
-//     console.log("Email:", email, "OTP:", otp);
-    
-//     try {
-//       if (!props.isInstructor) {
-//         const response = await updateStudentForgotPassword(
-//             userEmail!,
-//             data.password
-//           );
-//         console.log("OTP Verification Response:", response);
-//         if (response) {
-//           dispatch(userActions.saveUser(response));
-//           toast.success("OTP verification successful!"); 
-//           navigate("/");
-//         }
-//       }else {
-//         const response = await updateInstructorForgotPassword(otp, email!);
-//         if (response) {
-//           dispatch(userActions.saveUser(response));
-//           navigate("/instructor");
-//         }
-//       }
-//     } catch(error) {
-//       setErr("OTP verification failed");
-//     }
-//   };
-
-//   useEffect(() => {
-//     const resendTimeout = setTimeout(() => {
-//       setShowButton(true);
-//     }, resendTimer * 1000);
-
-//     const countdownInterval = setInterval(() => {
-//       setResendTimer((prev) => (prev > 0 ? prev - 1 : 0));
-//     }, 1000);
-
-//     return () => {
-//       clearTimeout(resendTimeout);
-//       clearInterval(countdownInterval);
-//     };
-//   }, [resendTimer]);
-//   const formatTime = (time: number) => {
-//     const minutes = Math.floor(time / 60);
-//     const seconds = time % 60;
-//     return `${minutes}:${("0" + seconds).slice(-2)}`; // Pad seconds with leading zero if needed
-//   };
-
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-500 to-indigo-600">
       <div className="bg-white w-full max-w-md rounded-lg shadow-lg p-6">

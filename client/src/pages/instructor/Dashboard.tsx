@@ -16,7 +16,7 @@ import TableOne from '../../components/instructor/Tables/StudentList';
 const Dashboard: React.FC = () => {
   const user = useSelector((store: RootState) => store.user.user);
   const [totalCount, setTotalCount] = useState(0);
-  const [totalEnrolledCount, setTotalEnrolledCount] = useState(0); // To store the total count
+  const [totalEnrolledCount, setTotalEnrolledCount] = useState(0); 
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
 
@@ -24,7 +24,7 @@ const Dashboard: React.FC = () => {
     try {
       await authorizedAxios.post('/instructor/addCourse', courseData);
       alert('Course created successfully!');
-      // Close modal after successful creation
+     
     } catch (error) {
       console.error('Error creating course:', error);
     }
@@ -34,9 +34,9 @@ const Dashboard: React.FC = () => {
     const fetchTotalCourseCount = async () => {
       setLoading(true);
       try {
-        const response = await fetchInstructorCourses(page); // Ensure page is passed if required
-        console.log("Total Course Count: ", response.totalCount); // Log the total count
-        setTotalCount(response.totalCount); // Correctly set the total count
+        const response = await fetchInstructorCourses(page); 
+        console.log("Total Course Count: ", response.totalCount); 
+        setTotalCount(response.totalCount); 
       } catch (error) {
         console.error("Error fetching total course count:", error);
       } finally {
@@ -52,11 +52,9 @@ const Dashboard: React.FC = () => {
 
 const fetchCourses = async () => {
   try {
-    const response = await fetchEnrolledStudents(); // Fetch API response
+    const response = await fetchEnrolledStudents(); 
 
-
-    // Calculate the total count based on the response length
-    const count = response.length; // Adjust if response has nested arrays or specific structure
+    const count = response.length; 
     setTotalEnrolledCount(count);
   } catch (error) {
     console.error('Error fetching courses:', error);

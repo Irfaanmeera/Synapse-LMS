@@ -9,15 +9,12 @@ import { loginSchema } from "../../validations/loginSchema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import OAuth from "../auth/OAuth";
-import {socket} from '../socket/socket'
-
-// import {socket} from '../socket/Socket'
+import { socket } from "../socket/socket";
 
 interface StudentData {
   email: string;
   password: string;
 }
-
 
 const Signin: FC = () => {
   const [err, setErr] = useState<string | null>(null);
@@ -45,28 +42,25 @@ const Signin: FC = () => {
     try {
       dispatch(userActions.setEmail(data.email));
       const response = await studentLogin(data);
-      console.log("Login response:", response); // Log response
-  
-      dispatch(userActions.saveUser(response)); // Save user data
-      socket.on('connect', () => {
-        console.log('Socket connected:', socket.id);
+      console.log("Login response:", response);
+
+      dispatch(userActions.saveUser(response));
+      socket.on("connect", () => {
+        console.log("Socket connected:", socket.id);
         socket.connect();
-        navigate("/"); // Redirect to home after successful socket connection
+        navigate("/");
       });
-  
-      // Try connecting the socket here too
+
       socket.connect();
     } catch (error: any) {
       console.error("Caught error:", error);
-  
-      // Display the error message received from handleAxiosError
-      setErr(error); // `error` will be the message returned from `handleAxiosError`
+      setErr(error);
     }
   };
-  
+
   return (
     <>
-       <div className="absolute inset-y-0 right-0 flex items-center sm:static sm:inset-auto sm:pr-3">
+      <div className="absolute inset-y-0 right-0 flex items-center sm:static sm:inset-auto sm:pr-3">
         <div className="hidden lg:block mr-2">
           <button
             type="button"
@@ -111,7 +105,9 @@ const Signin: FC = () => {
                           Sign in
                         </h2>
                       </div>
-                      <div>{err && <p className="text-red text-sm">{err}</p>}</div>
+                      <div>
+                        {err && <p className="text-red text-sm">{err}</p>}
+                      </div>
                       <form
                         onSubmit={handleSubmit(submitData)}
                         className="mt-6 space-y-6"
@@ -184,11 +180,12 @@ const Signin: FC = () => {
                             Sign In
                           </button>
                         </div>
-                        
                       </form>
                       <div className="flex justify-center items-center">
                         <span className="w-full border border-gray-blue"></span>
-                        <span className="px-4 text-sm text-slategray font-serif ">Or</span>
+                        <span className="px-4 text-sm text-slategray font-serif ">
+                          Or
+                        </span>
                         <span className="w-full border border-gray-blue"></span>
                       </div>
                       <OAuth
@@ -196,35 +193,8 @@ const Signin: FC = () => {
                           throw new Error("Function not implemented.");
                         }}
                       />
-
-                      {/* <div>
-                                            <p className="text-center text-sm">
-            Don't have an account!{" "}
-            <Link to={"/signup"}>
-              <span className="text-sky-600 cursor-pointer hover:text-sky-900 hover:underline">
-                Sign up
-              </span>
-            </Link>
-          </p>
-          <Link to={"/instructor/login"}>
-            <p className="text-center text-sm text-sky-600 cursor-pointer underline">
-              Login as Instructor
-            </p>
-          </Link>
-          
-                                            </div> */}
                     </div>
                   </div>
-
-                  {/* <div className="mt-4 flex justify-end">
-                                        <button
-                                            type="button"
-                                            className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                                            onClick={closeModal}
-                                        >
-                                            Got it, thanks!
-                                        </button>
-                                    </div> */}
                 </Dialog.Panel>
               </Transition.Child>
             </div>
