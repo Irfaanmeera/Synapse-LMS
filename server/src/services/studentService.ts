@@ -19,8 +19,6 @@ import {
 import { NotFoundError } from "../constants/errors/notFoundError";
 import Stripe from "stripe";
 
-// import nodemailer from 'nodemailer'
-
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 const INSTRUCTOR_PERCENTAGE = 70;
 
@@ -32,7 +30,7 @@ export class StudentService implements IStudentService {
     private categoryRepository: CategoryRepository,
     private moduleRepository: ModuleRepository,
     private enrolledCourseRepository: EnrolledCourseRepository
-  ) {}
+  ) { }
 
   async signup(studentDetails: IStudent): Promise<IStudent | null> {
     try {
@@ -45,7 +43,7 @@ export class StudentService implements IStudentService {
       return await this.studentRepository.createStudent(studentDetails);
     } catch (error) {
       console.log(error as Error);
-      throw error; // Rethrow the error to be caught in the controller
+      throw error;
     }
   }
 
@@ -58,9 +56,8 @@ export class StudentService implements IStudentService {
         return student;
       }
     } catch (error) {
-      // You can log the error here if necessary
+
       console.error(error);
-      // You might want to throw a more specific error or rethrow the caught error
       throw new Error("An error occurred while logging in. Please try again.");
     }
   }
@@ -114,37 +111,33 @@ export class StudentService implements IStudentService {
     file: Express.Multer.File
   ): Promise<IStudent> {
     try {
-      // Step 1: Find the current profile image of the student
+
       const student = await this.studentRepository.findStudentById(studentId);
 
-      // Step 2: If there's an existing image, delete it from the S3 bucket
       if (student && student.image) {
         const fileName = decodeURIComponent(
           student.image.split("/").pop()!.trim()
         );
         const existingImage = {
-          Bucket: "synapsebucket-aws", // Your S3 bucket name
-          Key: `profile-images/${fileName}`, // The key (filename) of the existing image
+          Bucket: "synapsebucket-aws",
+          Key: `profile-images/${fileName}`,
         };
-        await s3.send(new DeleteObjectCommand(existingImage)); // Delete the existing image
+        await s3.send(new DeleteObjectCommand(existingImage));
       }
 
-      // Step 3: Prepare the new file for upload
-      const key = `profile-images/${file.originalname}`; // The key (filename) for the new image
-      const params = {
-        Bucket: "synapsebucket-aws", // Your S3 bucket name
-        Key: key, // The new file's key (where it will be saved in S3)
-        Body: file.buffer, // The file's content (from memory)
-        ContentType: file.mimetype, // The file's MIME type
-      };
 
-      // Step 4: Generate the file URL where the image will be accessible
+      const key = `profile-images/${file.originalname}`;
+      const params = {
+        Bucket: "synapsebucket-aws",
+        Key: key,
+        Body: file.buffer,
+        ContentType: file.mimetype,
+      };
       const filePath = `https://${params.Bucket}.s3.${process.env.AWS_S3_REGION}.amazonaws.com/${params.Key}`;
 
-      // Step 5: Upload the file to S3
+
       await s3.send(new PutObjectCommand(params));
 
-      // Step 6: Update the student's profile image in the database with the new URL
       return await this.studentRepository.updateImage(studentId, filePath);
     } catch (error) {
       console.error(error);
@@ -254,7 +247,7 @@ export class StudentService implements IStudentService {
     } catch (error) {
       console.error(error);
       if (error instanceof BadRequestError) {
-        throw error; // Re-throw the specific error if it's a BadRequestError
+        throw error;
       }
       throw new Error("An error occurred while resetting the password");
     }
@@ -369,7 +362,7 @@ export class StudentService implements IStudentService {
           studentId,
           courseId
         );
-      console.log("Enrolled course in repo:", enrolledCourse);
+
       return enrolledCourse;
     } catch (error) {
       console.error("Error fetching enrolled course:", error);
@@ -399,42 +392,6 @@ export class StudentService implements IStudentService {
       chapterTitle
     );
 
-    console.log("response from service:", response);
-
-    // const course = await this.courseRepository.findCourseById(
-    //   response.courseId!
-    // );
-    // if (
-    //   course?.modules?.length === response.progression?.length &&
-    //   !response.completed
-    // ) {
-    //   const student = await this.studentRepository.findStudentById(
-    //     response.studentId!
-    //   );
-    //   const transporter = nodemailer.createTransport({
-    //     host: "smtp.gmail.com",
-    //     port: 587,
-    //     service: "Gmail",
-    //     secure: true,
-    //     auth: {
-    //       user: process.env.TRANSPORTER_EMAIL,
-    //       pass: process.env.TRANSPORTER_PASSWORD,
-    //     },
-    //   });
-    //   transporter.sendMail({
-    //     to: student!.email,
-    //     from: process.env.TRANSPORTER_EMAIL,
-    //     subject: "SYNAPSE: Course Completion Certificate",
-    //     html: `<div><h1>Course completion certificate from Synapse</h1></div>`,
-    //     attachments: [
-    //       {
-    //         filename: "certificate.jpg",
-    //         path: __dirname + "/../../../src/files/certificate.jpg",
-    //       },
-    //     ],
-    //   });
-    //   await this.enrolledCourseRepository.completedStatus(response.id!);
-    // }
     return response;
   }
 

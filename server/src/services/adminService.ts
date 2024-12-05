@@ -30,7 +30,7 @@ export class AdminService implements IAdminService {
     private instructorRepository: InstructorRepository,
     private courseRepository: CourseRepository,
     private enrolledCourseRepository: EnrolledCourseRepository
-  ) {}
+  ) { }
 
   async login(email: string): Promise<IAdmin> {
     try {
@@ -68,9 +68,6 @@ export class AdminService implements IAdminService {
 
   async editCategory(categoryId: string, data: { category: string }): Promise<ICategory> {
     try {
-    
-  
-      // Proceed with updating the category using the category repository
       return await this.categoryRepository.updateCategory(categoryId, data);
     } catch (error) {
       console.error(error);

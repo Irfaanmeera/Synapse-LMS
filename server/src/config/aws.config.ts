@@ -1,6 +1,6 @@
-import { S3Client, PutObjectCommand, } from '@aws-sdk/client-s3';
-import dotenv from 'dotenv';
-import { v4 as uuidv4 } from 'uuid';
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import dotenv from "dotenv";
+import { v4 as uuidv4 } from "uuid";
 
 dotenv.config();
 
@@ -12,7 +12,9 @@ const s3 = new S3Client({
   },
 });
 
-export const uploadToS3 = async (file: Express.Multer.File): Promise<string> => {
+export const uploadToS3 = async (
+  file: Express.Multer.File
+): Promise<string> => {
   const key = `videos/${uuidv4()}-${file.originalname}`;
   const uploadParams = {
     Bucket: process.env.AWS_S3_BUCKET_NAME as string,
@@ -24,9 +26,7 @@ export const uploadToS3 = async (file: Express.Multer.File): Promise<string> => 
   const command = new PutObjectCommand(uploadParams);
   await s3.send(command);
 
-  // Return the key instead of the full URL
-  return key; 
+  return key;
 };
-
 
 export default s3;

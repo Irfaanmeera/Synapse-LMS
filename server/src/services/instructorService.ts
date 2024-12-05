@@ -169,54 +169,54 @@ export class InstructorService implements IInstructorService {
   async updateCourse(
     courseId: string,
     courseDetails: ICourse,
-    file?: Express.Multer.File // Make file optional
+    file?: Express.Multer.File 
   ): Promise<ICourse> {
     try {
-      // Step 1: Find the current course details
+     
       const existingCourse =
         await this.courseRepository.getSingleCourseForInstructor(courseId);
 
-      // Step 2: If there's an existing image, delete it from the S3 bucket
+   
       if (existingCourse && existingCourse.image) {
         const fileName = decodeURIComponent(
           existingCourse.image.split("/").pop()!.trim()
         );
         const existingImage = {
-          Bucket: "synapsebucket-aws", // Your S3 bucket name
+          Bucket: "synapsebucket-aws", 
           Key: `courses/${existingCourse.name!.replace(
             /\s/g,
             "_"
-          )}/image/${fileName}`, // The key (filename) of the existing image
+          )}/image/${fileName}`, 
         };
-        await s3.send(new DeleteObjectCommand(existingImage)); // Delete the existing image
+        await s3.send(new DeleteObjectCommand(existingImage)); 
       }
 
-      // Step 3: Prepare the new file for upload, if provided
-      let filePath: string | undefined; // Initialize filePath
+     
+      let filePath: string | undefined; 
 
       if (file) {
-        const sanitizedCourseName = courseDetails.name!.replace(/\s/g, "_"); // Sanitize course name
-        const sanitizedFileName = encodeURIComponent(file.originalname); // Sanitize file name
+        const sanitizedCourseName = courseDetails.name!.replace(/\s/g, "_"); 
+        const sanitizedFileName = encodeURIComponent(file.originalname); 
 
-        const key = `courses/${sanitizedCourseName}/image/${sanitizedFileName}`; // Define S3 key for new image
+        const key = `courses/${sanitizedCourseName}/image/${sanitizedFileName}`; 
         const params = {
-          Bucket: "synapsebucket-aws", // Your S3 bucket name
-          Key: key, // The new file's key (where it will be saved in S3)
-          Body: file.buffer, // The file's content (from memory)
-          ContentType: file.mimetype, // The file's MIME type
+          Bucket: "synapsebucket-aws", 
+          Key: key, 
+          Body: file.buffer, 
+          ContentType: file.mimetype, 
         };
 
-        // Step 4: Generate the file URL where the image will be accessible
+       
         filePath = `https://${params.Bucket}.s3.${process.env.AWS_S3_REGION}.amazonaws.com/${params.Key}`;
 
-        // Step 5: Upload the file to S3
+     
         await s3.send(new PutObjectCommand(params));
       }
 
-      // Step 6: Update the course in the repository
+   
       const updatedCourseData = {
         ...courseDetails,
-        image: filePath || existingCourse!.image, // Use the new image URL if provided, else keep the existing one
+        image: filePath || existingCourse!.image, 
       };
 
       return await this.courseRepository.updateCourse(
@@ -283,15 +283,15 @@ export class InstructorService implements IInstructorService {
     file: Express.Multer.File
   ): Promise<ICourse> {
     try {
-      // Step 1: Create the course
+  
       const createdCourse = await this.courseRepository.createCourse(
         courseDetails
       );
 
-      // Step 2: Upload the image
+      
       if (file) {
-        const sanitizedCourseName = createdCourse.name!.replace(/\s/g, "_"); // Sanitize course name
-        const sanitizedFileName = encodeURIComponent(file.originalname); // Sanitize file name
+        const sanitizedCourseName = createdCourse.name!.replace(/\s/g, "_"); 
+        const sanitizedFileName = encodeURIComponent(file.originalname); 
 
         const key = `courses/${sanitizedCourseName}/image/${sanitizedFileName}`;
 
@@ -305,9 +305,8 @@ export class InstructorService implements IInstructorService {
         const filePath = `https://${params.Bucket}.s3.${process.env.AWS_S3_REGION}.amazonaws.com/${params.Key}`;
         console.log(filePath);
 
-        await s3.send(new PutObjectCommand(params)); // Upload the image to S3
+        await s3.send(new PutObjectCommand(params)); 
 
-        // Step 3: Update the course with the image URL
         if (createdCourse.id) {
           return await this.courseRepository.addCourseImage(
             createdCourse.id,
@@ -355,17 +354,14 @@ export class InstructorService implements IInstructorService {
       if (!module) {
         throw new BadRequestError("Module not found");
       }
-
-      // Upload video to S3 and get the file key
       const fileKey = await uploadToS3(file);
       console.log("File key:", fileKey);
-
-      // Construct the full video URL based on the file key
+      
       const videoUrl = `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${process.env.AWS_S3_REGION}.amazonaws.com/${fileKey}`;
-      chapterData.videoUrl = videoUrl; // Set the videoUrl in chapterData
+      chapterData.videoUrl = videoUrl; 
       console.log("ChapterDataVideoUrl:", chapterData.videoUrl);
 
-      // Add chapter to module
+      
       console.log("Attempting to update module with ID:", moduleId);
       return await this.moduleRepository.addChapter(moduleId, chapterData);
     } catch (error) {

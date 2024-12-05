@@ -2,7 +2,7 @@ import { Server, Socket } from "socket.io";
 import { createServer } from "http";
 import { IMessage } from "../interfaces/entityInterface/IChat";
 import { ChatRepository } from "../repositories/chatRepository";
-// import {ChatREpository} from "../repositories/implements/"
+
 const chatRepository = new ChatRepository();
 
 interface ChatMessage {
@@ -17,29 +17,26 @@ interface EventData {
     courseName: string;
     image: string;
     id: string;
-  }; // Adjust the type based on what data you expect
+  };
 }
 
 const httpServer = createServer();
 const io = new Server(httpServer, {
   cors: {
-    origin: "http://localhost:5173",  // Allow only this origin
+    origin: "http://localhost:5173",
     methods: ["GET", "POST"],
-    credentials: true,  // Allow credentials (cookies, HTTP authentication)
+    credentials: true,
   },
 });
-
 
 const activeMembers = new Map<string, number>();
 
 io.on("connection", (socket: Socket) => {
   console.log("A user connected");
 
-  // Update the active connection count after the user has connected
-  const connectedClientsCount = io.engine.clientsCount;  // This gives the correct number of connections
+  const connectedClientsCount = io.engine.clientsCount;
   console.log(connectedClientsCount, "connections");
 
-  // Listen for chat messages
   socket.on("join-room", (data: { courseId: string }) => {
     socket.join(data.courseId);
 
@@ -57,15 +54,15 @@ io.on("connection", (socket: Socket) => {
 
   socket.on("get-all-messages", async ({ courseId }) => {
     const messages = await chatRepository.getChatByCourseId(courseId);
-    console.log("Messages in repo", messages)
+    console.log("Messages in repo", messages);
     io.to(courseId).emit("get-course-response", messages);
   });
 
   socket.on("message", async (data: ChatMessage) => {
     const { courseId, message } = data;
-  console.log("course id", courseId)
+    console.log("course id", courseId);
     const existChat = await chatRepository.getChatByCourseId(courseId);
-   
+
     if (existChat) {
       await chatRepository.addMessage(courseId, message);
     } else {
@@ -73,14 +70,12 @@ io.on("connection", (socket: Socket) => {
         courseId,
         messages: [message],
       };
-    
-       await chatRepository.createChatRoom(chatDetails);
-      
+
+      await chatRepository.createChatRoom(chatDetails);
     }
     io.to(data.courseId!).emit("messageResponse", data);
   });
 
-  // Handle disconnect event
   socket.on("disconnect", () => {
     console.log("User disconnected");
     const rooms = Array.from(socket.rooms);

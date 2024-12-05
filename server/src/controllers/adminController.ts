@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Request, Response, NextFunction } from "express";
 import { IAdmin } from "../interfaces/entityInterface/IAdmin";
 import { AdminService } from "../services/adminService";
@@ -12,10 +13,7 @@ export class AdminController {
   async login(req: Request, res: Response, next: NextFunction) {
     try {
       const { email, password } = req.body;
-      console.log(email, password);
-
       const admin: IAdmin = await this.adminService.login(email);
-      console.log(admin);
 
       const isPasswordMatch = await bcrypt.compare(password, admin.password!);
       if (!admin || !admin.id) {
@@ -41,8 +39,6 @@ export class AdminController {
           role: "admin",
         };
 
-        console.log(adminDetails);
-
         res.status(200).json({
           admin: adminDetails,
           message: "Admin signed in",
@@ -56,7 +52,6 @@ export class AdminController {
       }
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
         return next(error);
       } else {
         console.log("An unknown error occurred");
@@ -142,7 +137,7 @@ export class AdminController {
   async getAllInstructors(req: Request, res: Response, next: NextFunction) {
     try {
       const instructors = await this.adminService.getAllInstructors();
-      res.status(200).json({ instructors });
+      res.status(200).json({ instructors});
     } catch (error) {
       if (error instanceof Error) {
         next(error);
@@ -283,7 +278,6 @@ export class AdminController {
       const revenueData = await this.adminService.fetchSalesData(
         filter as "weekly" | "monthly" | "yearly"
       );
-      console.log("Sales data in admin controller", revenueData.data);
       res.status(200).json(revenueData);
     } catch (error) {
       if (error instanceof Error) {

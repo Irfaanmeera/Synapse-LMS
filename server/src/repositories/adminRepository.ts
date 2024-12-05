@@ -5,7 +5,6 @@ import { IAdminRepository } from "../interfaces/repositoryInterfaces/IAdminRepos
 export class AdminRepository implements IAdminRepository{
   async findAdminByEmail(email:string) : Promise<IAdmin |null>{
    const admin= await Admin.findOne({email})
-   console.log("Admin from repo", admin)
    return admin;
    }
 }
